@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Коллекция Игр</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1c1c1c;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.3s ease;
+            z-index: 1000;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-family: 'Dancing Script', cursive; /* Курсивный шрифт для логотипа */
+            color: #00ff7f;
+            margin-left: 5%; /* Сдвиг логотипа на 5% влево */
+        }
+
+        header nav {
+            display: flex;
+            gap: 20px;
+            margin-right: 5%; /* Сдвиг кнопок на 5% вправо */
+        }
+
+        header nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 2px solid #00ff7f;
+            border-radius: 5px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        header nav a:hover {
+            background: #00ff7f;
+            color: #1c1c1c;
+        }
+
+        #games-collection {
+            padding: 80px 20px; /* Отступ для секции */
+            text-align: center;
+        }
+
+        #games-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; /* Пробел между играми */
+        }
+
+        .game-item {
+            background: rgba(255, 255, 255, 0.1); /* Полупрозрачный фон */
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 300px; /* Максимальная ширина для каждого элемента */
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer; /* Курсор в виде указателя */
+        }
+
+        .game-item:hover {
+            transform: scale(1.05); /* Увеличение при наведении */
+            box-shadow: 0 0 15px rgba(0, 255, 127, 0.5); /* Тень при наведении */
+        }
+
+        .button-container {
+            margin-top: 20px; /* Отступ сверху для кнопок */
+        }
+
+        button {
+            background: #00ff7f;
+            color: #1c1c1c;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background: rgba(0, 255, 127, 0.8); /* Легкое затемнение */
+            transform: scale(1.05);
+        }
+
+    </style>
+</head>
+<body>
+<header>
+    <a href="/"> <h1>ASCENMMO</h1></a>
+    <nav>
+        <a href="/developer/doc">Документация</a>
+        <a href="/admin/info">Информация о разработчике</a>
+    </nav>
+</header>
+
+<section id="games-collection">
+    <h3>Коллекция Игр</h3>
+    <div id="games-box">
+        <!-- Здесь будет отображаться список игр -->
+    </div>
+    <div class="button-container">
+        <button id="add-game">Добавить игру</button>
+        <button id="refresh-list">Обновить список</button>
+    </div>
+    <p id="error-message" style="display:none;">Игры не найдены.</p>
+</section>
+
+<footer>
+    <p>© 2024 Ascenmmo. Все права защищены.</p>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const gamesBox = document.getElementById('games-box');
+        const errorMessage = document.getElementById('error-message');
+        const addGameButton = document.getElementById('add-game');
+        const refreshListButton = document.getElementById('refresh-list');
+        const developerInfoButton = document.getElementById('developer-info');
+
+        // Определяем базовый URL для бэкенда
+        const backendUrl = `${window.location.origin}/api/v1/devTools`;
+
+        let isRetred = false
+
+        const handleApiError = async (error, retryFunc) => {
+            console.error('Ошибка:', error);
+            if (error.message && error.message.includes('token')) {
+                await refreshToken(retryFunc);
+            }else{
+                alert(error.message);
+            }
+        };
+
+
+
+        const refreshToken = async (retryFunc) => {
+            const refreshToken = getCookie('refresh');
+            const token = getCookie('token');
+            if (isRetred) {
+                return
+            }
+
+            isRetred = true
+
+            try {
+                const response = await fetch(`${window.location.origin}/api/v1/developers/refreshToken`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Token': token,
+                        'RefreshToken': refreshToken
+                    },
+                    body: JSON.stringify({
+                        id: 1,
+                        jsonrpc: "2.0",
+                        params: {}
+                    })
+                });
+
+                if (!response.ok) throw new Error('Ошибка обновления токенов');
+
+                const data = await response.json();
+                if (data.result && data.result.newToken && data.result.newRefresh) {
+                    document.cookie = `token=${data.result.newToken}; path=/`;
+                    document.cookie = `refresh=${data.result.newRefresh}; path=/`;
+                    retryFunc()
+                } else {
+                    throw new Error('Ошибка обновления токенов');
+                }
+            } catch (error) {
+                console.error('Ошибка обновления токенов:', error);
+                window.location.href = '/admin/auth';  // Редирект на страницу аутентификации
+            }
+        };
+
+        const fetchGames = async () => {
+            try {
+                const response = await fetch(`${backendUrl}/getMyGames`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Token': getCookie('token') // Получаем токен из куки
+                    },
+                    body: JSON.stringify({
+                        id: 1,
+                        jsonrpc: "2.0",
+                        params: {}
+                    })
+                });
+
+                if (!response.ok) throw new Error('Ошибка сети');
+
+                const data = await response.json();
+                if (data.result && data.result.games.length > 0) {
+                    errorMessage.style.display = 'none'; // Скрываем сообщение об ошибке
+                    renderGames(data.result.games);
+                } else {
+                    if (data.error) {
+                        handleApiError(data.error,fetchGames)
+                    }
+                    gamesBox.innerHTML = ''; // Очищаем контейнер с играми
+                    errorMessage.style.display = 'block'; // Показываем сообщение об ошибке
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                errorMessage.style.display = 'block'; // Показываем сообщение об ошибке
+            }
+        };
+
+        const renderGames = (games) => {
+            gamesBox.innerHTML = ''; // Очищаем контейнер перед добавлением новых игр
+            games.forEach(game => {
+                const gameItem = document.createElement('div');
+                gameItem.className = 'game-item';
+                gameItem.innerHTML = `
+                <h4>${game.name}</h4>
+                <p>Количество игроков: ${game.count_players}</p>
+                <p>Количество игроков онлайн: ${game.count_online}</p>
+            `;
+                gameItem.onclick = () => {
+                    window.location.href = `game_info?game_id=${game.game_id}`; // Редирект на страницу с игрой
+                };
+                gamesBox.appendChild(gameItem);
+            });
+        };
+
+        const getCookie = (name) => {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        };
+
+        addGameButton.onclick = () => {
+            window.location.href = 'game_info'; // Редирект на страницу добавления игры
+        };
+
+        refreshListButton.onclick = fetchGames;
+
+        fetchGames();
+
+        developerInfoButton.onclick = () => {
+            window.location.href = 'developer-info';
+        };
+
+        // Первоначальный вызов для загрузки игр
+
+    });
+
+</script>
+</body>
+</html>

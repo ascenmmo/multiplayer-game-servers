@@ -1,0 +1,264 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #1c1c1c;
+    color: #fff;
+    line-height: 1.6;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.3s ease;
+    z-index: 1000;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-family: 'Dancing Script', cursive; /* Курсивный шрифт для логотипа */
+    color: #00ff7f;
+    margin-left: 5%; /* Сдвиг логотипа на 10% влево */
+}
+
+header nav {
+    display: flex;
+    gap: 20px;
+    margin-right: 5%; /* Сдвиг кнопок на 10% вправо */
+}
+
+header nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border: 2px solid #00ff7f;
+    border-radius: 5px;
+    transition: background 0.3s, color 0.3s;
+}
+
+header nav a:hover {
+    background: #00ff7f;
+    color: #1c1c1c;
+}
+
+.hero {
+    height: 100vh; /* Высота экрана */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+    animation: fadeIn 1s ease-in;
+    width: 100%; /* Ширина на всю страницу */
+    position: relative; /* Для абсолютного позиционирования дочерних элементов */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.future-container {
+    position: absolute; /* Задать абсолютное позиционирование */
+    top: 0; /* Сдвиг вверх */
+    left: 0; /* Сдвиг влево */
+    background: #000; /* Черный фон */
+    width: 100%; /* Ширина на всю страницу */
+    height: 100%; /* Высота на всю страницу */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+}
+
+.future-container h2 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.future-container p {
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.button {
+    background: #00ff7f;
+    color: #1c1c1c;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+    width: 100%; /* Ширина кнопки на весь экран */
+    max-width: 300px; /* Максимальная ширина кнопки */
+}
+
+.button:hover {
+    background: rgba(0, 255, 127, 0.8); /* Легкое затемнение */
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 255, 127, 0.7);
+}
+
+section {
+    padding: 60px 20px;
+    text-align: center;
+    animation: fadeIn 1s ease-in;
+}
+
+h3 {
+    margin-bottom: 20px;
+    font-size: 36px;
+    color: #00ff7f;
+}
+
+p {
+    margin-bottom: 40px;
+    font-size: 18px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+footer {
+    padding: 20px;
+    text-align: center;
+    background: #000;
+    position: relative;
+}
+
+footer p {
+    margin: 0;
+}
+
+.service-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Пространство между элементами */
+    flex-wrap: wrap; /* Позволяет элементам оборачиваться на мобильных устройствах */
+    padding: 40px 20px; /* Отступы сверху и снизу */
+}
+
+.service-item {
+    background: rgba(255, 255, 255, 0.1); /* Полупрозрачный фон для контраста */
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 300px; /* Максимальная ширина для каждого элемента */
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.service-item:hover {
+    transform: scale(1.05); /* Увеличение при наведении */
+    box-shadow: 0 0 15px rgba(0, 255, 127, 0.5); /* Тень при наведении */
+}
+
+.service-item h4 {
+    color: #00ff7f; /* Цвет заголовка */
+    margin-bottom: 10px; /* Отступ снизу */
+}
+
+.service-item p {
+    font-size: 16px; /* Размер текста */
+    color: #e0e0e0; /* Цвет текста для лучшего контраста */
+}
+
+#admin {
+    padding: 60px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #000000 30%, #3d3d3d 100%); /* Градиентный фон */
+    border-radius: 10px; /* Закругление углов */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Тень для глубины */
+    position: relative; /* Для позиционирования псевдоэлементов */
+    overflow: hidden; /* Скрытие переполненных элементов */
+    animation: fadeIn 1s ease-in; /* Появление */
+}
+
+#admin h3 {
+    margin-bottom: 20px;
+    font-size: 36px;
+    color: #00ff7f; /* Цвет заголовка */
+    animation: slideIn 0.5s ease; /* Анимация заголовка */
+}
+
+#admin p {
+    margin-bottom: 40px;
+    font-size: 20px; /* Увеличенный размер текста */
+    color: #e0e0e0; /* Цвет текста для лучшего контраста */
+}
+
+.download-section {
+    background: url('https://example.com/your-background-image.jpg') no-repeat center center/cover; /* Замените на ваше изображение */
+    padding: 60px 20px;
+    text-align: center;
+    color: #fff;
+    animation: fadeIn 1s ease-in; /* Анимация появления */
+    position: relative; /* Для абсолютного позиционирования внутренних элементов */
+    overflow: hidden; /* Скрыть элементы, выходящие за пределы секции */
+}
+
+.download-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный фон для улучшения читаемости текста */
+    z-index: 1; /* Поместить под контентом */
+}
+
+.download-content {
+    position: relative; /* Для обеспечения правильного позиционирования текста и кнопки */
+    z-index: 2; /* Чтобы текст был выше фона */
+}
+
+.download-content h3 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    animation: slideIn 0.5s ease-in-out; /* Анимация заголовка */
+}
+
+.download-content p {
+    font-size: 18px;
+    margin-bottom: 10px; /* Уменьшено расстояние между параграфами */
+    animation: fadeIn 1s ease-in-out; /* Анимация текста */
+}
+
+.info-text {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 30px; /* Добавлено расстояние под информационным текстом */
+    color: #ffd700; /* Цвет текста для выделения */
+}
+
+/* Стили для формы авторизации и регистрации */
+#auth-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 80px 20px; /* Отступы для секции */
+}
+
+#auth-section h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: #00ff7f;
+}
+
+#auth-section h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #00ff7f; /* Цвет заголовков форм */
+}
+

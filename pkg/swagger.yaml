@@ -1,0 +1,2477 @@
+openapi: 3.0.0
+servers:
+    - {}
+paths:
+    /api/v1/devTools/createGame:
+        post:
+            tags:
+                - DevTools
+            summary: server createGame
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsCreateGame'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsCreateGame'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devTools/gameAddOwner:
+        post:
+            tags:
+                - DevTools
+            summary: server gameAddOwner
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsGameAddOwner'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsGameAddOwner'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devTools/gameRemoveUser:
+        post:
+            tags:
+                - DevTools
+            summary: server gameRemoveUser
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsGameRemoveUser'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsGameRemoveUser'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devTools/getGameByGameID:
+        post:
+            tags:
+                - DevTools
+            summary: server getMyGame
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsGetGameByGameID'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsGetGameByGameID'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devTools/getMyGames:
+        post:
+            tags:
+                - DevTools
+            summary: server getMyGames
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsGetMyGames'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsGetMyGames'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devTools/turnOffServerInGame:
+        post:
+            tags:
+                - DevTools
+            summary: server turnOnServerInGame
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsTurnOffServerInGame'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsTurnOffServerInGame'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devTools/turnOnServerInGame:
+        post:
+            tags:
+                - DevTools
+            summary: server turnOnServerInGame
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsTurnOnServerInGame'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsTurnOnServerInGame'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devTools/updateGame:
+        post:
+            tags:
+                - DevTools
+            summary: server updateGame
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsUpdateGame'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsUpdateGame'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsClient/getClient:
+        post:
+            tags:
+                - DevToolsClient
+            summary: server getClient
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsClientGetClient'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsClientGetClient'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsClient/refreshToken:
+        post:
+            tags:
+                - DevToolsClient
+            summary: server refreshToken
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+                - in: header
+                  name: RefreshToken
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsClientRefreshToken'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsClientRefreshToken'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsClient/signIn:
+        post:
+            tags:
+                - DevToolsClient
+            summary: server signIn
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsClientSignIn'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsClientSignIn'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsClient/signUp:
+        post:
+            tags:
+                - DevToolsClient
+            summary: server signUp
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsClientSignUp'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsClientSignUp'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsClient/updateClient:
+        post:
+            tags:
+                - DevToolsClient
+            summary: server updateClient
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsClientUpdateClient'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsClientUpdateClient'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsConnections/createRoom:
+        post:
+            tags:
+                - DevToolsConnections
+            summary: server createRoom
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsConnectionsCreateRoom'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsConnectionsCreateRoom'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsConnections/getRoomsAll:
+        post:
+            tags:
+                - DevToolsConnections
+            summary: server getRoomsAll
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsConnectionsGetRoomsAll'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsConnectionsGetRoomsAll'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsConnections/getRoomsConnectionUrls:
+        post:
+            tags:
+                - DevToolsConnections
+            summary: server getRoomsConnectionUrls
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsConnectionsGetRoomsConnectionUrls'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsConnectionsGetRoomsConnectionUrls'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsConnections/joinRoomByID:
+        post:
+            tags:
+                - DevToolsConnections
+            summary: server joinRoomByID
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsConnectionsJoinRoomByID'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsConnectionsJoinRoomByID'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsConnections/removeRoomByID:
+        post:
+            tags:
+                - DevToolsConnections
+            summary: server removeRoomByID
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsConnectionsRemoveRoomByID'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsConnectionsRemoveRoomByID'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsGameConfigs/createOrUpdateConfig:
+        post:
+            tags:
+                - DevToolsGameConfigs
+            summary: CreateOrUpdateConfig
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsGameConfigsCreateOrUpdateConfig'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsGameConfigsCreateOrUpdateConfig'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsGameConfigs/getGameConfig:
+        post:
+            tags:
+                - DevToolsGameConfigs
+            summary: CreateOrUpdateConfig
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsGameConfigsGetGameConfig'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsGameConfigsGetGameConfig'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsServer/addServer:
+        post:
+            tags:
+                - DevToolsServer
+            summary: server addServer
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsServerAddServer'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsServerAddServer'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsServer/deleteServers:
+        post:
+            tags:
+                - DevToolsServer
+            summary: server getServers
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsServerDeleteServers'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsServerDeleteServers'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsServer/getServers:
+        post:
+            tags:
+                - DevToolsServer
+            summary: server getServers
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsServerGetServers'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsServerGetServers'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/developers/getDeveloper:
+        post:
+            tags:
+                - Developers
+            summary: server getDeveloper
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevelopersGetDeveloper'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevelopersGetDeveloper'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/developers/refreshToken:
+        post:
+            tags:
+                - Developers
+            summary: server refreshToken
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+                - in: header
+                  name: RefreshToken
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevelopersRefreshToken'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevelopersRefreshToken'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/developers/signIn:
+        post:
+            tags:
+                - Developers
+            summary: server signIn
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevelopersSignIn'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevelopersSignIn'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/developers/signUp:
+        post:
+            tags:
+                - Developers
+            summary: server signUp
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevelopersSignUp'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevelopersSignUp'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/developers/updateDeveloper:
+        post:
+            tags:
+                - Developers
+            summary: server updateDeveloper
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevelopersUpdateDeveloper'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevelopersUpdateDeveloper'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+components:
+    schemas:
+        requestDevToolsClientGetClient:
+            type: object
+            properties:
+                gameID:
+                    type: string
+                    format: uuid
+        requestDevToolsClientRefreshToken:
+            type: object
+        requestDevToolsClientSignIn:
+            type: object
+            properties:
+                client:
+                    $ref: '#/components/schemas/types.Client'
+        requestDevToolsClientSignUp:
+            type: object
+            properties:
+                client:
+                    $ref: '#/components/schemas/types.Client'
+        requestDevToolsClientUpdateClient:
+            type: object
+            properties:
+                client:
+                    $ref: '#/components/schemas/types.Client'
+        requestDevToolsConnectionsCreateRoom:
+            type: object
+            properties:
+                gameID:
+                    type: string
+                    format: uuid
+                serverType:
+                    type: string
+        requestDevToolsConnectionsGetRoomsAll:
+            type: object
+            properties:
+                gameID:
+                    type: string
+                    format: uuid
+        requestDevToolsConnectionsGetRoomsConnectionUrls:
+            type: object
+        requestDevToolsConnectionsJoinRoomByID:
+            type: object
+            properties:
+                gameID:
+                    type: string
+                    format: uuid
+                roomID:
+                    type: string
+                    format: uuid
+        requestDevToolsConnectionsRemoveRoomByID:
+            type: object
+            properties:
+                gameID:
+                    type: string
+                    format: uuid
+                roomID:
+                    type: string
+                    format: uuid
+        requestDevToolsCreateGame:
+            type: object
+            properties:
+                game:
+                    $ref: '#/components/schemas/types.Game'
+        requestDevToolsGameAddOwner:
+            type: object
+            properties:
+                gameID:
+                    type: string
+                    format: uuid
+                userID:
+                    type: string
+                    format: uuid
+        requestDevToolsGameConfigsCreateOrUpdateConfig:
+            type: object
+            properties:
+                configs:
+                    $ref: '#/components/schemas/types.GameConfigs'
+        requestDevToolsGameConfigsGetGameConfig:
+            type: object
+            properties:
+                gameID:
+                    type: string
+                    format: uuid
+        requestDevToolsGameRemoveUser:
+            type: object
+            properties:
+                gameID:
+                    type: string
+                    format: uuid
+                userID:
+                    type: string
+                    format: uuid
+        requestDevToolsGetGameByGameID:
+            type: object
+            properties:
+                gameID:
+                    type: string
+                    format: uuid
+        requestDevToolsGetMyGames:
+            type: object
+        requestDevToolsServerAddServer:
+            type: object
+            properties:
+                address:
+                    type: string
+                name:
+                    type: string
+        requestDevToolsServerDeleteServers:
+            type: object
+            properties:
+                serverID:
+                    type: string
+                    format: uuid
+        requestDevToolsServerGetServers:
+            type: object
+        requestDevToolsTurnOffServerInGame:
+            type: object
+            properties:
+                gameId:
+                    type: string
+                    format: uuid
+                serverID:
+                    type: string
+                    format: uuid
+        requestDevToolsTurnOnServerInGame:
+            type: object
+            properties:
+                gameId:
+                    type: string
+                    format: uuid
+                serverID:
+                    type: string
+                    format: uuid
+        requestDevToolsUpdateGame:
+            type: object
+            properties:
+                gameID:
+                    type: string
+                    format: uuid
+                newGame:
+                    $ref: '#/components/schemas/types.Game'
+        requestDevelopersGetDeveloper:
+            type: object
+        requestDevelopersRefreshToken:
+            type: object
+        requestDevelopersSignIn:
+            type: object
+            properties:
+                developer:
+                    $ref: '#/components/schemas/types.Developer'
+        requestDevelopersSignUp:
+            type: object
+            properties:
+                developer:
+                    $ref: '#/components/schemas/types.Developer'
+        requestDevelopersUpdateDeveloper:
+            type: object
+            properties:
+                developer:
+                    $ref: '#/components/schemas/types.Developer'
+        responseDevToolsClientGetClient:
+            type: object
+            properties:
+                client:
+                    $ref: '#/components/schemas/types.Client'
+        responseDevToolsClientRefreshToken:
+            type: object
+            properties:
+                newRefresh:
+                    type: string
+                newToken:
+                    type: string
+        responseDevToolsClientSignIn:
+            type: object
+            properties:
+                refresh:
+                    type: string
+                token:
+                    type: string
+        responseDevToolsClientSignUp:
+            type: object
+            properties:
+                refresh:
+                    type: string
+                token:
+                    type: string
+        responseDevToolsClientUpdateClient:
+            type: object
+        responseDevToolsConnectionsCreateRoom:
+            type: object
+            properties:
+                newToken:
+                    type: string
+        responseDevToolsConnectionsGetRoomsAll:
+            type: object
+            properties:
+                rooms:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/types.Room'
+                    nullable: true
+        responseDevToolsConnectionsGetRoomsConnectionUrls:
+            type: object
+            properties:
+                connectionsServer:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/types.ConnectionServer'
+                    nullable: true
+        responseDevToolsConnectionsJoinRoomByID:
+            type: object
+            properties:
+                newToken:
+                    type: string
+        responseDevToolsConnectionsRemoveRoomByID:
+            type: object
+        responseDevToolsCreateGame:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+        responseDevToolsGameAddOwner:
+            type: object
+        responseDevToolsGameConfigsCreateOrUpdateConfig:
+            type: object
+        responseDevToolsGameConfigsGetGameConfig:
+            type: object
+            properties:
+                configs:
+                    $ref: '#/components/schemas/types.GameConfigs'
+        responseDevToolsGameRemoveUser:
+            type: object
+        responseDevToolsGetGameByGameID:
+            type: object
+            properties:
+                game:
+                    $ref: '#/components/schemas/types.Game'
+        responseDevToolsGetMyGames:
+            type: object
+            properties:
+                games:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/types.Game'
+                    nullable: true
+        responseDevToolsServerAddServer:
+            type: object
+        responseDevToolsServerDeleteServers:
+            type: object
+        responseDevToolsServerGetServers:
+            type: object
+            properties:
+                servers:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/types.Server'
+                    nullable: true
+        responseDevToolsTurnOffServerInGame:
+            type: object
+        responseDevToolsTurnOnServerInGame:
+            type: object
+        responseDevToolsUpdateGame:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+        responseDevelopersGetDeveloper:
+            type: object
+            properties:
+                developer:
+                    $ref: '#/components/schemas/types.Developer'
+        responseDevelopersRefreshToken:
+            type: object
+            properties:
+                newRefresh:
+                    type: string
+                newToken:
+                    type: string
+        responseDevelopersSignIn:
+            type: object
+            properties:
+                refresh:
+                    type: string
+                token:
+                    type: string
+        responseDevelopersSignUp:
+            type: object
+            properties:
+                refresh:
+                    type: string
+                token:
+                    type: string
+        responseDevelopersUpdateDeveloper:
+            type: object
+        types.Client:
+            type: object
+            properties:
+                additional:
+                    type: object
+                    nullable: true
+                email:
+                    type: string
+                gameID:
+                    type: string
+                    format: uuid
+                newPassword:
+                    type: string
+                nickname:
+                    type: string
+                password:
+                    type: string
+        types.ConnectionServer:
+            type: object
+            properties:
+                Address:
+                    type: string
+                ServerType:
+                    type: string
+        types.Developer:
+            type: object
+            properties:
+                email:
+                    type: string
+                new_password:
+                    type: string
+                nickname:
+                    type: string
+                password:
+                    type: string
+        types.Game:
+            type: object
+            properties:
+                count_online:
+                    type: number
+                    format: int
+                count_players:
+                    type: number
+                    format: int
+                description:
+                    type: string
+                game_id:
+                    type: string
+                    format: uuid
+                name:
+                    type: string
+                owners:
+                    type: array
+                    items:
+                        type: string
+                        format: uuid
+                    nullable: true
+                servers:
+                    type: array
+                    items:
+                        type: string
+                        format: uuid
+                    nullable: true
+        types.GameConfigs:
+            type: object
+            properties:
+                game_id:
+                    type: string
+                    format: uuid
+                sorting_config:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/types.SortingConfig'
+                    nullable: true
+        types.ParamMetadata:
+            type: object
+            properties:
+                column_name:
+                    type: string
+                value_type:
+                    type: string
+        types.Room:
+            type: object
+            properties:
+                connections:
+                    type: array
+                    items:
+                        type: string
+                        format: uuid
+                    nullable: true
+                created_at:
+                    type: number
+                    format: int64
+                creator_id:
+                    type: string
+                    format: uuid
+                game_id:
+                    type: string
+                    format: uuid
+                id:
+                    type: string
+                    format: uuid
+                is_exists:
+                    type: boolean
+                name:
+                    type: string
+                servers:
+                    type: array
+                    items:
+                        type: string
+                        format: uuid
+                    nullable: true
+        types.Server:
+            type: object
+            properties:
+                address:
+                    type: string
+                ascenmmo_server:
+                    type: boolean
+                id:
+                    type: string
+                    format: uuid
+                is_active:
+                    type: boolean
+                region:
+                    type: string
+                server_name:
+                    type: string
+                server_type:
+                    type: string
+        types.SortingConfig:
+            type: object
+            properties:
+                name:
+                    type: string
+                params:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/types.ParamMetadata'
+                    nullable: true
+                result_name:
+                    type: string
+                result_type:
+                    type: string
+                use_on_server_type:
+                    type: string

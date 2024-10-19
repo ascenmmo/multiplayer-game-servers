@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Документация API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: rgb(68, 68, 68); /* Цвет фона всей страницы */
+            color: #ffffff; /* Цвет текста для лучшей читаемости на темном фоне */
+        }
+        .accordion {
+            background: #3a3a3a; /* Цвет фона аккордеона */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .accordion-title {
+            padding: 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #444; /* Углубленный цвет */
+            background: #4a4a4a; /* Цвет заголовка аккордеона */
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .accordion-content {
+            display: none;
+            padding: 10px;
+            background: #2b2b2b; /* Цвет фона содержимого аккордеона */
+        }
+        .accordion-title:hover {
+            background: #5a5a5a; /* Цвет при наведении на заголовок */
+        }
+        .active {
+            background: #6a6a6a; /* Цвет активного заголовка */
+        }
+        pre {
+            background: #1e1e1e; /* Цвет фона для блоков кода */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            overflow-x: auto;
+            color: #ffffff; /* Цвет текста в блоке кода */
+        }
+        h1 {
+            color: #ffffff; /* Цвет заголовка документации */
+        }
+        h3, h4, h5 {
+            color: #ffffff; /* Цвет заголовков внутри аккордеона */
+        }
+        p {
+            color: #cccccc; /* Цвет обычного текста внутри аккордеона */
+        }
+    </style>
+</head>
+<body>
+<h1>Документация API</h1>
+{{ range . }} <!-- Обработка каждой категории -->
+<div class="accordion">
+    <div class="accordion-title">{{ .CategoryTitle }}</div> <!-- Заголовок категории -->
+    <div class="accordion-content">
+        {{ range .DocStruct }} <!-- Обработка каждого документа в категории -->
+        <div class="accordion">
+            <div class="accordion-title">{{ .Title }}</div> <!-- Заголовок документа -->
+            <div class="accordion-content">
+                <p>{{ .Info }}</p>
+                {{ if .DockLists }} <!-- Проверяем наличие DockLists -->
+                <h5>Списки структур документа:</h5>
+                {{ range .DockLists }} <!-- Обработка списка структур документа -->
+                <h1>{{ .Title }}</h1>
+                <p>{{ .Description }}</p>
+                <h5>Путь запроса:</h5>
+                <pre>{{ .RequestPath }}</pre>
+                <h5>Метод:</h5>
+                <pre>{{ .Method }}</pre>
+                <h5>Заголовки запроса:</h5>
+                <pre>{{ .RequestHeader }}</pre>
+                <h5>Тело запроса:</h5>
+                <pre>{{ .RequestBody }}</pre>
+                <h5>Информация о теле запроса:</h5>
+                <p>{{ .RequestBodyInfo }}</p>
+                <h5>Ответ:</h5>
+                <pre>{{ .ResponseBody }}</pre>
+                <h5>Информация о ответе:</h5>
+                <p>{{ .ResponseBodyInfo }}</p>
+                <h5>Ошибки:</h5>
+                <pre>{{ .ErrorBody }}</pre>
+                <h5>Список ошибок:</h5>
+                {{ range .DocErrorList }}
+                <h6>{{ .Name }}</h6>
+                <p>{{ .Description }}</p>
+                <pre>{{ .Body }}</pre>
+                {{ end }}
+                {{ end }}
+                {{ else }}
+                <p>Нет структур документа.</p>
+                {{ end }}
+            </div>
+        </div>
+        {{ end }}
+    </div>
+</div>
+{{ end }}
+
+<footer>
+    <p>© 2024 Ascenmmo. Все права защищены.</p>
+</footer>
+<script>
+    const titles = document.querySelectorAll('.accordion-title');
+    titles.forEach(title => {
+        title.addEventListener('click', function() {
+            this.classList.toggle('active');
+            const content = this.nextElementSibling;
+            content.style.display = content.style.display === 'block' ? 'none' : 'block';
+        });
+    });
+</script>
+</body>
+</html>
