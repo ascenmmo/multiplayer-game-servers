@@ -2375,7 +2375,7 @@ components:
                     format: int
                 description:
                     type: string
-                game_id:
+                gameID:
                     type: string
                     format: uuid
                 name:
@@ -2395,7 +2395,7 @@ components:
         types.GameConfigs:
             type: object
             properties:
-                game_id:
+                gameID:
                     type: string
                     format: uuid
                 sorting_config:
@@ -2425,7 +2425,7 @@ components:
                 creator_id:
                     type: string
                     format: uuid
-                game_id:
+                gameID:
                     type: string
                     format: uuid
                 id:

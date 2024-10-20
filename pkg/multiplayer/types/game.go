@@ -3,7 +3,7 @@ package types
 import "github.com/google/uuid"
 
 type Game struct {
-	ID          uuid.UUID `json:"game_id" bson:"_id"`
+	ID          uuid.UUID `json:"gameID" bson:"_id"`
 	Name        string    `json:"name" bson:"name"`
 	Description string    `json:"description" bson:"description"`
 

@@ -6,7 +6,7 @@ import (
 
 type Room struct {
 	ID     uuid.UUID `json:"id" bson:"_id"`
-	GameID uuid.UUID `json:"game_id" bson:"game_id"`
+	GameID uuid.UUID `json:"gameID" bson:"gameID"`
 	Name   string    `json:"name" bson:"name"`
 
 	CreatorID uuid.UUID `json:"creator_id" bson:"creator_id"`

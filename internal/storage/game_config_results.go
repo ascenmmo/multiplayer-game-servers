@@ -28,7 +28,7 @@ func (s *gameConfigsResultsStorage) Create(result types.GameConfigResults) (err 
 
 func (s *gameConfigsResultsStorage) GetAllResults(gameID uuid.UUID) (gameConfig []types.GameConfigResults, err error) {
 	filter := bson.M{
-		"game_id": gameID,
+		"gameID": gameID,
 	}
 
 	cur, err := s.collection.Find(context.Background(), filter)
@@ -44,8 +44,8 @@ func (s *gameConfigsResultsStorage) GetAllResults(gameID uuid.UUID) (gameConfig 
 }
 func (s *gameConfigsResultsStorage) GetResults(gameID uuid.UUID, roomID uuid.UUID) (gameConfig []types.GameConfigResults, err error) {
 	filter := bson.M{
-		"game_id": gameID,
-		"room_id": roomID,
+		"gameID": gameID,
+		"roomID": roomID,
 	}
 	err = s.collection.FindOne(context.Background(), filter).Decode(gameConfig)
 	if err != nil {
@@ -61,10 +61,10 @@ func NewGameConfigsResultsStorage(client *mongo.Client) (GameConfigsResultsStora
 		context.Background(),
 		[]mongo.IndexModel{
 			{
-				Keys: bson.D{{Key: "game_id", Value: 1}},
+				Keys: bson.D{{Key: "gameID", Value: 1}},
 			},
 			{
-				Keys: bson.D{{Key: "room_id", Value: 1}},
+				Keys: bson.D{{Key: "roomID", Value: 1}},
 			},
 		},
 	)

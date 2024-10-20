@@ -31,7 +31,7 @@ func NewRoomsStorage(client *mongo.Client) (RoomsStorage, error) {
 				Keys: bson.D{{Key: "creator_id", Value: 1}},
 			},
 			{
-				Keys: bson.D{{Key: "game_id", Value: 1}},
+				Keys: bson.D{{Key: "gameID", Value: 1}},
 			},
 		},
 	)
@@ -77,7 +77,7 @@ func (d *roomsStorage) FindByCreatorID(creatorID uuid.UUID) (room types.Room, er
 
 func (d *roomsStorage) FindAll(gameID uuid.UUID) (rooms []types.Room, err error) {
 	filter := bson.M{
-		"game_id": gameID,
+		"gameID": gameID,
 	}
 
 	cur, err := d.collection.Find(context.TODO(), filter)

@@ -12,13 +12,13 @@ type GameConfigExecutor interface {
 
 type GameConfigResults struct {
 	ID     uuid.UUID              `json:"id" bson:"id"`
-	GameID uuid.UUID              `json:"game_id" bson:"game_id"`
+	GameID uuid.UUID              `json:"gameID" bson:"gameID"`
 	RoomID uuid.UUID              `json:"room_id" bson:"room_id"`
 	Result map[string]interface{} `json:"result" bson:"result"`
 }
 
 type GameConfigs struct {
-	GameID        uuid.UUID       `json:"game_id" bson:"_id"`
+	GameID        uuid.UUID       `json:"gameID" bson:"_id"`
 	SortingConfig []SortingConfig `json:"sorting_config" bson:"sorting_config"`
 	IsExists      bool            `json:"-" bson:"is_exists"`
 }
