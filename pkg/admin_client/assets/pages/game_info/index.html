@@ -54,8 +54,7 @@
         }
 
         #game-info,
-        #servers-box,
-        #game-configs {
+        #servers-box {
             flex: 1;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
@@ -70,7 +69,7 @@
             margin: 20px; /* Отступы для заголовков */
         }
 
-        .add-game-config,
+        .game-config,
         .add-server-button,
         button {
             background: #00ff7f;
@@ -82,9 +81,10 @@
             transition: background 0.3s, transform 0.3s;
             margin-top: 10px; /* Отступ сверху для кнопок */
             margin-left: 10px; /* Отступ сверху для кнопок */
+            margin-right: 10px; /* Отступ сверху для кнопок */
         }
 
-        .add-game-config:hover,
+        .game-config:hover,
         .add-server-button:hover,
         button:hover {
             background: rgba(0, 255, 127, 0.8); /* Легкое затемнение */
@@ -190,12 +190,6 @@
         <div id="servers-list"></div>
     </div>
 
-    <div id="game-configs">
-        <h4>Конфигурации для игры</h4>
-        <button class="add-game-config" id="add-game-config">Добавить конфигурацию</button>
-        <div id="game-configs-list"></div>
-    </div>
-
 </div>
 
 <footer>
@@ -293,7 +287,6 @@
                     renderGameInfo(data.result.game);
                     gameServers = data.result.game.servers; // Сохраняем массив серверов игры
                     fetchServers(gameID);
-                    fetchGameConfig(gameID);
                 }
                 if (data.error) {
                     handleApiError(data.error, fetchGameInfo);
@@ -312,8 +305,13 @@
 <!--            <div class="description-label">Описание: ${game.description}</div>-->
             <input type="text" class="edit-game-name" id="edit-game-name" value="${game.name}" />
             <button class="save-game" id="save-game">Сохранить изменения</button>
+            <button class="game-config" id="game-config">Удаленные процедуры</button>
+            <button class="game-annalists" id="game-annalists">Аналитика</button>
+
         `;
             document.getElementById('save-game').onclick = () => fetchUpdateGame();
+            document.getElementById('game-config').onclick = () => fetchGameConfigs();
+            document.getElementById('game-annalists').onclick = () => fetchGameAnnalists();
         };
 
         const fetchUpdateGame = async () => {
@@ -584,6 +582,15 @@
             fetchCreateGame();
         };
 
+
+        const fetchGameConfigs = async () => {
+            window.location.href = `game_info/config?gameID=${gameID}`
+        }
+
+        const fetchGameAnnalists = async () => {
+            window.location.href = `game_info/annalists?gameID=${gameID}`
+        }
+
         // Добавляем делегирование событий для кнопок
         serversList.addEventListener('click', (event) => {
             if (event.target.tagName === 'BUTTON') {
@@ -599,51 +606,6 @@
                 }
             }
         });
-
-        const fetchGameConfig = async (gameID) => {
-            const response = await fetch(`${window.location.origin}/api/v1/devToolsGameConfigs/getGameConfig`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Token': getCookie('token')
-                },
-                body: JSON.stringify({
-                    id: 1,
-                    jsonrpc: "2.0",
-                    params: {
-                        gameID: gameID
-                    }
-                })
-            });
-
-            const data = await response.json();
-
-            // Проверяем наличие результата
-            if (data.result && data.result.configs && data.result.configs.sorting_config) {
-                const sortingConfig = data.result.configs.sorting_config;
-
-                // Создаем HTML элемент для отображения
-                const configList = document.getElementById('config-list');
-                configList.innerHTML = '';  // Очищаем содержимое перед добавлением
-
-                sortingConfig.forEach(config => {
-                    const configItem = document.createElement('div');
-                    configItem.classList.add('config-item');
-
-                    // Заполняем данные для отображения
-                    configItem.innerHTML = `
-                      <p>Поле: ${config.result_name}</p>
-                      <p>Тип сортировки: ${config.name}</p>
-                      <p>Сервер: ${config.use_on_server_type}</p>
-                    `;
-
-                    configList.appendChild(configItem);
-                });
-            } else {
-                console.error('Конфигурации не найдены');
-            }
-        }
-
 
         if (!gameID) {
             newGameContainer.style.display = 'block'; // Показываем контейнер для создания новой игры
