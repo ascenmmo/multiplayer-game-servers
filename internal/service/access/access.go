@@ -63,7 +63,7 @@ func (c *accessGame) AddOwner(ownerID uuid.UUID, gameID, newOwnerID uuid.UUID) (
 func (c *accessGame) GetOwnerAccess(gameID, ownerID uuid.UUID) (err error) {
 	gameAccess, err := c.storage.FindByGameID(gameID)
 	if err != nil {
-		return err
+		return errors.ErrAccessDenied
 	}
 
 	isOwner := false

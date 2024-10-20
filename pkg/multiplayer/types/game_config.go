@@ -29,7 +29,7 @@ type SortingConfig struct {
 	UseOnServerType string             `json:"use_on_server_type" bson:"use_on_server_type"`
 	ResultName      string             `json:"result_name" bson:"result_name"`
 	ResultType      string             `json:"result_type" bson:"result_type"`
-	Executor        GameConfigExecutor `json:"-" bson:"executor"`
+	Executor        GameConfigExecutor `json:"-" bson:"-"`
 }
 
 type ParamMetadata struct {

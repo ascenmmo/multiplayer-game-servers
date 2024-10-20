@@ -2,6 +2,7 @@ package devtools
 
 import (
 	"context"
+	"github.com/ascenmmo/multiplayer-game-servers/internal/errors"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/service/access"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/storage"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
@@ -26,6 +27,21 @@ func (g *gameConfigs) CreateOrUpdateConfig(ctx context.Context, token string, co
 		return err
 	}
 
+	for i, conf := range configs.SortingConfig {
+		for i := i + 1; i < len(configs.SortingConfig); i++ {
+			if conf.ResultName == configs.SortingConfig[i].ResultName {
+				return errors.ErrGameConfigSameResultName
+			}
+		}
+		for j, cloumn := range conf.Params {
+			for j := j + 1; j < len(conf.Params); j++ {
+				if cloumn.ColumnName == conf.Params[j].ColumnName {
+					return errors.ErrGameConfigSameColumnName
+				}
+			}
+		}
+	}
+
 	err = g.accessGame.GetOwnerAccess(configs.GameID, info.UserID)
 	if err != nil {
 		return err
@@ -45,7 +61,7 @@ func (g *gameConfigs) GetGameConfig(ctx context.Context, token string, gameID uu
 		return configs, err
 	}
 
-	err = g.accessGame.GetOwnerAccess(info.GameID, info.UserID)
+	err = g.accessGame.GetOwnerAccess(gameID, info.UserID)
 	if err != nil {
 		return configs, err
 	}

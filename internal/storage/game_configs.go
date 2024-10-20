@@ -41,7 +41,7 @@ func (s *gameConfigsStorage) GetConfig(gameID uuid.UUID) (gameConfig types.GameC
 }
 
 func NewGameConfigsStorage(client *mongo.Client) (GameConfigsStorage, error) {
-	coll := client.Database(dataBaseGame).Collection(roomsCollectionKey)
+	coll := client.Database(dataBaseGame).Collection(configsCollectionKey)
 
 	gameConf := gameConfigsStorage{
 		collection: coll,
