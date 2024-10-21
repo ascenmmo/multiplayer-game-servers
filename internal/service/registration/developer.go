@@ -2,6 +2,7 @@ package registration
 
 import (
 	"context"
+	"fmt"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/storage"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
@@ -121,7 +122,27 @@ func (c *developerService) UpdateDeveloper(ctx context.Context, token string, de
 
 	developer.ID = info.UserID
 
-	err = c.developerStorage.Update(developer)
+	oldDev, err := c.developerStorage.FindByID(developer.ID)
+	if err != nil {
+		return err
+	}
+
+	if developer.Password != "" && developer.NewPassword != "" {
+		fmt.Println("tut")
+		if developer.Password == oldDev.Password {
+			oldDev.Password = c.token.PasswordHash(developer.NewPassword)
+		}
+	}
+
+	if developer.Nickname != "" {
+		oldDev.Nickname = developer.Nickname
+	}
+
+	if developer.Email != "" {
+		oldDev.Nickname = developer.Nickname
+	}
+
+	err = c.developerStorage.Update(oldDev)
 	if err != nil {
 		return err
 	}

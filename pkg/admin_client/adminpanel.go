@@ -72,3 +72,14 @@ func GameConfig(lengudage string) string {
 		return "not found"
 	}
 }
+
+func DeveloperInfo(lengudage string) string {
+	switch lengudage {
+	case ru:
+		return pages.DeveloperInfo
+	case eng:
+		return pages.DeveloperInfo
+	default:
+		return "not found"
+	}
+}

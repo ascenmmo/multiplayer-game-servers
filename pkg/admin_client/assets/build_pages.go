@@ -17,6 +17,7 @@ var (
 		"MainPage":       dir + "main/index.html",
 		"GameInfo":       dir + "game_info/index.html",
 		"GameConfig":     dir + "game_config/index.html",
+		"DeveloperInfo":  dir + "developer_info/index.html",
 	}
 )
 

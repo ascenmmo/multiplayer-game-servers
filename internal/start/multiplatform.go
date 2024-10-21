@@ -144,8 +144,22 @@ func adminPanel(app *fiber.App) {
 		}
 		return nil
 	})
+
 	app.Get("/admin/game_info/config", func(c *fiber.Ctx) error {
 		tmpl, err := template.New("docs").Parse(string(adminclient.GameConfig("ru")))
+		if err != nil {
+			return err
+		}
+		c.Set("Content-Type", "text/html")
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+	app.Get("/admin/info", func(c *fiber.Ctx) error {
+		tmpl, err := template.New("docs").Parse(string(adminclient.DeveloperInfo("ru")))
 		if err != nil {
 			return err
 		}
