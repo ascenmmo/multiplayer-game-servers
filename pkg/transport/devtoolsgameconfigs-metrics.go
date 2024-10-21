@@ -52,3 +52,16 @@ func (m metricsDevToolsGameConfigs) GetGameConfig(ctx context.Context, token str
 
 	return m.next.GetGameConfig(ctx, token, gameID)
 }
+
+func (m metricsDevToolsGameConfigs) GetGameResultConfigPreview(ctx context.Context, token string, gameID uuid.UUID) (gameResult types.GameConfigResults, err error) {
+
+	defer func(begin time.Time) {
+		m.requestLatency.With("method", "getGameResultConfigPreview", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	defer m.requestCount.With("method", "getGameResultConfigPreview", "success", fmt.Sprint(err == nil)).Add(1)
+
+	m.requestCountAll.With("method", "getGameResultConfigPreview").Add(1)
+
+	return m.next.GetGameResultConfigPreview(ctx, token, gameID)
+}

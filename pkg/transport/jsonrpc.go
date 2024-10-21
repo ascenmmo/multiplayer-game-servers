@@ -182,6 +182,8 @@ func (srv *Server) doSingleBatch(ctx *fiber.Ctx, request baseJsonRPC) (response 
 		return srv.httpDevToolsGameConfigs.createOrUpdateConfig(ctx, request)
 	case "devtoolsgameconfigs.getgameconfig":
 		return srv.httpDevToolsGameConfigs.getGameConfig(ctx, request)
+	case "devtoolsgameconfigs.getgameresultconfigpreview":
+		return srv.httpDevToolsGameConfigs.getGameResultConfigPreview(ctx, request)
 	case "devtoolsserver.addserver":
 		return srv.httpDevToolsServer.addServer(ctx, request)
 	case "devtoolsserver.getservers":

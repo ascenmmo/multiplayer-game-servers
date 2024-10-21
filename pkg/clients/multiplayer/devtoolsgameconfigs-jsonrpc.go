@@ -16,6 +16,7 @@ type ClientDevToolsGameConfigs struct {
 
 type retDevToolsGameConfigsCreateOrUpdateConfig = func(err error)
 type retDevToolsGameConfigsGetGameConfig = func(configs types.GameConfigs, err error)
+type retDevToolsGameConfigsGetGameResultConfigPreview = func(gameResult types.GameConfigResults, err error)
 
 func (cli *ClientDevToolsGameConfigs) CreateOrUpdateConfig(ctx context.Context, token string, configs types.GameConfigs) (err error) {
 
@@ -130,6 +131,65 @@ func (cli *ClientDevToolsGameConfigs) ReqGetGameConfig(ctx context.Context, call
 				}
 			}
 			callback(response.Configs, cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response))
+		}
+	}
+	return
+}
+
+func (cli *ClientDevToolsGameConfigs) GetGameResultConfigPreview(ctx context.Context, token string, gameID uuid.UUID) (gameResult types.GameConfigResults, err error) {
+
+	request := requestDevToolsGameConfigsGetGameResultConfigPreview{
+		GameID: gameID,
+		Token:  token,
+	}
+	var response responseDevToolsGameConfigsGetGameResultConfigPreview
+	var rpcResponse *jsonrpc.ResponseRPC
+	cacheKey, _ := hasher.Hash(request)
+	rpcResponse, err = cli.rpc.Call(ctx, "devtoolsgameconfigs.getgameresultconfigpreview", request)
+	var fallbackCheck func(error) bool
+	if cli.fallbackDevToolsGameConfigs != nil {
+		fallbackCheck = cli.fallbackDevToolsGameConfigs.GetGameResultConfigPreview
+	}
+	if rpcResponse != nil && rpcResponse.Error != nil {
+		if cli.errorDecoder != nil {
+			err = cli.errorDecoder(rpcResponse.Error.Raw())
+		} else {
+			err = fmt.Errorf(rpcResponse.Error.Message)
+		}
+	}
+	if err = cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response); err != nil {
+		return
+	}
+	return response.GameResult, err
+}
+
+func (cli *ClientDevToolsGameConfigs) ReqGetGameResultConfigPreview(ctx context.Context, callback retDevToolsGameConfigsGetGameResultConfigPreview, token string, gameID uuid.UUID) (request RequestRPC) {
+
+	request = RequestRPC{rpcRequest: &jsonrpc.RequestRPC{
+		ID:      jsonrpc.NewID(),
+		JSONRPC: jsonrpc.Version,
+		Method:  "devtoolsgameconfigs.getgameresultconfigpreview",
+		Params: requestDevToolsGameConfigsGetGameResultConfigPreview{
+			GameID: gameID,
+			Token:  token,
+		},
+	}}
+	if callback != nil {
+		var response responseDevToolsGameConfigsGetGameResultConfigPreview
+		request.retHandler = func(err error, rpcResponse *jsonrpc.ResponseRPC) {
+			cacheKey, _ := hasher.Hash(request.rpcRequest.Params)
+			var fallbackCheck func(error) bool
+			if cli.fallbackDevToolsGameConfigs != nil {
+				fallbackCheck = cli.fallbackDevToolsGameConfigs.GetGameResultConfigPreview
+			}
+			if rpcResponse != nil && rpcResponse.Error != nil {
+				if cli.errorDecoder != nil {
+					err = cli.errorDecoder(rpcResponse.Error.Raw())
+				} else {
+					err = fmt.Errorf(rpcResponse.Error.Message)
+				}
+			}
+			callback(response.GameResult, cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response))
 		}
 	}
 	return

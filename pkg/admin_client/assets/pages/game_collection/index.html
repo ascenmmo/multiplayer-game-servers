@@ -33,7 +33,8 @@
             font-size: 24px;
             font-family: 'Dancing Script', cursive; /* Курсивный шрифт для логотипа */
             color: #00ff7f;
-            margin-left: 5%; /* Сдвиг логотипа на 5% влево */
+            margin-left: 5%; /* Сдвиг логотипа на 10% влево */
+            text-decoration: none;
         }
 
         header nav {
@@ -237,7 +238,7 @@
                 <p>Количество игроков онлайн: ${game.count_online}</p>
             `;
                 gameItem.onclick = () => {
-                    window.location.href = `game_info?game_id=${game.game_id}`; // Редирект на страницу с игрой
+                    window.location.href = `game_info?gameID=${game.gameID}`; // Редирект на страницу с игрой
                 };
                 gamesBox.appendChild(gameItem);
             });

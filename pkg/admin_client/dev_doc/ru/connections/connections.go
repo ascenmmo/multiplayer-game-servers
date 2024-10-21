@@ -35,7 +35,7 @@ func GetConnectionsStruct() []types.DocStruct {
 				RequestHeader:    "Token: ваш токен",
 				RequestBody:      "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"params\": {\n    \"gameID\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n  }\n}",
 				RequestBodyInfo:  "В теле запроса передается идентификатор игры (gameID). Необходимо указать токен в заголовке для авторизации запроса.",
-				ResponseBody:     "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"result\": {\n    \"rooms\": [\n      {\n        \"connections\": [\n          \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n        ],\n        \"created_at\": 0,\n        \"creator_id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n        \"game_id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n        \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n        \"name\": \"string\",\n        \"servers\": [\n          \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n        ]\n      }\n    ]\n  }\n}",
+				ResponseBody:     "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"result\": {\n    \"rooms\": [\n      {\n        \"connections\": [\n          \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n        ],\n        \"created_at\": 0,\n        \"creator_id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n        \"gameID\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n        \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n        \"name\": \"string\",\n        \"servers\": [\n          \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\n        ]\n      }\n    ]\n  }\n}",
 				ResponseBodyInfo: "В ответе возвращается массив комнат с их данными, включая идентификаторы, имя, информацию о соединениях, времени создания и сервере.",
 			},
 		},

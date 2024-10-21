@@ -30,7 +30,10 @@
         header h1 {
             margin: 0;
             font-size: 24px;
+            font-family: 'Dancing Script', cursive; /* Курсивный шрифт для логотипа */
             color: #00ff7f;
+            margin-left: 5%; /* Сдвиг логотипа на 10% влево */
+            text-decoration: none;
         }
 
         nav a {
@@ -51,8 +54,7 @@
         }
 
         #game-info,
-        #servers-box,
-        #game-configs {
+        #servers-box {
             flex: 1;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
@@ -67,7 +69,7 @@
             margin: 20px; /* Отступы для заголовков */
         }
 
-        .add-game-config,
+        .game-config,
         .add-server-button,
         button {
             background: #00ff7f;
@@ -79,9 +81,10 @@
             transition: background 0.3s, transform 0.3s;
             margin-top: 10px; /* Отступ сверху для кнопок */
             margin-left: 10px; /* Отступ сверху для кнопок */
+            margin-right: 10px; /* Отступ сверху для кнопок */
         }
 
-        .add-game-config:hover,
+        .game-config:hover,
         .add-server-button:hover,
         button:hover {
             background: rgba(0, 255, 127, 0.8); /* Легкое затемнение */
@@ -153,7 +156,7 @@
 
         .player-count,
         .online-player-count,
-        .description-label{
+        .description-label {
             margin-left: 20px;
             margin-right: 20px;
         }
@@ -162,7 +165,7 @@
 </head>
 <body>
 <header>
-    <a href="/"> <h1>ASCENMMO</h1></a>
+    <a href="/"><h1>ASCENMMO</h1></a>
     <nav>
         <a href="/developer/doc">Документация</a>
         <a href="/admin/info">Информация о разработчике</a>
@@ -176,8 +179,8 @@
         <div id="game-details"></div>
         <div id="new-game-container" style="display:none;">
             <h4>Создать новую игру</h4>
-            <input type="text" id="new-game-name" placeholder="Введите имя игры" />
-            <button class="create-game"  id="create-game">Создать игру</button>
+            <input type="text" id="new-game-name" placeholder="Введите имя игры"/>
+            <button class="create-game" id="create-game">Создать игру</button>
         </div>
     </section>
 
@@ -185,12 +188,6 @@
         <h4>Серверы</h4>
         <button class="add-server-button" id="add-server-button">Добавить сервер</button>
         <div id="servers-list"></div>
-    </div>
-
-    <div id="game-configs">
-        <h4>Конфигурации для игры</h4>
-        <button class="add-game-config" id="add-game-config">Добавить конфигурацию</button>
-        <div id="game-configs-list"></div>
     </div>
 
 </div>
@@ -206,10 +203,9 @@
         const serversList = document.getElementById('servers-list');
 
         const urlParams = new URLSearchParams(window.location.search);
-        const gameID = urlParams.get('game_id');
+        const gameID = urlParams.get('gameID');
 
         let isRetred = false
-
 
 
         const backendUrl = `${window.location.origin}/api/v1/devTools`;
@@ -224,7 +220,7 @@
             console.error('Ошибка:', error);
             if (error.message && error.message.includes('token')) {
                 await refreshToken(retryFunc);
-            }else{
+            } else {
                 alert(error.message);
             }
         };
@@ -281,7 +277,7 @@
                     body: JSON.stringify({
                         id: 1,
                         jsonrpc: "2.0",
-                        params: { gameID }
+                        params: {gameID}
                     })
                 });
 
@@ -309,8 +305,13 @@
 <!--            <div class="description-label">Описание: ${game.description}</div>-->
             <input type="text" class="edit-game-name" id="edit-game-name" value="${game.name}" />
             <button class="save-game" id="save-game">Сохранить изменения</button>
+            <button class="game-config" id="game-config">Удаленные процедуры</button>
+            <button class="game-annalists" id="game-annalists">Аналитика</button>
+
         `;
             document.getElementById('save-game').onclick = () => fetchUpdateGame();
+            document.getElementById('game-config').onclick = () => fetchGameConfigs();
+            document.getElementById('game-annalists').onclick = () => fetchGameAnnalists();
         };
 
         const fetchUpdateGame = async () => {
@@ -327,7 +328,7 @@
                         jsonrpc: "2.0",
                         params: {
                             gameID,
-                            newGame: { name: newName }
+                            newGame: {name: newName}
                         }
                     })
                 });
@@ -357,7 +358,7 @@
                         jsonrpc: "2.0",
                         params: {
                             gameID,
-                            game: { name: newName }
+                            game: {name: newName}
                         }
                     })
                 });
@@ -365,9 +366,9 @@
                 const data = await response.json();
                 if (data.error) {
                     handleApiError(data.error, fetchCreateGame);
-                }else {
+                } else {
                     const id = data.result.id
-                    window.location.href = `game_info?game_id=${id}`
+                    window.location.href = `game_info?gameID=${id}`
                     alert('Игра обновлена успешно!');
                 }
             } catch (error) {
@@ -393,7 +394,7 @@
 
                 const data = await response.json();
                 if (data.error) {
-                    handleApiError(data.error, fetchCreateGame);
+                    handleApiError(data.error, fetchServers);
                 }
 
                 renderServers(data.result.servers);
@@ -508,11 +509,11 @@
 
                 if (!response.ok) throw new Error('Ошибка сети');
                 const data = await response.json();
-                    if (data.error) {
-                        handleApiError(data.error, fetchCreateServer)
-                    }else {
-                        fetchGameInfo()
-                    }
+                if (data.error) {
+                    handleApiError(data.error, fetchCreateServer)
+                } else {
+                    fetchGameInfo()
+                }
             } catch (error) {
                 console.error('Ошибка отключения:', error);
             }
@@ -529,14 +530,14 @@
                     body: JSON.stringify({
                         id: 1,
                         jsonrpc: "2.0",
-                        params: { serverID: deletingServerID}
+                        params: {serverID: deletingServerID}
                     })
                 });
 
                 const data = await response.json();
                 if (data.error) {
                     handleApiError(data.error, fetchDeleteServer)
-                }else {
+                } else {
                     fetchGameInfo()
                 }
 
@@ -580,6 +581,15 @@
         document.getElementById('create-game').onclick = () => {
             fetchCreateGame();
         };
+
+
+        const fetchGameConfigs = async () => {
+            window.location.href = `game_info/config?gameID=${gameID}`
+        }
+
+        const fetchGameAnnalists = async () => {
+            window.location.href = `game_info/annalists?gameID=${gameID}`
+        }
 
         // Добавляем делегирование событий для кнопок
         serversList.addEventListener('click', (event) => {

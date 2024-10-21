@@ -4,4 +4,5 @@ package multiplayer
 type fallbackDevToolsGameConfigs interface {
 	CreateOrUpdateConfig(err error) bool
 	GetGameConfig(err error) bool
+	GetGameResultConfigPreview(err error) bool
 }

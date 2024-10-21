@@ -22,3 +22,12 @@ type requestDevToolsGameConfigsGetGameConfig struct {
 type responseDevToolsGameConfigsGetGameConfig struct {
 	Configs types.GameConfigs `json:"configs"`
 }
+
+type requestDevToolsGameConfigsGetGameResultConfigPreview struct {
+	Token  string    `json:"token"`
+	GameID uuid.UUID `json:"gameID"`
+}
+
+type responseDevToolsGameConfigsGetGameResultConfigPreview struct {
+	GameResult types.GameConfigResults `json:"gameResult"`
+}

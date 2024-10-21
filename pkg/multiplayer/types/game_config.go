@@ -11,14 +11,14 @@ type GameConfigExecutor interface {
 }
 
 type GameConfigResults struct {
-	ID     uuid.UUID              `json:"id" bson:"id"`
-	GameID uuid.UUID              `json:"game_id" bson:"game_id"`
-	RoomID uuid.UUID              `json:"room_id" bson:"room_id"`
+	ID     uuid.UUID              `json:"-" bson:"id"`
+	GameID uuid.UUID              `json:"gameID" bson:"gameID"`
+	RoomID uuid.UUID              `json:"roomID" bson:"roomID"`
 	Result map[string]interface{} `json:"result" bson:"result"`
 }
 
 type GameConfigs struct {
-	GameID        uuid.UUID       `json:"game_id" bson:"_id"`
+	GameID        uuid.UUID       `json:"gameID" bson:"_id"`
 	SortingConfig []SortingConfig `json:"sorting_config" bson:"sorting_config"`
 	IsExists      bool            `json:"-" bson:"is_exists"`
 }
@@ -29,7 +29,7 @@ type SortingConfig struct {
 	UseOnServerType string             `json:"use_on_server_type" bson:"use_on_server_type"`
 	ResultName      string             `json:"result_name" bson:"result_name"`
 	ResultType      string             `json:"result_type" bson:"result_type"`
-	Executor        GameConfigExecutor `json:"-" bson:"executor"`
+	Executor        GameConfigExecutor `json:"-" bson:"-"`
 }
 
 type ParamMetadata struct {

@@ -20,9 +20,10 @@ const (
 	dataBaseDevelopers      = "developers"
 	developersCollectionKey = "developers"
 
-	dataBaseGame       = "games"
-	gameCollectionKey  = "games"
-	roomsCollectionKey = "rooms"
+	dataBaseGame         = "games"
+	gameCollectionKey    = "games"
+	roomsCollectionKey   = "rooms"
+	configsCollectionKey = "configs"
 
 	dataBaseAccess            = "access"
 	accessGameCollectionKey   = "accessGame"

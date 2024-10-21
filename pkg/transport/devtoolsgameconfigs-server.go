@@ -9,15 +9,17 @@ import (
 )
 
 type serverDevToolsGameConfigs struct {
-	svc                  multiplayer.DevToolsGameConfigs
-	createOrUpdateConfig DevToolsGameConfigsCreateOrUpdateConfig
-	getGameConfig        DevToolsGameConfigsGetGameConfig
+	svc                        multiplayer.DevToolsGameConfigs
+	createOrUpdateConfig       DevToolsGameConfigsCreateOrUpdateConfig
+	getGameConfig              DevToolsGameConfigsGetGameConfig
+	getGameResultConfigPreview DevToolsGameConfigsGetGameResultConfigPreview
 }
 
 type MiddlewareSetDevToolsGameConfigs interface {
 	Wrap(m MiddlewareDevToolsGameConfigs)
 	WrapCreateOrUpdateConfig(m MiddlewareDevToolsGameConfigsCreateOrUpdateConfig)
 	WrapGetGameConfig(m MiddlewareDevToolsGameConfigsGetGameConfig)
+	WrapGetGameResultConfigPreview(m MiddlewareDevToolsGameConfigsGetGameResultConfigPreview)
 
 	WithTrace()
 	WithMetrics()
@@ -26,9 +28,10 @@ type MiddlewareSetDevToolsGameConfigs interface {
 
 func newServerDevToolsGameConfigs(svc multiplayer.DevToolsGameConfigs) *serverDevToolsGameConfigs {
 	return &serverDevToolsGameConfigs{
-		createOrUpdateConfig: svc.CreateOrUpdateConfig,
-		getGameConfig:        svc.GetGameConfig,
-		svc:                  svc,
+		createOrUpdateConfig:       svc.CreateOrUpdateConfig,
+		getGameConfig:              svc.GetGameConfig,
+		getGameResultConfigPreview: svc.GetGameResultConfigPreview,
+		svc:                        svc,
 	}
 }
 
@@ -36,6 +39,7 @@ func (srv *serverDevToolsGameConfigs) Wrap(m MiddlewareDevToolsGameConfigs) {
 	srv.svc = m(srv.svc)
 	srv.createOrUpdateConfig = srv.svc.CreateOrUpdateConfig
 	srv.getGameConfig = srv.svc.GetGameConfig
+	srv.getGameResultConfigPreview = srv.svc.GetGameResultConfigPreview
 }
 
 func (srv *serverDevToolsGameConfigs) CreateOrUpdateConfig(ctx context.Context, token string, configs types.GameConfigs) (err error) {
@@ -46,12 +50,20 @@ func (srv *serverDevToolsGameConfigs) GetGameConfig(ctx context.Context, token s
 	return srv.getGameConfig(ctx, token, gameID)
 }
 
+func (srv *serverDevToolsGameConfigs) GetGameResultConfigPreview(ctx context.Context, token string, gameID uuid.UUID) (gameResult types.GameConfigResults, err error) {
+	return srv.getGameResultConfigPreview(ctx, token, gameID)
+}
+
 func (srv *serverDevToolsGameConfigs) WrapCreateOrUpdateConfig(m MiddlewareDevToolsGameConfigsCreateOrUpdateConfig) {
 	srv.createOrUpdateConfig = m(srv.createOrUpdateConfig)
 }
 
 func (srv *serverDevToolsGameConfigs) WrapGetGameConfig(m MiddlewareDevToolsGameConfigsGetGameConfig) {
 	srv.getGameConfig = m(srv.getGameConfig)
+}
+
+func (srv *serverDevToolsGameConfigs) WrapGetGameResultConfigPreview(m MiddlewareDevToolsGameConfigsGetGameResultConfigPreview) {
+	srv.getGameResultConfigPreview = m(srv.getGameResultConfigPreview)
 }
 
 func (srv *serverDevToolsGameConfigs) WithTrace() {

@@ -124,6 +124,63 @@ func (http *httpDevToolsGameConfigs) getGameConfig(ctx *fiber.Ctx, requestBase b
 	}
 	return
 }
+func (http *httpDevToolsGameConfigs) serveGetGameResultConfigPreview(ctx *fiber.Ctx) (err error) {
+	return http.serveMethod(ctx, "getgameresultconfigpreview", http.getGameResultConfigPreview)
+}
+func (http *httpDevToolsGameConfigs) getGameResultConfigPreview(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
+
+	var err error
+	var request requestDevToolsGameConfigsGetGameResultConfigPreview
+
+	methodCtx := ctx.UserContext()
+	span := otg.SpanFromContext(methodCtx)
+	span.SetTag("method", "getGameResultConfigPreview")
+
+	if requestBase.Params != nil {
+		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
+			ext.Error.Set(span, true)
+			span.SetTag("msg", "request body could not be decoded: "+err.Error())
+			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
+		}
+	}
+	if requestBase.Version != Version {
+		ext.Error.Set(span, true)
+		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
+		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
+	}
+
+	if _token := string(ctx.Request().Header.Peek("Token")); _token != "" {
+		var token string
+		token = _token
+		request.Token = token
+	}
+
+	var response responseDevToolsGameConfigsGetGameResultConfigPreview
+	response.GameResult, err = http.svc.GetGameResultConfigPreview(methodCtx, request.Token, request.GameID)
+	if err != nil {
+		if http.errorHandler != nil {
+			err = http.errorHandler(err)
+		}
+		ext.Error.Set(span, true)
+		span.SetTag("msg", err)
+		span.SetTag("errData", toString(err))
+		code := internalError
+		if errCoder, ok := err.(withErrorCode); ok {
+			code = errCoder.Code()
+		}
+		return makeErrorResponseJsonRPC(requestBase.ID, code, err.Error(), err)
+	}
+	responseBase = &baseJsonRPC{
+		ID:      requestBase.ID,
+		Version: Version,
+	}
+	if responseBase.Result, err = json.Marshal(response); err != nil {
+		ext.Error.Set(span, true)
+		span.SetTag("msg", "response body could not be encoded: "+err.Error())
+		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
+	}
+	return
+}
 func (http *httpDevToolsGameConfigs) serveMethod(ctx *fiber.Ctx, methodName string, methodHandler methodJsonRPC) (err error) {
 
 	span := otg.SpanFromContext(ctx.UserContext())
@@ -243,6 +300,8 @@ func (http *httpDevToolsGameConfigs) doSingleBatch(ctx *fiber.Ctx, request baseJ
 		return http.createOrUpdateConfig(ctx, request)
 	case "getgameconfig":
 		return http.getGameConfig(ctx, request)
+	case "getgameresultconfigpreview":
+		return http.getGameResultConfigPreview(ctx, request)
 	default:
 		ext.Error.Set(span, true)
 		span.SetTag("msg", "invalid method '"+methodNameOrigin+"'")

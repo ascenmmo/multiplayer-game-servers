@@ -6,7 +6,7 @@ import (
 
 type AccessGame struct {
 	ID        uuid.UUID `json:"id" bson:"_id"`
-	GameID    uuid.UUID `json:"game_id" bson:"game_id"`
+	GameID    uuid.UUID `json:"gameID" bson:"gameID"`
 	CreatorID uuid.UUID `json:"creator_id" bson:"creator_id"`
 
 	Owners []uuid.UUID `json:"owners" bson:"owners"`

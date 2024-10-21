@@ -10,8 +10,10 @@ import (
 
 type DevToolsGameConfigsCreateOrUpdateConfig func(ctx context.Context, token string, configs types.GameConfigs) (err error)
 type DevToolsGameConfigsGetGameConfig func(ctx context.Context, token string, gameID uuid.UUID) (configs types.GameConfigs, err error)
+type DevToolsGameConfigsGetGameResultConfigPreview func(ctx context.Context, token string, gameID uuid.UUID) (gameResult types.GameConfigResults, err error)
 
 type MiddlewareDevToolsGameConfigs func(next multiplayer.DevToolsGameConfigs) multiplayer.DevToolsGameConfigs
 
 type MiddlewareDevToolsGameConfigsCreateOrUpdateConfig func(next DevToolsGameConfigsCreateOrUpdateConfig) DevToolsGameConfigsCreateOrUpdateConfig
 type MiddlewareDevToolsGameConfigsGetGameConfig func(next DevToolsGameConfigsGetGameConfig) DevToolsGameConfigsGetGameConfig
+type MiddlewareDevToolsGameConfigsGetGameResultConfigPreview func(next DevToolsGameConfigsGetGameResultConfigPreview) DevToolsGameConfigsGetGameResultConfigPreview

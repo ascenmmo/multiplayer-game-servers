@@ -65,3 +65,25 @@ func (m loggerDevToolsGameConfigs) GetGameConfig(ctx context.Context, token stri
 	}(time.Now())
 	return m.next.GetGameConfig(ctx, token, gameID)
 }
+
+func (m loggerDevToolsGameConfigs) GetGameResultConfigPreview(ctx context.Context, token string, gameID uuid.UUID) (gameResult types.GameConfigResults, err error) {
+	logger := log.Ctx(ctx).With().Str("service", "DevToolsGameConfigs").Str("method", "getGameResultConfigPreview").Logger()
+	defer func(begin time.Time) {
+		logHandle := func(ev *zerolog.Event) {
+			fields := map[string]interface{}{
+				"request": viewer.Sprintf("%+v", requestDevToolsGameConfigsGetGameResultConfigPreview{
+					GameID: gameID,
+					Token:  token,
+				}),
+				"response": viewer.Sprintf("%+v", responseDevToolsGameConfigsGetGameResultConfigPreview{GameResult: gameResult}),
+			}
+			ev.Fields(fields).Str("took", time.Since(begin).String())
+		}
+		if err != nil {
+			logger.Error().Err(err).Func(logHandle).Msg("call getGameResultConfigPreview")
+			return
+		}
+		logger.Info().Func(logHandle).Msg("call getGameResultConfigPreview")
+	}(time.Now())
+	return m.next.GetGameResultConfigPreview(ctx, token, gameID)
+}

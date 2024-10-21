@@ -26,7 +26,7 @@ func NewAccessGameStorage(client *mongo.Client) (AccessGameStorage, error) {
 	_, err := coll.Indexes().CreateMany(
 		context.Background(),
 		[]mongo.IndexModel{{
-			Keys:    bson.D{{Key: "game_id", Value: 1}},
+			Keys:    bson.D{{Key: "gameID", Value: 1}},
 			Options: options.Index().SetUnique(true),
 		}, {
 			Keys: bson.D{{Key: "owners", Value: 1}},
@@ -60,7 +60,7 @@ func (d *accessGameStorage) FindByID(accessGameID uuid.UUID) (accessGame types.A
 }
 
 func (d *accessGameStorage) FindByGameID(gameID uuid.UUID) (accessGame types.AccessGame, err error) {
-	filter := bson.M{"game_id": gameID}
+	filter := bson.M{"gameID": gameID}
 	err = d.collection.FindOne(context.TODO(), filter).Decode(&accessGame)
 	if err != nil {
 		return accessGame, err

@@ -51,4 +51,5 @@ func (http *httpDevToolsGameConfigs) SetRoutes(route *fiber.App) {
 	route.Post("/api/v1/devToolsGameConfigs", http.serveBatch)
 	route.Post("/api/v1/devToolsGameConfigs/createOrUpdateConfig", http.serveCreateOrUpdateConfig)
 	route.Post("/api/v1/devToolsGameConfigs/getGameConfig", http.serveGetGameConfig)
+	route.Post("/api/v1/devToolsGameConfigs/getGameResultConfigPreview", http.serveGetGameResultConfigPreview)
 }

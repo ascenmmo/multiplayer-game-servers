@@ -1386,7 +1386,7 @@ paths:
         post:
             tags:
                 - DevToolsGameConfigs
-            summary: CreateOrUpdateConfig
+            summary: GetGameConfig
             parameters:
                 - in: header
                   name: Token
@@ -1430,6 +1430,79 @@ paths:
                                             example: "2.0"
                                         result:
                                             $ref: '#/components/schemas/responseDevToolsGameConfigsGetGameConfig'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsGameConfigs/getGameResultConfigPreview:
+        post:
+            tags:
+                - DevToolsGameConfigs
+            summary: GetGameResultConfigPreview
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsGameConfigsGetGameResultConfigPreview'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsGameConfigsGetGameResultConfigPreview'
                                     - type: object
                                       properties:
                                         error:
@@ -2116,6 +2189,12 @@ components:
                 gameID:
                     type: string
                     format: uuid
+        requestDevToolsGameConfigsGetGameResultConfigPreview:
+            type: object
+            properties:
+                gameID:
+                    type: string
+                    format: uuid
         requestDevToolsGameRemoveUser:
             type: object
             properties:
@@ -2264,6 +2343,11 @@ components:
             properties:
                 configs:
                     $ref: '#/components/schemas/types.GameConfigs'
+        responseDevToolsGameConfigsGetGameResultConfigPreview:
+            type: object
+            properties:
+                gameResult:
+                    $ref: '#/components/schemas/types.GameConfigResults'
         responseDevToolsGameRemoveUser:
             type: object
         responseDevToolsGetGameByGameID:
@@ -2375,7 +2459,7 @@ components:
                     format: int
                 description:
                     type: string
-                game_id:
+                gameID:
                     type: string
                     format: uuid
                 name:
@@ -2392,10 +2476,24 @@ components:
                         type: string
                         format: uuid
                     nullable: true
+        types.GameConfigResults:
+            type: object
+            properties:
+                gameID:
+                    type: string
+                    format: uuid
+                result:
+                    type: object
+                    additionalProperties:
+                        type: object
+                        nullable: true
+                roomID:
+                    type: string
+                    format: uuid
         types.GameConfigs:
             type: object
             properties:
-                game_id:
+                gameID:
                     type: string
                     format: uuid
                 sorting_config:
@@ -2425,7 +2523,7 @@ components:
                 creator_id:
                     type: string
                     format: uuid
-                game_id:
+                gameID:
                     type: string
                     format: uuid
                 id:

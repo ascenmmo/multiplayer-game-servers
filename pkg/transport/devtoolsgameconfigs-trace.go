@@ -28,3 +28,9 @@ func (svc traceDevToolsGameConfigs) GetGameConfig(ctx context.Context, token str
 	span.SetTag("method", "GetGameConfig")
 	return svc.next.GetGameConfig(ctx, token, gameID)
 }
+
+func (svc traceDevToolsGameConfigs) GetGameResultConfigPreview(ctx context.Context, token string, gameID uuid.UUID) (gameResult types.GameConfigResults, err error) {
+	span := opentracing.SpanFromContext(ctx)
+	span.SetTag("method", "GetGameResultConfigPreview")
+	return svc.next.GetGameResultConfigPreview(ctx, token, gameID)
+}

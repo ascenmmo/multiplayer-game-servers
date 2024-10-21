@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// DevToolsGameConfigs
 // @tg http-prefix=api/v1
 // @tg jsonRPC-server log trace metrics
 // @tg tagNoOmitempty
@@ -22,6 +23,9 @@ type DevToolsGameConfigs interface {
 	// @tg summary=`CreateOrUpdateConfig`
 	CreateOrUpdateConfig(ctx context.Context, token string, configs types.GameConfigs) (err error)
 	// @tg http-headers=token|Token
-	// @tg summary=`CreateOrUpdateConfig`
+	// @tg summary=`GetGameConfig`
 	GetGameConfig(ctx context.Context, token string, gameID uuid.UUID) (configs types.GameConfigs, err error)
+	// @tg http-headers=token|Token
+	// @tg summary=`GetGameResultConfigPreview`
+	GetGameResultConfigPreview(ctx context.Context, token string, gameID uuid.UUID) (gameResult types.GameConfigResults, err error)
 }
