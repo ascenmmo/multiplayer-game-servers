@@ -254,7 +254,60 @@
         let existingConfigs = []; // Массив для хранения текущих конфигураций
 
         // Добавляем токен авторизации
-        const token = getCookie("token");
+        let token = getCookie("token");
+
+        let isRetred = false
+
+        const handleApiError = async (error, retryFunc) => {
+            console.error('Ошибка:', error);
+            if (error.message && error.message.includes('token')) {
+                await refreshToken(retryFunc);
+            }else{
+                alert(error.message);
+            }
+        };
+
+
+
+        const refreshToken = async (retryFunc) => {
+            const refreshToken = getCookie('refresh');
+            if (isRetred) {
+                return
+            }
+
+            isRetred = true
+
+            try {
+                const response = await fetch(`${window.location.origin}/api/v1/developers/refreshToken`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Token': token,
+                        'RefreshToken': refreshToken
+                    },
+                    body: JSON.stringify({
+                        id: 1,
+                        jsonrpc: "2.0",
+                        params: {}
+                    })
+                });
+
+                if (!response.ok) throw new Error('Ошибка обновления токенов');
+
+                const data = await response.json();
+                if (data.result && data.result.newToken && data.result.newRefresh) {
+                    document.cookie = `token=${data.result.newToken}; path=/`;
+                    document.cookie = `refresh=${data.result.newRefresh}; path=/`;
+                    retryFunc()
+                } else {
+                    throw new Error('Ошибка обновления токенов');
+                }
+            } catch (error) {
+                console.error('Ошибка обновления токенов:', error);
+                window.location.href = '/admin/auth';  // Редирект на страницу аутентификации
+            }
+            token = getCookie("token")
+        };
 
         // Получение текущих конфигураций
         function fetchGameConfig() {
@@ -273,7 +326,12 @@
                 })
             })
                 .then(response => response.json())
-                .then(data => renderGameConfig(data))
+                .then(data => {
+                    if (data.error) {
+                        handleApiError(data.error, fetchGameConfig)
+                    }
+                    renderGameConfig(data)
+                })
                 .catch(err => {
                     console.error('Error fetching configurations:', err);
                 });
@@ -296,7 +354,12 @@
                 })
             })
                 .then(response => response.json())
-                .then(data => renderGameResultConfig(data))
+                .then(data => {
+                    if (data.error) {
+                        handleApiError(data.error, fetchGameResultConfigPreview)
+                    }
+                    renderGameResultConfig(data)
+                })
                 .catch(err => {
                     console.error('Error fetching game result config:', err);
                 });
@@ -314,12 +377,13 @@
                 data.result.configs.sorting_config.forEach((config, index) => {
                     const configItem = document.createElement('div');
                     configItem.className = 'config-item';
-                    configItem.textContent = `${config.result_name}: ${config.name}`;
+                    configItem.style.display = 'flex';
+                    configItem.style.alignItems = 'center'; // Выравнивание по центру
 
                     // Кнопка для удаления конфигурации
                     const deleteButton = document.createElement('button');
                     deleteButton.textContent = 'X';
-                    deleteButton.style.marginLeft = '10px';
+                    deleteButton.style.marginRight = '10px'; // Отступ справа от кнопки
                     deleteButton.style.backgroundColor = 'gray';
                     deleteButton.style.color = '#fff';
                     deleteButton.style.border = 'none';
@@ -330,6 +394,8 @@
                     });
 
                     configItem.appendChild(deleteButton); // Добавляем кнопку "Удалить" в элемент конфигурации
+                    configItem.appendChild(document.createTextNode(`${config.result_name}: ${config.name}`)); // Текст конфигурации
+
                     configItem.addEventListener('click', () => {
                         configJson.textContent = JSON.stringify(config, null, 2);
                         configJson.appendChild(refreshResultButton);
@@ -381,15 +447,16 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.result && data.result.success) {
-                        console.log('Конфигурация успешно обновлена:', data);
-                        fetchGameConfig(); // Обновляем конфигурации после сохранения
-                    } else {
-                        console.error('Ошибка при обновлении конфигурации:', data);
+                    if (data.error) {
+                        handleApiError(data.error, update)
                     }
                 })
                 .catch(err => {
+
                     console.error('Ошибка при отправке запроса:', err);
+                })
+                .finally(() => {
+                    fetchGameConfig(); // Обновляем конфигурации после обновления на сервере
                 });
         }
 
