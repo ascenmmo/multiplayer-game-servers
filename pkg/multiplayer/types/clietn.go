@@ -8,7 +8,7 @@ type Client struct {
 	Email       string `json:"email" bson:"email"`
 	Nickname    string `json:"nickname" bson:"nickname"`
 	Password    string `json:"password,omitempty" bson:"password"`
-	NewPassword string `json:"newPassword,omitempty" bson:"password"`
+	NewPassword string `json:"newPassword,omitempty" bson:"-"`
 
 	GameID uuid.UUID `json:"gameID" bson:"gameID"`
 

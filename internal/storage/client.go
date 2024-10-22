@@ -36,7 +36,7 @@ func NewClientStorage(client *mongo.Client) (ClientStorage, error) {
 		},
 	)
 	if err != nil {
-		return &clientStorage{}, err
+		return &clientStorage{}, nil
 	}
 
 	return &clientStorage{
@@ -52,8 +52,7 @@ func (c *clientStorage) CreateClient(client types.Client) (err error) {
 
 func (c *clientStorage) FindByID(clientID uuid.UUID, gameID uuid.UUID) (client types.Client, err error) {
 	filter := bson.M{
-		"_id":    clientID,
-		"gameID": gameID,
+		"_id": clientID,
 	}
 	err = c.collection.FindOne(context.TODO(), filter).Decode(&client)
 	if err != nil {
