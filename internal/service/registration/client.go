@@ -3,7 +3,6 @@ package registration
 import (
 	"context"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/storage"
-	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	tokengenerator "github.com/ascenmmo/token-generator/token_generator"
 	tokentype "github.com/ascenmmo/token-generator/token_type"
@@ -182,6 +181,6 @@ func (c *clientService) UpdateClient(ctx context.Context, token string, client t
 	return nil
 }
 
-func NewClientService(clientStorage storage.ClientStorage, token tokengenerator.TokenGenerator, logger *zerolog.Logger) multiplayer.DevToolsClient {
-	return &clientService{clientStorage: clientStorage, token: token, logger: logger}
+func NewClientService(clientStorage storage.ClientStorage, gameStorage storage.GameStorage, roomStorage storage.RoomsStorage, token tokengenerator.TokenGenerator, logger *zerolog.Logger) *clientService {
+	return &clientService{clientStorage: clientStorage, gameStorage: gameStorage, roomStorage: roomStorage, token: token, logger: logger}
 }

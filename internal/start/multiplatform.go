@@ -48,7 +48,7 @@ func Multiplayer(logger zerolog.Logger) {
 	newScheduler := scheduler.NewScheduler(gameStorage, roomStorage, serverStorage, gameConfigResultsStorage, token)
 
 	developerService := registration.NewDeveloperService(developerStorage, token, &logger)
-	clientService := registration.NewClientService(clientStorage, token, &logger)
+	clientService := registration.NewClientService(clientStorage, gameStorage, roomStorage, token, &logger)
 
 	devToolsConnectionServicc := devtools.NewConnections(gameStorage, serverStorage, roomStorage, gameConfigStorage, token, &logger)
 	devToolsService := devtools.NewDevTools(accessGameService, gameStorage, serverStorage, token, &logger)
@@ -72,7 +72,7 @@ func Multiplayer(logger zerolog.Logger) {
 		adminPanel(app)
 	}
 
-	newScheduler.Run(context.Background())
+	go newScheduler.Run(context.Background())
 
 	logger.Info().Str("bind", fmt.Sprintf("http://%s:%s", env.ServerAddress, env.MultiplayerPort)).Msg("listen on")
 	if err := srv.Fiber().Listen(":" + env.MultiplayerPort); err != nil {
