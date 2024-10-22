@@ -20,7 +20,7 @@ import (
 type DevToolsConnections interface {
 	// @tg http-headers=token|Token
 	// @tg summary=`server createRoom`
-	CreateRoom(ctx context.Context, token string, gameID uuid.UUID, serverType string) (newToken string, err error)
+	CreateRoom(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error)
 	// @tg http-headers=token|Token
 	// @tg summary=`server getRoomsAll`
 	GetRoomsAll(ctx context.Context, token string, gameID uuid.UUID) (rooms []types.Room, err error)

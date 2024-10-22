@@ -50,8 +50,8 @@ func (srv *serverDevToolsConnections) Wrap(m MiddlewareDevToolsConnections) {
 	srv.getRoomsConnectionUrls = srv.svc.GetRoomsConnectionUrls
 }
 
-func (srv *serverDevToolsConnections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID, serverType string) (newToken string, err error) {
-	return srv.createRoom(ctx, token, gameID, serverType)
+func (srv *serverDevToolsConnections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error) {
+	return srv.createRoom(ctx, token, gameID)
 }
 
 func (srv *serverDevToolsConnections) GetRoomsAll(ctx context.Context, token string, gameID uuid.UUID) (rooms []types.Room, err error) {

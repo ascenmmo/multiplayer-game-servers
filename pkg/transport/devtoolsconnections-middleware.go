@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type DevToolsConnectionsCreateRoom func(ctx context.Context, token string, gameID uuid.UUID, serverType string) (newToken string, err error)
+type DevToolsConnectionsCreateRoom func(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error)
 type DevToolsConnectionsGetRoomsAll func(ctx context.Context, token string, gameID uuid.UUID) (rooms []types.Room, err error)
 type DevToolsConnectionsJoinRoomByID func(ctx context.Context, token string, gameID uuid.UUID, roomID uuid.UUID) (newToken string, err error)
 type DevToolsConnectionsRemoveRoomByID func(ctx context.Context, token string, gameID uuid.UUID, roomID uuid.UUID) (err error)

@@ -27,7 +27,7 @@ func metricsMiddlewareDevToolsConnections(next multiplayer.DevToolsConnections) 
 	}
 }
 
-func (m metricsDevToolsConnections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID, serverType string) (newToken string, err error) {
+func (m metricsDevToolsConnections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error) {
 
 	defer func(begin time.Time) {
 		m.requestLatency.With("method", "createRoom", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
@@ -37,7 +37,7 @@ func (m metricsDevToolsConnections) CreateRoom(ctx context.Context, token string
 
 	m.requestCountAll.With("method", "createRoom").Add(1)
 
-	return m.next.CreateRoom(ctx, token, gameID, serverType)
+	return m.next.CreateRoom(ctx, token, gameID)
 }
 
 func (m metricsDevToolsConnections) GetRoomsAll(ctx context.Context, token string, gameID uuid.UUID) (rooms []types.Room, err error) {

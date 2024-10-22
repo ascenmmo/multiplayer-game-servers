@@ -20,12 +20,11 @@ type retDevToolsConnectionsJoinRoomByID = func(newToken string, err error)
 type retDevToolsConnectionsRemoveRoomByID = func(err error)
 type retDevToolsConnectionsGetRoomsConnectionUrls = func(connectionsServer []types.ConnectionServer, err error)
 
-func (cli *ClientDevToolsConnections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID, serverType string) (newToken string, err error) {
+func (cli *ClientDevToolsConnections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error) {
 
 	request := requestDevToolsConnectionsCreateRoom{
-		GameID:     gameID,
-		ServerType: serverType,
-		Token:      token,
+		GameID: gameID,
+		Token:  token,
 	}
 	var response responseDevToolsConnectionsCreateRoom
 	var rpcResponse *jsonrpc.ResponseRPC
@@ -48,16 +47,15 @@ func (cli *ClientDevToolsConnections) CreateRoom(ctx context.Context, token stri
 	return response.NewToken, err
 }
 
-func (cli *ClientDevToolsConnections) ReqCreateRoom(ctx context.Context, callback retDevToolsConnectionsCreateRoom, token string, gameID uuid.UUID, serverType string) (request RequestRPC) {
+func (cli *ClientDevToolsConnections) ReqCreateRoom(ctx context.Context, callback retDevToolsConnectionsCreateRoom, token string, gameID uuid.UUID) (request RequestRPC) {
 
 	request = RequestRPC{rpcRequest: &jsonrpc.RequestRPC{
 		ID:      jsonrpc.NewID(),
 		JSONRPC: jsonrpc.Version,
 		Method:  "devtoolsconnections.createroom",
 		Params: requestDevToolsConnectionsCreateRoom{
-			GameID:     gameID,
-			ServerType: serverType,
-			Token:      token,
+			GameID: gameID,
+			Token:  token,
 		},
 	}}
 	if callback != nil {

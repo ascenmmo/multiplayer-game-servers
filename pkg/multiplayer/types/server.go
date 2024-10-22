@@ -65,6 +65,18 @@ func (s *Server) CreateRoom(ctx context.Context, token string, gameConfigs GameC
 	return err
 }
 
+func (s *Server) GetGameConfigResults(ctx context.Context, token string) (results []GameConfigResults, err error) {
+	switch s.ServerType {
+	case ServerTypeUDP:
+		results, err = s.getGameConfigResultUDP(ctx, token)
+	case ServerTypeTCP:
+		results, err = s.getGameConfigResultTcp(ctx, token)
+	case ServerTypeWebsocket:
+		results, err = s.getGameConfigResultWs(ctx, token)
+	}
+	return nil, err
+}
+
 func (s *Server) RemoveOwner(ownerID uuid.UUID) {
 	for i, ownersID := range s.Owners {
 		if ownersID == ownerID {
@@ -188,4 +200,55 @@ func (s *Server) isExistsRest(ctx context.Context, token string) (err error) {
 
 	s.IsActive = exists
 	return nil
+}
+
+func (s *Server) getGameConfigResultUDP(ctx context.Context, token string) (gameResults []GameConfigResults, err error) {
+	cli := udpGameServer.New(s.Address)
+	results, err := cli.ServerSettings().GetGameResults(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range results {
+		gameResults = append(gameResults, GameConfigResults{
+			ID:     uuid.New(),
+			GameID: v.GameID,
+			RoomID: v.RoomID,
+			Result: v.Result,
+		})
+	}
+	return gameResults, err
+}
+
+func (s *Server) getGameConfigResultTcp(ctx context.Context, token string) (gameResults []GameConfigResults, err error) {
+	cli := tcpGameServer.New(s.Address)
+	results, err := cli.ServerSettings().GetGameResults(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range results {
+		gameResults = append(gameResults, GameConfigResults{
+			ID:     uuid.New(),
+			GameID: v.GameID,
+			RoomID: v.RoomID,
+			Result: v.Result,
+		})
+	}
+	return gameResults, err
+}
+
+func (s *Server) getGameConfigResultWs(ctx context.Context, token string) (gameResults []GameConfigResults, err error) {
+	cli := wsGameServer.New(s.Address)
+	results, err := cli.ServerSettings().GetGameResults(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range results {
+		gameResults = append(gameResults, GameConfigResults{
+			ID:     uuid.New(),
+			GameID: v.GameID,
+			RoomID: v.RoomID,
+			Result: v.Result,
+		})
+	}
+	return gameResults, err
 }

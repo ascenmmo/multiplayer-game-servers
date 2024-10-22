@@ -7,9 +7,8 @@ import (
 )
 
 type requestDevToolsConnectionsCreateRoom struct {
-	Token      string    `json:"token"`
-	GameID     uuid.UUID `json:"gameID"`
-	ServerType string    `json:"serverType"`
+	Token  string    `json:"token"`
+	GameID uuid.UUID `json:"gameID"`
 }
 
 type responseDevToolsConnectionsCreateRoom struct {

@@ -2,11 +2,17 @@ package scheduler
 
 import (
 	"context"
+	"fmt"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/storage"
+	tokengenerator "github.com/ascenmmo/token-generator/token_generator"
+	tokentype "github.com/ascenmmo/token-generator/token_type"
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
+	"time"
 )
 
 type Scheduler interface {
+	Run(ctx context.Context)
 }
 
 type scheduler struct {
@@ -14,10 +20,17 @@ type scheduler struct {
 	roomStorage       storage.RoomsStorage
 	serverStorage     storage.ServersStorage
 	confResultStorage storage.GameConfigsResultsStorage
+	tokenGenerator    tokengenerator.TokenGenerator
 }
 
 func (s scheduler) Run(ctx context.Context) {
-
+	ticker := time.NewTicker(time.Second * 1)
+	for range ticker.C {
+		err := s.getConfigResultsFromServer(ctx)
+		if err != nil {
+			log.Error().Err(err).Msg("error getting config results from server")
+		}
+	}
 }
 
 func (s scheduler) getConfigResultsFromServer(ctx context.Context) (err error) {
@@ -25,6 +38,12 @@ func (s scheduler) getConfigResultsFromServer(ctx context.Context) (err error) {
 	if err != nil {
 		return
 	}
+
+	token, _ := s.tokenGenerator.GenerateToken(tokentype.Info{
+		GameID: uuid.New(),
+		RoomID: uuid.New(),
+		UserID: uuid.New(),
+	}, tokengenerator.JWT)
 
 	var batchServerIDs [][]uuid.UUID
 	batchSize := 10
@@ -46,13 +65,32 @@ func (s scheduler) getConfigResultsFromServer(ctx context.Context) (err error) {
 		}
 
 		for _, server := range servers {
-			data, err := server.IsExists()
+			if server.IsActive {
+				continue
+			}
+			results, err := server.GetGameConfigResults(ctx, token)
+			if err != nil {
+				continue
+			}
 
+			if len(results) == 0 {
+				continue
+			}
+
+			err = s.confResultStorage.CreateMany(results)
+			if err != nil {
+				fmt.Println()
+				fmt.Println()
+				fmt.Println("CreateMany", err)
+				fmt.Println()
+				fmt.Println()
+			}
 		}
-
 	}
+
+	return nil
 }
 
-func NewScheduler() Scheduler {
-
+func NewScheduler(gameStorage storage.GameStorage, roomStorage storage.RoomsStorage, serverStorage storage.ServersStorage, confResultStorage storage.GameConfigsResultsStorage, tokenGenerator tokengenerator.TokenGenerator) *scheduler {
+	return &scheduler{gameStorage: gameStorage, roomStorage: roomStorage, serverStorage: serverStorage, confResultStorage: confResultStorage, tokenGenerator: tokenGenerator}
 }

@@ -22,7 +22,7 @@ type connections struct {
 	logger             *zerolog.Logger
 }
 
-func (c *connections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID, serverType string) (newToken string, err error) {
+func (c *connections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error) {
 	info, err := c.token.ParseToken(token)
 	if err != nil {
 		return newToken, err

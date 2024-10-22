@@ -42,7 +42,7 @@ func (http *httpDevToolsConnections) createRoom(ctx *fiber.Ctx, requestBase base
 	}
 
 	var response responseDevToolsConnectionsCreateRoom
-	response.NewToken, err = http.svc.CreateRoom(methodCtx, request.Token, request.GameID, request.ServerType)
+	response.NewToken, err = http.svc.CreateRoom(methodCtx, request.Token, request.GameID)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)

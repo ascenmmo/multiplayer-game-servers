@@ -2136,8 +2136,6 @@ components:
                 gameID:
                     type: string
                     format: uuid
-                serverType:
-                    type: string
         requestDevToolsConnectionsGetRoomsAll:
             type: object
             properties:

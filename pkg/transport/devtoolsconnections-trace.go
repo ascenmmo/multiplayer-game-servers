@@ -17,10 +17,10 @@ func traceMiddlewareDevToolsConnections(next multiplayer.DevToolsConnections) mu
 	return &traceDevToolsConnections{next: next}
 }
 
-func (svc traceDevToolsConnections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID, serverType string) (newToken string, err error) {
+func (svc traceDevToolsConnections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error) {
 	span := opentracing.SpanFromContext(ctx)
 	span.SetTag("method", "CreateRoom")
-	return svc.next.CreateRoom(ctx, token, gameID, serverType)
+	return svc.next.CreateRoom(ctx, token, gameID)
 }
 
 func (svc traceDevToolsConnections) GetRoomsAll(ctx context.Context, token string, gameID uuid.UUID) (rooms []types.Room, err error) {

@@ -6,11 +6,13 @@ import (
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type GameConfigsResultsStorage interface {
 	Create(result types.GameConfigResults) (err error)
-	GetAllResults(gameID uuid.UUID) (gameConfig []types.GameConfigResults, err error)
+	CreateMany(result []types.GameConfigResults) (err error)
+	GetAllResults(gameID uuid.UUID, offset, limit int64) (gameConfig []types.GameConfigResults, err error)
 	GetResults(gameID uuid.UUID, roomID uuid.UUID) (gameConfig []types.GameConfigResults, err error)
 }
 
@@ -26,12 +28,27 @@ func (s *gameConfigsResultsStorage) Create(result types.GameConfigResults) (err 
 	return err
 }
 
-func (s *gameConfigsResultsStorage) GetAllResults(gameID uuid.UUID) (gameConfig []types.GameConfigResults, err error) {
+func (s *gameConfigsResultsStorage) CreateMany(result []types.GameConfigResults) (err error) {
+	docs := make([]interface{}, len(result))
+	for i, v := range result {
+		docs[i] = v
+	}
+
+	_, err = s.collection.InsertMany(context.Background(), docs)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+func (s *gameConfigsResultsStorage) GetAllResults(gameID uuid.UUID, offset, limit int64) (gameConfig []types.GameConfigResults, err error) {
 	filter := bson.M{
 		"gameID": gameID,
 	}
 
-	cur, err := s.collection.Find(context.Background(), filter)
+	opts := options.Find().SetSort(limit).SetSkip(offset)
+
+	cur, err := s.collection.Find(context.Background(), filter, opts)
 	if err != nil {
 		return gameConfig, err
 	}
@@ -42,6 +59,7 @@ func (s *gameConfigsResultsStorage) GetAllResults(gameID uuid.UUID) (gameConfig 
 	}
 	return gameConfig, nil
 }
+
 func (s *gameConfigsResultsStorage) GetResults(gameID uuid.UUID, roomID uuid.UUID) (gameConfig []types.GameConfigResults, err error) {
 	filter := bson.M{
 		"gameID": gameID,

@@ -22,15 +22,14 @@ func loggerMiddlewareDevToolsConnections() MiddlewareDevToolsConnections {
 	}
 }
 
-func (m loggerDevToolsConnections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID, serverType string) (newToken string, err error) {
+func (m loggerDevToolsConnections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "createRoom").Logger()
 	defer func(begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
 				"request": viewer.Sprintf("%+v", requestDevToolsConnectionsCreateRoom{
-					GameID:     gameID,
-					ServerType: serverType,
-					Token:      token,
+					GameID: gameID,
+					Token:  token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsCreateRoom{NewToken: newToken}),
 			}
@@ -42,7 +41,7 @@ func (m loggerDevToolsConnections) CreateRoom(ctx context.Context, token string,
 		}
 		logger.Info().Func(logHandle).Msg("call createRoom")
 	}(time.Now())
-	return m.next.CreateRoom(ctx, token, gameID, serverType)
+	return m.next.CreateRoom(ctx, token, gameID)
 }
 
 func (m loggerDevToolsConnections) GetRoomsAll(ctx context.Context, token string, gameID uuid.UUID) (rooms []types.Room, err error) {
