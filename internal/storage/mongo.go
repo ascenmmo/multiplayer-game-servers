@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"github.com/ascenmmo/multiplayer-game-servers/env"
 	"github.com/google/uuid"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,7 +11,7 @@ import (
 )
 
 var (
-	DefaultUserID = uuid.NewSHA1(uuid.UUID{}, []byte("ASCENMMO"))
+	DefaultUserID = uuid.NewSHA1(uuid.UUID{}, []byte(env.ServerAddress))
 )
 
 const (

@@ -9,6 +9,7 @@ import (
 	"github.com/ascenmmo/websocket-server/pkg/clients/wsGameServer"
 	wsType "github.com/ascenmmo/websocket-server/pkg/restconnection/types"
 	"github.com/google/uuid"
+	"strings"
 )
 
 const (
@@ -22,10 +23,11 @@ type Server struct {
 	ID         uuid.UUID `json:"id" bson:"_id"`
 	ServerName string    `json:"server_name" bson:"server_name"`
 
-	Owners     []uuid.UUID `json:"-" bson:"owners"`
-	Address    string      `json:"address" bson:"address"`
-	ServerType string      `json:"server_type" bson:"server_type"`
-	Region     string      `json:"region" bson:"region"`
+	Owners         []uuid.UUID `json:"-" bson:"owners"`
+	Address        string      `json:"address" bson:"address"`
+	ServerType     string      `json:"server_type" bson:"server_type"`
+	Region         string      `json:"region" bson:"region"`
+	ConnectionPort string      `json:"connection_port" bson:"connection_port"`
 
 	AscenmmoServer bool `json:"ascenmmo_server" bson:"ascenmmo_server"`
 	IsActive       bool `json:"is_active" bson:"is_active"`
@@ -111,6 +113,14 @@ func (s *Server) IsOwner(ownerID uuid.UUID) bool {
 	return false
 }
 
+func (s *Server) GetConnectionAddress() string {
+	split := strings.Split(s.Address, ":")
+	if len(split) == 2 {
+		return split[0] + ":" + s.ConnectionPort
+	}
+	return s.Address
+}
+
 func (s *Server) createRestRoom(ctx context.Context, token string) (err error) {
 	cli := tcpGameServer.New(s.Address)
 
@@ -154,6 +164,7 @@ func (s *Server) isExistsWS(ctx context.Context, token string) (err error) {
 	}
 
 	s.ServerType = settings.ServerType
+	s.ConnectionPort = settings.ServerPort
 	s.IsActive = true
 
 	s.IsActive = exists
@@ -175,6 +186,7 @@ func (s *Server) isExistsUDP(ctx context.Context, token string) (err error) {
 	}
 
 	s.ServerType = settings.ServerType
+	s.ConnectionPort = settings.ServerPort
 	s.IsActive = true
 
 	s.IsActive = exists
@@ -196,6 +208,7 @@ func (s *Server) isExistsRest(ctx context.Context, token string) (err error) {
 	}
 
 	s.ServerType = settings.ServerType
+	s.ConnectionPort = settings.ServerPort
 	s.IsActive = true
 
 	s.IsActive = exists

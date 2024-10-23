@@ -76,7 +76,21 @@ func (c *connections) CreateRoom(ctx context.Context, token string, gameID uuid.
 		}
 	}
 
-	room.Servers = game.Servers
+	servers, err := c.serverStorage.FindByIDs(game.Servers)
+	if err != nil {
+		return newToken, errors.ErrServerCreatingRoomError
+	}
+
+	for i := range servers {
+		exists := servers[i].IsExists(ctx, token)
+		if exists {
+			room.Servers = append(room.Servers, servers[i].ID)
+		}
+	}
+
+	if len(room.Servers) == 0 {
+		return newToken, errors.ErrServerNotExists
+	}
 
 	err = c.roomsStorage.CreateRoom(room)
 	if err != nil {
@@ -172,7 +186,7 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 		case types.ServerTypeUDP:
 			path = ""
 		case types.ServerTypeWebsocket:
-			path = ""
+			path = "/api/ws/connect"
 		}
 
 		err = server.CreateRoom(ctx, token, config)
@@ -182,8 +196,8 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 		}
 
 		connectionsServer = append(connectionsServer, types.ConnectionServer{
+			Address:    server.GetConnectionAddress() + path,
 			ServerType: server.ServerType,
-			Address:    server.Address + path,
 		})
 
 	}

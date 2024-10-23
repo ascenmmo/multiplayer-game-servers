@@ -36,10 +36,10 @@ func (s *serverService) AddServer(ctx context.Context, token string, name string
 
 	newServer.AddOwner(info.UserID)
 
-	//exists := newServer.IsExists(ctx, token)
-	//if !exists {
-	//	return errors.ErrServerNotExists
-	//}
+	exists := newServer.IsExists(ctx, token)
+	if !exists {
+		return errors.ErrServerNotExists
+	}
 
 	err = s.serverStorage.CreateServer(*newServer)
 	if err != nil {
@@ -103,7 +103,6 @@ func (s *serverService) DeleteServers(ctx context.Context, token string, serverI
 	}
 
 	return nil
-
 }
 
 func NewServerService(access access.AccessGame, gameStorage storage.GameStorage, serverStorage storage.ServersStorage, token tokengenerator.TokenGenerator, logger *zerolog.Logger) multiplayer.DevToolsServer {

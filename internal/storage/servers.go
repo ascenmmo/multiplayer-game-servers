@@ -25,36 +25,6 @@ type serversStorage struct {
 	collection *mongo.Collection
 }
 
-func NewServersStorage(client *mongo.Client) (ServersStorage, error) {
-	coll := client.Database(dataBaseServers).Collection(serversCollectionKey)
-	_, err := coll.Indexes().CreateMany(
-		context.Background(),
-		[]mongo.IndexModel{{
-			Keys:    bson.D{{Key: "address", Value: 1}},
-			Options: options.Index().SetUnique(true),
-		},
-			{
-				Keys: bson.D{{Key: "creator_id", Value: 1}},
-			},
-		},
-	)
-	if err != nil {
-		return &serversStorage{}, err
-	}
-
-	neSserversStorage := &serversStorage{
-		collection: coll,
-	}
-
-	err = neSserversStorage.addDefaultServers()
-	if err != nil {
-		return &serversStorage{}, err
-	}
-
-	return neSserversStorage, nil
-
-}
-
 func (d *serversStorage) CreateServer(servers types.Server) (err error) {
 	_, err = d.collection.InsertOne(context.TODO(), servers)
 	return err
@@ -192,17 +162,51 @@ func (d *serversStorage) addDefaultServers() (err error) {
 		return err
 	}
 
-	if len(servers) > 0 {
-		for _, v := range defalultdata.AddServers(DefaultUserID) {
+	if len(servers) == 0 {
+		for _, v := range servers {
 			err = d.CreateServer(v)
-			return err
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	for _, v := range defalultdata.AddServers(DefaultUserID) {
 		err = d.Update(v)
-		return err
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
+}
+
+func NewServersStorage(client *mongo.Client) (ServersStorage, error) {
+	coll := client.Database(dataBaseServers).Collection(serversCollectionKey)
+	_, err := coll.Indexes().CreateMany(
+		context.Background(),
+		[]mongo.IndexModel{{
+			Keys:    bson.D{{Key: "address", Value: 1}},
+			Options: options.Index().SetUnique(true),
+		},
+			{
+				Keys: bson.D{{Key: "creator_id", Value: 1}},
+			},
+		},
+	)
+	if err != nil {
+		return &serversStorage{}, err
+	}
+
+	newServersStorage := &serversStorage{
+		collection: coll,
+	}
+
+	err = newServersStorage.addDefaultServers()
+	if err != nil {
+		return &serversStorage{}, err
+	}
+
+	return newServersStorage, nil
+
 }

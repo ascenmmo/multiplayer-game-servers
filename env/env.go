@@ -1,7 +1,7 @@
 package env
 
 var (
-	ServerAddress = "localhost"
+	ServerAddress = "ascenmmo.com"
 	TokenKey      = "_remember_token_mast_be_32_bytes"
 )
 
@@ -14,21 +14,21 @@ var (
 )
 
 var (
-	RunUdpServer                 = false
+	RunUdpServer                 = true
 	UdpServerPort                = "8081"
 	UdpServerConnectionPort      = "4500"
 	UdpServerMaxRequestPerSecond = 200
 )
 
 var (
-	RunWebsocketServer                 = false
+	RunWebsocketServer                 = true
 	WebsocketServerPort                = "8082"
 	WebsocketServerConnectionPort      = "4240"
 	WebsocketServerMaxRequestPerSecond = 100
 )
 
 var (
-	RunTcpServer                 = false
+	RunTcpServer                 = true
 	TcpServerPort                = "8083"
 	TcpServerMaxRequestPerSecond = 5
 )
