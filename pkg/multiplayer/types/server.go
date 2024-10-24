@@ -132,7 +132,9 @@ func (s *Server) IsOwner(ownerID uuid.UUID) bool {
 }
 
 func (s *Server) GetConnectionAddress() string {
-	split := strings.Split(s.Address, ":")
+	raplase := strings.Replace(s.Address, "https://", "", 1)
+	raplase = strings.Replace(raplase, "http://", "", 1)
+	split := strings.Split(raplase, ":")
 	if len(split) == 2 {
 		return split[0] + ":" + s.ConnectionPort
 	}
@@ -140,9 +142,7 @@ func (s *Server) GetConnectionAddress() string {
 }
 
 func (s *Server) getRestUrl() string {
-	split := strings.Split(s.Address, "://")
-	if len(split) == 1 {
-		return fmt.Sprintf("http://%s", split[0])
-	}
-	return fmt.Sprintf("http://%s", split[1])
+	raplase := strings.Replace(s.Address, "https://", "", 1)
+	raplase = strings.Replace(raplase, "http://", "", 1)
+	return fmt.Sprintf("http://%s", raplase)
 }

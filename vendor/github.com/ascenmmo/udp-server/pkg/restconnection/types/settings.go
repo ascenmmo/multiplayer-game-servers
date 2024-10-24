@@ -8,8 +8,8 @@ import (
 
 type Settings struct {
 	ServerType          string `json:"serverType"`
-	TCPPort             string `json:"tcpPort"`
-	ServerPort          string `json:"serverPort"`
+	ServerPort          string `json:"tcpPort"`
+	ConnectionPort      string `json:"serverPort"`
 	ServerAddress       string `json:"serverAddress"`
 	MaxConnections      int    `json:"maxConnections"`
 	MaxRequestPerSecond int    `json:"maxRequestPerSecond"`
@@ -17,8 +17,8 @@ type Settings struct {
 
 func NewSettings() (settings Settings) {
 	settings.ServerType = "upd"
-	settings.TCPPort = env.TCPPort
-	settings.ServerPort = env.UDPPort
+	settings.ServerPort = env.TCPPort
+	settings.ConnectionPort = env.UDPPort
 	settings.ServerAddress = env.ServerAddress
 	settings.MaxConnections = CountConnectionsMAX()
 	settings.MaxRequestPerSecond = env.MaxRequestPerSecond

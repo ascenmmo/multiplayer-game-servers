@@ -1,7 +1,7 @@
 # github.com/andybalholm/brotli v1.0.5
 ## explicit; go 1.12
 github.com/andybalholm/brotli
-# github.com/ascenmmo/tcp-server v0.0.0-20241019193052-e3d16a692e36
+# github.com/ascenmmo/tcp-server v0.0.0-20241024211831-8ae5df86d51d
 ## explicit; go 1.23.2
 github.com/ascenmmo/tcp-server/env
 github.com/ascenmmo/tcp-server/internal/entities
@@ -24,7 +24,7 @@ github.com/ascenmmo/tcp-server/pkg/transport/viewer
 ## explicit; go 1.23.2
 github.com/ascenmmo/token-generator/token_generator
 github.com/ascenmmo/token-generator/token_type
-# github.com/ascenmmo/udp-server v0.0.0-20241019193314-5d5bb0192e62
+# github.com/ascenmmo/udp-server v0.0.0-20241024212248-f4a81fca8975
 ## explicit; go 1.23.2
 github.com/ascenmmo/udp-server/env
 github.com/ascenmmo/udp-server/internal/connection
@@ -45,7 +45,7 @@ github.com/ascenmmo/udp-server/pkg/restconnection/types
 github.com/ascenmmo/udp-server/pkg/start
 github.com/ascenmmo/udp-server/pkg/transport
 github.com/ascenmmo/udp-server/pkg/transport/viewer
-# github.com/ascenmmo/websocket-server v0.0.0-20241019193446-0d6e2fa2d908
+# github.com/ascenmmo/websocket-server v0.0.0-20241024212146-240cd9c4f6b6
 ## explicit; go 1.23.2
 github.com/ascenmmo/websocket-server/env
 github.com/ascenmmo/websocket-server/internal/connection
@@ -55,10 +55,6 @@ github.com/ascenmmo/websocket-server/internal/service
 github.com/ascenmmo/websocket-server/internal/service/configs_service
 github.com/ascenmmo/websocket-server/internal/storage
 github.com/ascenmmo/websocket-server/internal/utils
-github.com/ascenmmo/websocket-server/pkg/clients/wsGameServer
-github.com/ascenmmo/websocket-server/pkg/clients/wsGameServer/cb
-github.com/ascenmmo/websocket-server/pkg/clients/wsGameServer/hasher
-github.com/ascenmmo/websocket-server/pkg/clients/wsGameServer/jsonrpc
 github.com/ascenmmo/websocket-server/pkg/entities
 github.com/ascenmmo/websocket-server/pkg/errors
 github.com/ascenmmo/websocket-server/pkg/restconnection
