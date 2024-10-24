@@ -36,7 +36,10 @@ func (s *serverService) AddServer(ctx context.Context, token string, name string
 
 	newServer.AddOwner(info.UserID)
 
-	exists := newServer.IsExists(ctx, token)
+	exists, err := newServer.IsExists(ctx, token)
+	if err != nil {
+		s.logger.Error().Err(err)
+	}
 	if !exists {
 		return errors.ErrServerNotExists
 	}

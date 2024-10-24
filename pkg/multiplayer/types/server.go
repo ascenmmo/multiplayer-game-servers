@@ -2,12 +2,11 @@ package types
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/ascenmmo/tcp-server/pkg/clients/tcpGameServer"
 	restType "github.com/ascenmmo/tcp-server/pkg/restconnection/types"
 	"github.com/ascenmmo/udp-server/pkg/clients/udpGameServer"
-	udpType "github.com/ascenmmo/udp-server/pkg/restconnection/types"
-	"github.com/ascenmmo/websocket-server/pkg/clients/wsGameServer"
-	wsType "github.com/ascenmmo/websocket-server/pkg/restconnection/types"
 	"github.com/google/uuid"
 	"strings"
 )
@@ -16,7 +15,6 @@ const (
 	ServerTypeUDP       = "udp"
 	ServerTypeTCP       = "tcp"
 	ServerTypeWebsocket = "websocket"
-	ServerTypeChat      = "chat"
 )
 
 type Server struct {
@@ -38,45 +36,65 @@ type ConnectionServer struct {
 	ServerType string
 }
 
-func (s *Server) IsExists(ctx context.Context, token string) bool {
+func (s *Server) IsExists(ctx context.Context, token string) (bool, error) {
 	var err error
-	switch s.ServerType {
-	case ServerTypeUDP:
-		err = s.isExistsUDP(ctx, token)
-	case ServerTypeTCP:
-		err = s.isExistsRest(ctx, token)
-	case ServerTypeWebsocket:
-		err = s.isExistsWS(ctx, token)
-	case ServerTypeChat:
-		err = s.isExistsWS(ctx, token)
-	default:
-		return false
+	cli := udpGameServer.New(s.getRestUrl())
+	exists, err := cli.ServerSettings().HealthCheck(context.TODO(), token)
+	if err != nil {
+		s.IsActive = false
+		return false, err
 	}
-	return err == nil
+
+	settings, err := cli.ServerSettings().GetServerSettings(ctx, token)
+	if err != nil {
+		s.IsActive = false
+		return false, err
+	}
+
+	s.ServerType = settings.ServerType
+	s.ConnectionPort = settings.ServerPort
+	s.IsActive = true
+
+	s.IsActive = exists
+	return exists, err
 }
 
 func (s *Server) CreateRoom(ctx context.Context, token string, gameConfigs GameConfigs) (err error) {
-	switch s.ServerType {
-	case ServerTypeUDP:
-		err = s.createUDPRoom(ctx, token)
-	case ServerTypeTCP:
-		err = s.createRestRoom(ctx, token)
-	case ServerTypeWebsocket:
-		err = s.createWSRoom(ctx, token)
+	cli := tcpGameServer.New(s.getRestUrl())
+
+	confBuf, err := json.Marshal(gameConfigs)
+
+	var config restType.GameConfigs
+	err = json.Unmarshal(confBuf, &config)
+	if err != nil {
+		return err
 	}
-	return err
+
+	err = cli.ServerSettings().CreateRoom(ctx, token, restType.CreateRoomRequest{
+		GameConfigs: config,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (s *Server) GetGameConfigResults(ctx context.Context, token string) (results []GameConfigResults, err error) {
-	switch s.ServerType {
-	case ServerTypeUDP:
-		results, err = s.getGameConfigResultUDP(ctx, token)
-	case ServerTypeTCP:
-		results, err = s.getGameConfigResultTcp(ctx, token)
-	case ServerTypeWebsocket:
-		results, err = s.getGameConfigResultWs(ctx, token)
+func (s *Server) GetGameConfigResults(ctx context.Context, token string) (gameResults []GameConfigResults, err error) {
+	cli := tcpGameServer.New(s.getRestUrl())
+	results, err := cli.ServerSettings().GetGameResults(ctx, token)
+	if err != nil {
+		return nil, err
 	}
-	return nil, err
+	for _, v := range results {
+		gameResults = append(gameResults, GameConfigResults{
+			ID:     uuid.New(),
+			GameID: v.GameID,
+			RoomID: v.RoomID,
+			Result: v.Result,
+		})
+	}
+	return gameResults, err
 }
 
 func (s *Server) RemoveOwner(ownerID uuid.UUID) {
@@ -121,147 +139,10 @@ func (s *Server) GetConnectionAddress() string {
 	return s.Address
 }
 
-func (s *Server) createRestRoom(ctx context.Context, token string) (err error) {
-	cli := tcpGameServer.New(s.Address)
-
-	err = cli.ServerSettings().CreateRoom(ctx, token, restType.CreateRoomRequest{})
-	if err != nil {
-		return err
+func (s *Server) getRestUrl() string {
+	split := strings.Split(s.Address, "://")
+	if len(split) == 1 {
+		return fmt.Sprintf("http://%s", split[0])
 	}
-	return nil
-}
-
-func (s *Server) createUDPRoom(ctx context.Context, token string) (err error) {
-	cli := udpGameServer.New(s.Address)
-	err = cli.ServerSettings().CreateRoom(ctx, token, udpType.CreateRoomRequest{})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *Server) createWSRoom(ctx context.Context, token string) (err error) {
-	cli := wsGameServer.New(s.Address)
-	err = cli.ServerSettings().CreateRoom(ctx, token, wsType.CreateRoomRequest{})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *Server) isExistsWS(ctx context.Context, token string) (err error) {
-	cli := wsGameServer.New(s.Address)
-	exists, err := cli.ServerSettings().HealthCheck(context.TODO(), token)
-	if err != nil {
-		s.IsActive = false
-		return err
-	}
-
-	settings, err := cli.ServerSettings().GetServerSettings(ctx, token)
-	if err != nil {
-		s.IsActive = false
-		return err
-	}
-
-	s.ServerType = settings.ServerType
-	s.ConnectionPort = settings.ServerPort
-	s.IsActive = true
-
-	s.IsActive = exists
-	return nil
-}
-
-func (s *Server) isExistsUDP(ctx context.Context, token string) (err error) {
-	cli := udpGameServer.New(s.Address)
-	exists, err := cli.ServerSettings().HealthCheck(context.TODO(), token)
-	if err != nil {
-		s.IsActive = false
-		return err
-	}
-
-	settings, err := cli.ServerSettings().GetServerSettings(ctx, token)
-	if err != nil {
-		s.IsActive = false
-		return err
-	}
-
-	s.ServerType = settings.ServerType
-	s.ConnectionPort = settings.ServerPort
-	s.IsActive = true
-
-	s.IsActive = exists
-	return nil
-}
-
-func (s *Server) isExistsRest(ctx context.Context, token string) (err error) {
-	cli := tcpGameServer.New(s.Address)
-	exists, err := cli.ServerSettings().HealthCheck(context.TODO(), token)
-	if err != nil {
-		s.IsActive = false
-		return err
-	}
-
-	settings, err := cli.ServerSettings().GetServerSettings(ctx, token)
-	if err != nil {
-		s.IsActive = false
-		return err
-	}
-
-	s.ServerType = settings.ServerType
-	s.ConnectionPort = settings.ServerPort
-	s.IsActive = true
-
-	s.IsActive = exists
-	return nil
-}
-
-func (s *Server) getGameConfigResultUDP(ctx context.Context, token string) (gameResults []GameConfigResults, err error) {
-	cli := udpGameServer.New(s.Address)
-	results, err := cli.ServerSettings().GetGameResults(ctx, token)
-	if err != nil {
-		return nil, err
-	}
-	for _, v := range results {
-		gameResults = append(gameResults, GameConfigResults{
-			ID:     uuid.New(),
-			GameID: v.GameID,
-			RoomID: v.RoomID,
-			Result: v.Result,
-		})
-	}
-	return gameResults, err
-}
-
-func (s *Server) getGameConfigResultTcp(ctx context.Context, token string) (gameResults []GameConfigResults, err error) {
-	cli := tcpGameServer.New(s.Address)
-	results, err := cli.ServerSettings().GetGameResults(ctx, token)
-	if err != nil {
-		return nil, err
-	}
-	for _, v := range results {
-		gameResults = append(gameResults, GameConfigResults{
-			ID:     uuid.New(),
-			GameID: v.GameID,
-			RoomID: v.RoomID,
-			Result: v.Result,
-		})
-	}
-	return gameResults, err
-}
-
-func (s *Server) getGameConfigResultWs(ctx context.Context, token string) (gameResults []GameConfigResults, err error) {
-	cli := wsGameServer.New(s.Address)
-	results, err := cli.ServerSettings().GetGameResults(ctx, token)
-	if err != nil {
-		return nil, err
-	}
-	for _, v := range results {
-		gameResults = append(gameResults, GameConfigResults{
-			ID:     uuid.New(),
-			GameID: v.GameID,
-			RoomID: v.RoomID,
-			Result: v.Result,
-		})
-	}
-	return gameResults, err
+	return fmt.Sprintf("http://%s", split[1])
 }

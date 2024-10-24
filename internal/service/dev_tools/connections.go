@@ -78,18 +78,22 @@ func (c *connections) CreateRoom(ctx context.Context, token string, gameID uuid.
 
 	servers, err := c.serverStorage.FindByIDs(game.Servers)
 	if err != nil {
-		return newToken, errors.ErrServerCreatingRoomError
+		return newToken, errors.ErrServerCreatingRoomOllServesOffError
 	}
 
 	for i := range servers {
-		exists := servers[i].IsExists(ctx, token)
+		exists, err := servers[i].IsExists(ctx, token)
+		if err != nil {
+			c.logger.Error().Err(err)
+			continue
+		}
 		if exists {
 			room.Servers = append(room.Servers, servers[i].ID)
 		}
 	}
 
 	if len(room.Servers) == 0 {
-		return newToken, errors.ErrServerNotExists
+		return newToken, errors.ErrServerCreatingRoomOllServesOffError
 	}
 
 	err = c.roomsStorage.CreateRoom(room)
