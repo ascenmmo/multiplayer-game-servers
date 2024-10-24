@@ -52,7 +52,7 @@ func (s *Server) IsExists(ctx context.Context, token string) (bool, error) {
 	}
 
 	s.ServerType = settings.ServerType
-	s.ConnectionPort = settings.ServerPort
+	s.ConnectionPort = settings.ConnectionPort
 	s.IsActive = true
 
 	s.IsActive = exists
