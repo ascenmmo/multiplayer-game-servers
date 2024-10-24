@@ -24,6 +24,7 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
+
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
