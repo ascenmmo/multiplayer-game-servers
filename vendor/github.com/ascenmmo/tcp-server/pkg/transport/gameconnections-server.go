@@ -21,6 +21,7 @@ type MiddlewareSetGameConnections interface {
 	WrapGetMessage(m MiddlewareGameConnectionsGetMessage)
 	WrapRemoveUser(m MiddlewareGameConnectionsRemoveUser)
 
+	WithTrace()
 	WithLog()
 }
 
@@ -62,6 +63,10 @@ func (srv *serverGameConnections) WrapGetMessage(m MiddlewareGameConnectionsGetM
 
 func (srv *serverGameConnections) WrapRemoveUser(m MiddlewareGameConnectionsRemoveUser) {
 	srv.removeUser = m(srv.removeUser)
+}
+
+func (srv *serverGameConnections) WithTrace() {
+	srv.Wrap(traceMiddlewareGameConnections)
 }
 
 func (srv *serverGameConnections) WithLog() {

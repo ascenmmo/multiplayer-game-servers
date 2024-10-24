@@ -1,7 +1,7 @@
 # github.com/andybalholm/brotli v1.0.5
 ## explicit; go 1.12
 github.com/andybalholm/brotli
-# github.com/ascenmmo/tcp-server v0.0.0-20241024211831-8ae5df86d51d
+# github.com/ascenmmo/tcp-server v0.0.0-20241024213218-104f0955af07
 ## explicit; go 1.23.2
 github.com/ascenmmo/tcp-server/env
 github.com/ascenmmo/tcp-server/internal/entities
@@ -24,7 +24,7 @@ github.com/ascenmmo/tcp-server/pkg/transport/viewer
 ## explicit; go 1.23.2
 github.com/ascenmmo/token-generator/token_generator
 github.com/ascenmmo/token-generator/token_type
-# github.com/ascenmmo/udp-server v0.0.0-20241024212248-f4a81fca8975
+# github.com/ascenmmo/udp-server v0.0.0-20241024213152-f807e90ce36c
 ## explicit; go 1.23.2
 github.com/ascenmmo/udp-server/env
 github.com/ascenmmo/udp-server/internal/connection
@@ -45,7 +45,7 @@ github.com/ascenmmo/udp-server/pkg/restconnection/types
 github.com/ascenmmo/udp-server/pkg/start
 github.com/ascenmmo/udp-server/pkg/transport
 github.com/ascenmmo/udp-server/pkg/transport/viewer
-# github.com/ascenmmo/websocket-server v0.0.0-20241024212146-240cd9c4f6b6
+# github.com/ascenmmo/websocket-server v0.0.0-20241024213056-3c1271cc0529
 ## explicit; go 1.23.2
 github.com/ascenmmo/websocket-server/env
 github.com/ascenmmo/websocket-server/internal/connection

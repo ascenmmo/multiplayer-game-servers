@@ -4,6 +4,8 @@ package transport
 import (
 	"encoding/json"
 	"github.com/gofiber/fiber/v2"
+	otg "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 	"strings"
 	"sync"
 )
@@ -63,8 +65,11 @@ func (srv *Server) serveBatch(ctx *fiber.Ctx) (err error) {
 
 	var single bool
 	var requests []baseJsonRPC
+	batchSpan := otg.SpanFromContext(ctx.UserContext())
 	methodHTTP := ctx.Method()
 	if methodHTTP != fiber.MethodPost {
+		ext.Error.Set(batchSpan, true)
+		batchSpan.SetTag("msg", "only POST method supported")
 		ctx.Response().SetStatusCode(fiber.StatusMethodNotAllowed)
 		if _, err = ctx.WriteString("only POST method supported"); err != nil {
 			return
@@ -74,6 +79,8 @@ func (srv *Server) serveBatch(ctx *fiber.Ctx) (err error) {
 	if err = json.Unmarshal(ctx.Body(), &requests); err != nil {
 		var request baseJsonRPC
 		if err = json.Unmarshal(ctx.Body(), &request); err != nil {
+			ext.Error.Set(batchSpan, true)
+			batchSpan.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return sendResponse(ctx, makeErrorResponseJsonRPC([]byte("\"0\""), parseError, "request body could not be decoded: "+err.Error(), nil))
 		}
 		single = true
@@ -127,8 +134,13 @@ func (srv *Server) doBatch(ctx *fiber.Ctx, requests []baseJsonRPC) (responses js
 }
 func (srv *Server) doSingleBatch(ctx *fiber.Ctx, request baseJsonRPC) (response *baseJsonRPC) {
 
+	methodCtx := ctx.UserContext()
 	methodNameOrigin := request.Method
 	method := strings.ToLower(request.Method)
+	batchSpan := otg.SpanFromContext(methodCtx)
+	span := otg.StartSpan(request.Method, otg.ChildOf(batchSpan.Context()))
+	defer span.Finish()
+	methodCtx = otg.ContextWithSpan(methodCtx, span)
 	switch method {
 	case "gameconnections.setsendmessage":
 		return srv.httpGameConnections.setSendMessage(ctx, request)
@@ -149,6 +161,8 @@ func (srv *Server) doSingleBatch(ctx *fiber.Ctx, request baseJsonRPC) (response 
 	case "serversettings.getgameresults":
 		return srv.httpServerSettings.getGameResults(ctx, request)
 	default:
+		ext.Error.Set(span, true)
+		span.SetTag("msg", "invalid method '"+methodNameOrigin+"'")
 		return makeErrorResponseJsonRPC(request.ID, methodNotFoundError, "invalid method '"+methodNameOrigin+"'", nil)
 	}
 }

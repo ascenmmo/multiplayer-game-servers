@@ -32,6 +32,11 @@ func (http *httpGameConnections) WithLog() *httpGameConnections {
 	return http
 }
 
+func (http *httpGameConnections) WithTrace() *httpGameConnections {
+	http.svc.WithTrace()
+	return http
+}
+
 func (http *httpGameConnections) WithErrorHandler(handler ErrorHandler) *httpGameConnections {
 	http.errorHandler = handler
 	return http

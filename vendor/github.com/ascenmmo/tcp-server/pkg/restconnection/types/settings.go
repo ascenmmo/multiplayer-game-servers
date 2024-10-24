@@ -7,8 +7,8 @@ import (
 
 type Settings struct {
 	ServerType          string `json:"serverType"`
-	ServerPort          string `json:"tcpPort"`
-	ConnectionPort      string `json:"serverPort"`
+	ServerPort          string `json:"serverPort"`
+	ConnectionPort      string `json:"connectionPort"`
 	ServerAddress       string `json:"serverAddress"`
 	MaxConnections      int    `json:"maxConnections"`
 	MaxRequestPerSecond int    `json:"maxRequestPerSecond"`

@@ -96,6 +96,16 @@ func (srv *Server) Shutdown() {
 	}
 }
 
+func (srv *Server) WithTrace() *Server {
+	if srv.httpGameConnections != nil {
+		srv.httpGameConnections = srv.GameConnections().WithTrace()
+	}
+	if srv.httpServerSettings != nil {
+		srv.httpServerSettings = srv.ServerSettings().WithTrace()
+	}
+	return srv
+}
+
 func (srv *Server) GameConnections() *httpGameConnections {
 	return srv.httpGameConnections
 }
