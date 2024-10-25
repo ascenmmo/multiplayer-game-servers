@@ -32,8 +32,11 @@ type Server struct {
 }
 
 type ConnectionServer struct {
-	Address    string
-	ServerType string
+	Address        string
+	ConnectionPort string
+	Path           string
+	FullURL        string
+	ServerType     string
 }
 
 func (s *Server) IsExists(ctx context.Context, token string) (bool, error) {
@@ -131,14 +134,26 @@ func (s *Server) IsOwner(ownerID uuid.UUID) bool {
 	return false
 }
 
-func (s *Server) GetConnectionAddress() string {
+func (s *Server) GetConnectionServer() (c ConnectionServer) {
 	raplase := strings.Replace(s.Address, "https://", "", 1)
 	raplase = strings.Replace(raplase, "http://", "", 1)
-	split := strings.Split(raplase, ":")
-	if len(split) == 2 {
-		return split[0] + ":" + s.ConnectionPort
+
+	c.Address = raplase
+	c.ConnectionPort = s.ConnectionPort
+
+	switch s.ServerType {
+	case ServerTypeTCP:
+		c.Path = "/api/v1/rest/gameConnections/"
+	case ServerTypeUDP:
+		c.Path = ""
+	case ServerTypeWebsocket:
+		c.Path = "/api/ws/connect"
 	}
-	return s.Address
+
+	c.ServerType = s.ServerType
+	c.FullURL = c.Address + ":" + c.ConnectionPort + c.Path
+
+	return c
 }
 
 func (s *Server) getRestUrl() string {

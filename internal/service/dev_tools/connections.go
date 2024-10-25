@@ -183,27 +183,13 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 	}
 
 	for _, server := range servers {
-		path := ""
-		switch server.ServerType {
-		case types.ServerTypeTCP:
-			path = "/api/v1/rest/gameConnections/"
-		case types.ServerTypeUDP:
-			path = ""
-		case types.ServerTypeWebsocket:
-			path = "/api/ws/connect"
-		}
-
 		err = server.CreateRoom(ctx, token, config)
 		if err != nil {
 			c.logger.Error().Err(err).Msg("server error create room")
 			continue
 		}
 
-		connectionsServer = append(connectionsServer, types.ConnectionServer{
-			Address:    server.GetConnectionAddress() + path,
-			ServerType: server.ServerType,
-		})
-
+		connectionsServer = append(connectionsServer, server.GetConnectionServer())
 	}
 
 	return connectionsServer, nil

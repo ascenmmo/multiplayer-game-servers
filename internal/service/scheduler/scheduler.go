@@ -2,7 +2,6 @@ package scheduler
 
 import (
 	"context"
-	"fmt"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/storage"
 	tokengenerator "github.com/ascenmmo/token-generator/token_generator"
 	tokentype "github.com/ascenmmo/token-generator/token_type"
@@ -79,11 +78,7 @@ func (s scheduler) getConfigResultsFromServer(ctx context.Context) (err error) {
 
 			err = s.confResultStorage.CreateMany(results)
 			if err != nil {
-				fmt.Println()
-				fmt.Println()
-				fmt.Println("CreateMany", err)
-				fmt.Println()
-				fmt.Println()
+				return err
 			}
 		}
 	}
