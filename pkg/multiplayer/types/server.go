@@ -135,10 +135,7 @@ func (s *Server) IsOwner(ownerID uuid.UUID) bool {
 }
 
 func (s *Server) GetConnectionServer() (c ConnectionServer) {
-	raplase := strings.Replace(s.Address, "https://", "", 1)
-	raplase = strings.Replace(raplase, "http://", "", 1)
-
-	c.Address = raplase
+	c.Address = s.gatSingleAddress()
 	c.ConnectionPort = s.ConnectionPort
 
 	switch s.ServerType {
@@ -154,6 +151,13 @@ func (s *Server) GetConnectionServer() (c ConnectionServer) {
 	c.FullURL = c.Address + ":" + c.ConnectionPort + c.Path
 
 	return c
+}
+
+func (s *Server) gatSingleAddress() string {
+	raplase := strings.Replace(s.Address, "https://", "", 1)
+	raplase = strings.Replace(raplase, "http://", "", 1)
+	split := strings.Split(raplase, ":")
+	return split[0]
 }
 
 func (s *Server) getRestUrl() string {

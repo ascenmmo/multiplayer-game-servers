@@ -2,6 +2,7 @@ package devtools
 
 import (
 	"context"
+	"fmt"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/errors"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/storage"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
@@ -32,38 +33,6 @@ func (c *connections) CreateRoom(ctx context.Context, token string, gameID uuid.
 	if err != nil {
 		return newToken, err
 	}
-
-	//var servers []types.Server
-	//if len(game.Servers) == 0 {
-	//	servers, err = c.serverStorage.FindAllByServerType(storage.DefaultUserID, serverType)
-	//	if err != nil {
-	//		return "", err
-	//	}
-	//} else {
-	//	servers, err = c.serverStorage.FindByIDs(game.Servers)
-	//	if err != nil {
-	//		return "", err
-	//	}
-	//}
-
-	//isCreated := false
-	//serverID := uuid.UUID{}
-	//for _, server := range servers {
-	//	if server.ServerType != serverType {
-	//		continue
-	//	}
-	//	err = server.CreateRoom(ctx, token)
-	//	if err != nil {
-	//		return "", err
-	//	}
-	//	serverID = server.ID
-	//	isCreated = true
-	//	break
-	//}
-	//
-	//if !isCreated {
-	//	return newToken, errors.ErrServerCreatingRoomError
-	//}
 
 	room, err := c.roomsStorage.FindByCreatorID(info.UserID)
 	if err != nil {
@@ -177,6 +146,7 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 		return connectionsServer, err
 	}
 
+	fmt.Println("servers:", servers)
 	config, err := c.gameConfigsStorage.GetConfig(info.GameID)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("game configs not found")
@@ -184,11 +154,10 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 
 	for _, server := range servers {
 		err = server.CreateRoom(ctx, token, config)
-		if err != nil {
+		if err.Error() != errors.ErrRoomIsExists.Error() {
 			c.logger.Error().Err(err).Msg("server error create room")
 			continue
 		}
-
 		connectionsServer = append(connectionsServer, server.GetConnectionServer())
 	}
 
