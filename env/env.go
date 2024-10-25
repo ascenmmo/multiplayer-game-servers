@@ -14,21 +14,21 @@ var (
 )
 
 var (
-	RunUdpServer                 = true
+	RunUdpServer                 = false
 	UdpServerPort                = "8081"
 	UdpServerConnectionPort      = "4500"
 	UdpServerMaxRequestPerSecond = 200
 )
 
 var (
-	RunWebsocketServer                 = true
+	RunWebsocketServer                 = false
 	WebsocketServerPort                = "8082"
 	WebsocketServerConnectionPort      = "4240"
 	WebsocketServerMaxRequestPerSecond = 100
 )
 
 var (
-	RunTcpServer                 = true
+	RunTcpServer                 = false
 	TcpServerPort                = "8083"
 	TcpServerMaxRequestPerSecond = 5
 )
