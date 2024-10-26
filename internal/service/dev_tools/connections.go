@@ -46,7 +46,7 @@ func (c *connections) CreateRoom(ctx context.Context, token string, gameID uuid.
 
 	servers, err := c.serverStorage.FindByIDs(game.Servers)
 	if err != nil {
-		return newToken, errors.ErrServerCreatingRoomOllServesOffError
+		return newToken, errors.ErrServerCreatingRoomAllServesOffError
 	}
 
 	for i := range servers {
@@ -61,7 +61,7 @@ func (c *connections) CreateRoom(ctx context.Context, token string, gameID uuid.
 	}
 
 	if len(room.Servers) == 0 {
-		return newToken, errors.ErrServerCreatingRoomOllServesOffError
+		return newToken, errors.ErrServerCreatingRoomAllServesOffError
 	}
 
 	err = c.roomsStorage.CreateRoom(room)

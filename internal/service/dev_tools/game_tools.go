@@ -173,7 +173,7 @@ func (g *devTools) TurnOnServerInGame(ctx context.Context, token string, serverI
 		return err
 	}
 
-	game.Servers = append(game.Servers, serverID)
+	game.TurnOnServer(serverID)
 
 	err = g.gameStorage.Update(game)
 

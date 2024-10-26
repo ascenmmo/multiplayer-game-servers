@@ -15,6 +15,21 @@ type Game struct {
 	Servers []uuid.UUID `json:"servers" bson:"servers"`
 }
 
+func (g *Game) TurnOnServer(id uuid.UUID) {
+	serverIds := make(map[uuid.UUID]struct{})
+	var uniqServers []uuid.UUID
+	g.Servers = append(g.Servers, id)
+	for _, serverId := range g.Servers {
+		serverIds[serverId] = struct{}{}
+	}
+
+	for key, _ := range serverIds {
+		uniqServers = append(uniqServers, key)
+	}
+
+	g.Servers = uniqServers
+}
+
 func (g *Game) RemoveOwners(id uuid.UUID) {
 	for i, owner := range g.Owners {
 		if owner == id {
