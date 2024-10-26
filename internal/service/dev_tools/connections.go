@@ -150,7 +150,8 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 	}
 
 	for _, server := range servers {
-		err = server.CreateRoom(ctx, token, config)
+		configForServer := config.ConfigForServer(server.ServerType)
+		err = server.CreateRoom(ctx, token, configForServer)
 		if err != nil {
 			if err.Error() != errors.ErrRoomIsExists.Error() {
 				c.logger.Error().Err(err).Msg("server error create room")

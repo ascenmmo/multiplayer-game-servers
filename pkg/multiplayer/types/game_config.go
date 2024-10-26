@@ -37,6 +37,18 @@ type ParamMetadata struct {
 	ValueType  string `json:"value_type" bson:"value_type"`
 }
 
+func (g *GameConfigs) ConfigForServer(serverType string) (configForServer GameConfigs) {
+	configForServer.GameID = g.GameID
+	configForServer.IsExists = g.IsExists
+	configForServer.SortingConfig = g.SortingConfig
+	for _, config := range g.SortingConfig {
+		if config.UseOnServerType == serverType {
+			configForServer.SortingConfig = append(configForServer.SortingConfig, config)
+		}
+	}
+	return configForServer
+}
+
 func (g *GameConfigs) RemoveSortingConfig(name string) {
 	for i, v := range g.SortingConfig {
 		if v.Name == name {
