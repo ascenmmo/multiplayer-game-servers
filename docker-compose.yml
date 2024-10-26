@@ -9,11 +9,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"  # Multiplayer
-#      - "8081:8081"  # UDP Server
-#      - "8082:8082"  # WebSocket Server
-#      - "8083:8083"  # TCP Server
-#      - "4500:4500"  # UDP Connection Port
-#      - "4240:4240"  # WebSocket Connection Port
+      - "8081:8081"  # UDP Server
+      - "8082:8082"  # WebSocket Server
+      - "8083:8083"  # TCP Server
+      - "4500:4500/udp"  # UDP Connection Port
+      - "4240:4240"  # WebSocket Connection Port
 
   mongodb:
     image: mongo:8.0

@@ -21,10 +21,11 @@ const (
 	dataBaseDevelopers      = "developers"
 	developersCollectionKey = "developers"
 
-	dataBaseGame         = "games"
-	gameCollectionKey    = "games"
-	roomsCollectionKey   = "rooms"
-	configsCollectionKey = "configs"
+	dataBaseGame               = "games"
+	gameCollectionKey          = "games"
+	roomsCollectionKey         = "rooms"
+	configsCollectionKey       = "configs"
+	configsResultCollectionKey = "configs_results"
 
 	dataBaseAccess            = "access"
 	accessGameCollectionKey   = "accessGame"

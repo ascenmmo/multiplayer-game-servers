@@ -74,7 +74,7 @@ func (s *gameConfigsResultsStorage) GetResults(gameID uuid.UUID, roomID uuid.UUI
 }
 
 func NewGameConfigsResultsStorage(client *mongo.Client) (GameConfigsResultsStorage, error) {
-	coll := client.Database(dataBaseGame).Collection(roomsCollectionKey)
+	coll := client.Database(dataBaseGame).Collection(configsResultCollectionKey)
 	_, err := coll.Indexes().CreateMany(
 		context.Background(),
 		[]mongo.IndexModel{

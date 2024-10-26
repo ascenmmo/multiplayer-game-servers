@@ -80,6 +80,13 @@ func (s scheduler) getConfigResultsFromServer(ctx context.Context) (err error) {
 			if err != nil {
 				return err
 			}
+
+			for _, result := range results {
+				err := s.roomStorage.Delete(result.RoomID)
+				if err != nil {
+					return err
+				}
+			}
 		}
 	}
 
