@@ -64,9 +64,6 @@ func (s scheduler) getConfigResultsFromServer(ctx context.Context) (err error) {
 		}
 
 		for _, server := range servers {
-			if server.IsActive {
-				continue
-			}
 			results, err := server.GetGameConfigResults(ctx, token)
 			if err != nil {
 				continue
