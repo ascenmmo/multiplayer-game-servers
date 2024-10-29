@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  multiplayer:
+    restart: always
+    container_name: multiplayer
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"  # Multiplayer
+      - "8081:8081"  # UDP Server
+      - "8082:8082"  # WebSocket Server
+      - "8083:8083"  # TCP Server
+      - "4500:4500/udp"  # UDP Connection Port
+      - "4240:4240"  # WebSocket Connection Port
+
+  mongodb:
+    image: mongo:8.0
+    restart: always
+    container_name: mongodb
+    volumes:
+      - ./data/mongo:/data/db
+    env_file:
+      - env/db.env
+    ports:
+      - "27017:27017"
