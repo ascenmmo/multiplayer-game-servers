@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <title>Информация об Игре</title>
     <style>
         body {
@@ -77,6 +78,19 @@
 
         h4 {
             margin: 20px; /* Отступы для заголовков */
+        }
+
+        pre {
+            background: #2e2e2e;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+            margin: 20px;
+        }
+
+
+        code {
+            color: #00ff7f;
         }
 
         .game-config,
@@ -310,10 +324,13 @@
         const renderGameInfo = (game) => {
             gameDetails.innerHTML = `
             <h4>${game.name}</h4>
+
             <div class="player-count">Количество игроков: ${game.count_players}</div>
             <div class="online-player-count">Количество игроков онлайн: ${game.count_online}</div>
 <!--            <div class="description-label">Описание: ${game.description}</div>-->
             <input type="text" class="edit-game-name" id="edit-game-name" value="${game.name}" />
+            <pre><code class="gameID show">gameID: "${game.gameID}"</code></pre>
+
             <button class="save-game" id="save-game">Сохранить изменения</button>
             <button class="game-config" id="game-config">Удаленные процедуры</button>
             <button class="game-annalists" id="game-annalists">Аналитика</button>
