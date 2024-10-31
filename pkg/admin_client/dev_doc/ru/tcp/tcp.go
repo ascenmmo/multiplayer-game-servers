@@ -36,26 +36,6 @@ func GetTCPConnectionsStruct() []types.DocStruct {
   "result": {}
 }`,
 				ResponseBodyInfo: "Ответ указывает на успешное выполнение операции.",
-				ErrorBody: `{
-  "error": "информация об ошибке"
-}`,
-				DocErrorList: []types.DocErrorList{
-					{
-						Name:        "room not found",
-						Description: "Ошибка возникает, если указанная комната не найдена.",
-						Body:        `{"error": "room not found"}`,
-					},
-					{
-						Name:        "room bad value",
-						Description: "Ошибка возникает, если переданы некорректные параметры для сообщения.",
-						Body:        `{"error": "room bad value"}`,
-					},
-					{
-						Name:        "too many connections",
-						Description: "Ошибка возникает, если превышен лимит подключений или сообщений в секунду.",
-						Body:        `{"error": "too many requests"}`,
-					},
-				},
 			},
 			{
 				Title:         "Получение новых сообщений",
@@ -81,26 +61,6 @@ func GetTCPConnectionsStruct() []types.DocStruct {
   }
 }`,
 				ResponseBodyInfo: "Ответ содержит массив новых сообщений от сервера.",
-				ErrorBody: `{
-  "error": "информация об ошибке"
-}`,
-				DocErrorList: []types.DocErrorList{
-					{
-						Name:        "room not found",
-						Description: "Ошибка возникает, если указанная комната не найдена.",
-						Body:        `{"error": "room not found"}`,
-					},
-					{
-						Name:        "room bad value",
-						Description: "Ошибка возникает, если переданы некорректные параметры.",
-						Body:        `{"error": "room bad value"}`,
-					},
-					{
-						Name:        "too many connections",
-						Description: "Ошибка возникает, если превышен лимит подключений или сообщений в секунду.",
-						Body:        `{"error": "too many requests"}`,
-					},
-				},
 			},
 			{
 				Title:         "Удаление пользователя",
@@ -122,26 +82,6 @@ func GetTCPConnectionsStruct() []types.DocStruct {
   "result": {}
 }`,
 				ResponseBodyInfo: "Ответ указывает на успешное выполнение операции.",
-				ErrorBody: `{
-  "error": "информация об ошибке"
-}`,
-				DocErrorList: []types.DocErrorList{
-					{
-						Name:        "room not found",
-						Description: "Ошибка возникает, если указанная комната не найдена.",
-						Body:        `{"error": "room not found"}`,
-					},
-					{
-						Name:        "room bad value",
-						Description: "Ошибка возникает, если переданы некорректные данные для удаления пользователя.",
-						Body:        `{"error": "room bad value"}`,
-					},
-					{
-						Name:        "too many connections",
-						Description: "Ошибка возникает, если превышен лимит подключений или сообщений.",
-						Body:        `{"error": "too many requests"}`,
-					},
-				},
 			},
 		},
 	}

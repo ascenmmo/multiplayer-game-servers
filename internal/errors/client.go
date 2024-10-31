@@ -3,5 +3,6 @@ package errors
 import "errors"
 
 var (
-	ErrClientNickNameNotExists = errors.New("email not exists")
+	ErrClientCreationError = errors.New("error creating client")
+	ErrClientNotFound      = errors.New("error client not found")
 )

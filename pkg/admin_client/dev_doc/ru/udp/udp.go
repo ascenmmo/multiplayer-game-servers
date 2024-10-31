@@ -25,26 +25,6 @@ func GetUPDConnectionsStruct() []types.DocStruct {
 	"data": "данные от других клиентов"
 }`,
 				ResponseBodyInfo: "Ответ содержит данные, полученные от других клиентов, подключённых к той же комнате.",
-				ErrorBody: `{
-	"error": "информация об ошибке"
-}`,
-				DocErrorList: []types.DocErrorList{
-					{
-						Name:        "room not found",
-						Description: "Ошибка возникает, если комната, к которой пытается подключиться клиент, не существует.",
-						Body:        `{"error": "room not found"}`,
-					},
-					{
-						Name:        "room bad value",
-						Description: "Ошибка возникает, если переданы неверные параметры для подключения к комнате.",
-						Body:        `{"error": "room bad value"}`,
-					},
-					{
-						Name:        "too many connections",
-						Description: "Ошибка возникает, если превышено максимальное количество подключений или сообщений в секунду.",
-						Body:        `{"error": "too many requests"}`,
-					},
-				},
 			},
 		},
 	}

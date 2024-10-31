@@ -91,17 +91,17 @@
 <h1>Документация API</h1>
 {{ range . }} <!-- Обработка каждой категории -->
 <div class="accordion">
-    <div class="accordion-title">{{ .CategoryTitle }}</div> <!-- Заголовок категории -->
+    <div class="accordion-title">{{ .CategoryTitle }}</div>
     <div class="accordion-content">
         {{ range .DocStruct }} <!-- Обработка каждого документа в категории -->
         <div class="accordion">
-            <div class="accordion-title">{{ .Title }}</div> <!-- Заголовок документа -->
+            <div class="accordion-title">{{ .Title }}</div>
             <div class="accordion-content">
                 <p>{{ .Info }}</p>
-                {{ if .DockLists }} <!-- Проверяем наличие DockLists -->
+                {{ if .DockLists }}
                 <h5>Списки структур документа:</h5>
-                {{ range .DockLists }} <!-- Обработка списка структур документа -->
-                <h1>{{ .Title }}</h1>
+                {{ range .DockLists }}
+                <h3>{{ .Title }}</h3>
                 <p>{{ .Description }}</p>
                 <h5>Путь запроса:</h5>
                 <pre>{{ .RequestPath }}</pre>
@@ -117,20 +117,27 @@
                 <pre>{{ .ResponseBody }}</pre>
                 <h5>Информация о ответе:</h5>
                 <p>{{ .ResponseBodyInfo }}</p>
-                <h5>Ошибки:</h5>
-                <pre>{{ .ErrorBody }}</pre>
-                <h5>Список ошибок:</h5>
-                {{ range .DocErrorList }}
-                <h6>{{ .Name }}</h6>
-                <p>{{ .Description }}</p>
-                <pre>{{ .Body }}</pre>
-                {{ end }}
                 {{ end }}
                 {{ else }}
                 <p>Нет структур документа.</p>
                 {{ end }}
             </div>
         </div>
+        {{ end }}
+
+        {{ if .DocErrorList }}
+        <h5>Список ошибок:</h5>
+        {{ range .DocErrorList }}
+        <div class="accordion">
+            <div class="accordion-title">{{ .Name }}</div>
+            <div class="accordion-content">
+                <p>{{ .Description }}</p>
+                <pre>{{ .Body }}</pre>
+            </div>
+        </div>
+        {{ end }}
+        {{ else }}
+        <p>Ошибки не найдены.</p>
         {{ end }}
     </div>
 </div>
