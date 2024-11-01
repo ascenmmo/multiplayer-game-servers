@@ -13,11 +13,13 @@ func GetCategory() []types.DocCategory {
 	client := types.DocCategory{
 		CategoryTitle: "Клиенты",
 		DocStruct:     ruclient.GetClientStruct(),
+		DocErrorList:  ruclient.ClientErrors(),
 	}
 
 	connection := types.DocCategory{
 		CategoryTitle: "Создание подключений",
 		DocStruct:     ruconnections.GetConnectionsStruct(),
+		DocErrorList:  ruconnections.ConnectionErrors(),
 	}
 
 	connectionService := udp.GetUPDConnectionsStruct()
@@ -27,6 +29,7 @@ func GetCategory() []types.DocCategory {
 	connectionServiceCategory := types.DocCategory{
 		CategoryTitle: "Подключение к сервисам",
 		DocStruct:     connectionService,
+		DocErrorList:  tcp.TcpErrors(),
 	}
 
 	data := []types.DocCategory{

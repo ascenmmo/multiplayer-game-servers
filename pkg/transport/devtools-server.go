@@ -14,6 +14,7 @@ type serverDevTools struct {
 	gameAddOwner        DevToolsGameAddOwner
 	gameRemoveUser      DevToolsGameRemoveUser
 	updateGame          DevToolsUpdateGame
+	deleteGame          DevToolsDeleteGame
 	getMyGames          DevToolsGetMyGames
 	getGameByGameID     DevToolsGetGameByGameID
 	turnOnServerInGame  DevToolsTurnOnServerInGame
@@ -26,6 +27,7 @@ type MiddlewareSetDevTools interface {
 	WrapGameAddOwner(m MiddlewareDevToolsGameAddOwner)
 	WrapGameRemoveUser(m MiddlewareDevToolsGameRemoveUser)
 	WrapUpdateGame(m MiddlewareDevToolsUpdateGame)
+	WrapDeleteGame(m MiddlewareDevToolsDeleteGame)
 	WrapGetMyGames(m MiddlewareDevToolsGetMyGames)
 	WrapGetGameByGameID(m MiddlewareDevToolsGetGameByGameID)
 	WrapTurnOnServerInGame(m MiddlewareDevToolsTurnOnServerInGame)
@@ -39,6 +41,7 @@ type MiddlewareSetDevTools interface {
 func newServerDevTools(svc multiplayer.DevTools) *serverDevTools {
 	return &serverDevTools{
 		createGame:          svc.CreateGame,
+		deleteGame:          svc.DeleteGame,
 		gameAddOwner:        svc.GameAddOwner,
 		gameRemoveUser:      svc.GameRemoveUser,
 		getGameByGameID:     svc.GetGameByGameID,
@@ -56,6 +59,7 @@ func (srv *serverDevTools) Wrap(m MiddlewareDevTools) {
 	srv.gameAddOwner = srv.svc.GameAddOwner
 	srv.gameRemoveUser = srv.svc.GameRemoveUser
 	srv.updateGame = srv.svc.UpdateGame
+	srv.deleteGame = srv.svc.DeleteGame
 	srv.getMyGames = srv.svc.GetMyGames
 	srv.getGameByGameID = srv.svc.GetGameByGameID
 	srv.turnOnServerInGame = srv.svc.TurnOnServerInGame
@@ -76,6 +80,10 @@ func (srv *serverDevTools) GameRemoveUser(ctx context.Context, token string, gam
 
 func (srv *serverDevTools) UpdateGame(ctx context.Context, token string, gameID uuid.UUID, newGame types.Game) (id uuid.UUID, err error) {
 	return srv.updateGame(ctx, token, gameID, newGame)
+}
+
+func (srv *serverDevTools) DeleteGame(ctx context.Context, token string, gameID uuid.UUID) (err error) {
+	return srv.deleteGame(ctx, token, gameID)
 }
 
 func (srv *serverDevTools) GetMyGames(ctx context.Context, token string) (games []types.Game, err error) {
@@ -108,6 +116,10 @@ func (srv *serverDevTools) WrapGameRemoveUser(m MiddlewareDevToolsGameRemoveUser
 
 func (srv *serverDevTools) WrapUpdateGame(m MiddlewareDevToolsUpdateGame) {
 	srv.updateGame = m(srv.updateGame)
+}
+
+func (srv *serverDevTools) WrapDeleteGame(m MiddlewareDevToolsDeleteGame) {
+	srv.deleteGame = m(srv.deleteGame)
 }
 
 func (srv *serverDevTools) WrapGetMyGames(m MiddlewareDevToolsGetMyGames) {

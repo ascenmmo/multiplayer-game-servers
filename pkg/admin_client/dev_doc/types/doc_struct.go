@@ -1,8 +1,9 @@
 package types
 
 type DocCategory struct {
-	CategoryTitle string `json:"title"`
-	DocStruct     []DocStruct
+	CategoryTitle string         `json:"title"`
+	DocStruct     []DocStruct    `json:"doc_struct"`
+	DocErrorList  []DocErrorList `json:"doc_error_list"`
 }
 
 type DocStruct struct {
@@ -10,6 +11,7 @@ type DocStruct struct {
 	Info      string          `json:"info"`
 	DockLists []DocStructList `json:"dock_lists"`
 }
+
 type DocStructList struct {
 	Title            string `json:"title"`
 	Description      string `json:"description"`
@@ -20,8 +22,6 @@ type DocStructList struct {
 	RequestBodyInfo  string `json:"RequestBodyInfo"`
 	ResponseBody     string `json:"ResponseBody"`
 	ResponseBodyInfo string `json:"ResponseBodyInfo"`
-	ErrorBody        string `bson:"errorBody"`
-	DocErrorList     []DocErrorList
 }
 
 type DocErrorList struct {

@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <title>Конфигурация Игры</title>
     <style>
         /* Основные стили */
         body {
             font-family: 'Arial', sans-serif;
-            margin: 0;
             padding: 0;
             background-color: #1c1c1c;
             color: #fff;
             line-height: 1.6;
+            margin-bottom: 100px;
         }
 
         header {
@@ -67,6 +68,7 @@
             width: 30%;
             padding-right: 20px;
         }
+
 
         #config-description {
             width: 70%;
@@ -133,11 +135,40 @@
 
         .form-group input,
         .form-group select {
-            width: 100%;
+            width: calc(20%);
             padding: 10px;
             border: 1px solid #00ff7f;
             border-radius: 5px;
             background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            margin-left: 20px;
+            margin-right: 20px;
+            font-size: 12px;
+        }
+
+        input[type="text"] {
+            width: calc(80%);
+            padding: 10px;
+            border: 1px solid #00ff7f;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        input[type="text"]::placeholder {
+            color: #ccc; /* Цвет плейсхолдера */
+        }
+
+        footer {
+            position: fixed; /* Фиксируем футер внизу */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
         }
     </style>
 </head>
@@ -147,6 +178,7 @@
     <nav>
         <a href="/developer/doc">Документация</a>
         <a href="/admin/info">Информация о разработчике</a>
+        <a href="/admin/games">Мои игры</a>
     </nav>
 </header>
 
@@ -174,11 +206,10 @@
             <div class="form-group">
                 <label for="run_func">Выберите действие:</label>
                 <select id="run_func">
-                    <option value="btn1">Btn1</option>
-                    <option value="btn2">Btn2</option>
-                    <option value="btn3">Btn3</option>
-                    <option value="btn4">Btn4</option>
-                    <option value="btn5">Btn5</option>
+                    <option value="IncrementResult">Добовляем к полю +1 {IncrementResult}</option>
+                    <option value="DecrementResult">Удаляем из поля -1 {DecrementResult}</option>
+                    <option value="AdditionDataResultToOld">Суммируем результаты oldData + newData {AdditionDataResultToOld}</option>
+                    <option value="SubtractDataResultToOld">Вычитаем результаты oldData - newData {SubtractDataResultToOld}</option>
                 </select>
             </div>
 

@@ -15,6 +15,7 @@ type GameStorage interface {
 	FindByName(name string) (game types.Game, err error)
 	FindByOwnerID(ownerID uuid.UUID) (game []types.Game, err error)
 	Update(game types.Game) (err error)
+	DeleteGame(gameID uuid.UUID) (err error)
 }
 
 type gameStorage struct {
@@ -98,5 +99,18 @@ func (d *gameStorage) Update(game types.Game) (err error) {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (d *gameStorage) DeleteGame(gameID uuid.UUID) (err error) {
+	filter := bson.M{
+		"_id": gameID,
+	}
+
+	_, err = d.collection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

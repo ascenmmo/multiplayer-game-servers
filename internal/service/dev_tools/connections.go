@@ -30,7 +30,7 @@ func (c *connections) CreateRoom(ctx context.Context, token string, gameID uuid.
 
 	game, err := c.gameStorage.FindByID(gameID)
 	if err != nil {
-		return newToken, err
+		return newToken, errors.ErrGameNotFound
 	}
 
 	room, err := c.roomsStorage.FindByCreatorID(info.UserID)
@@ -89,7 +89,7 @@ func (c *connections) GetRoomsAll(ctx context.Context, token string, gameID uuid
 
 	rooms, err = c.roomsStorage.FindAll(gameID)
 	if err != nil {
-		return rooms, err
+		return rooms, errors.ErrRoomNoFound
 	}
 
 	return rooms, nil
@@ -103,14 +103,14 @@ func (c *connections) JoinRoomByID(ctx context.Context, token string, gameID uui
 
 	room, err := c.roomsStorage.FindByID(roomID)
 	if err != nil {
-		return newToken, err
+		return newToken, errors.ErrRoomNoFound
 	}
 
 	room.Connections = append(room.Connections, info.UserID)
 
 	err = c.roomsStorage.Update(room)
 	if err != nil {
-		return "", err
+		return "", errors.ErrRoomNoFound
 	}
 
 	generateToken, err := c.token.GenerateToken(tokentype.Info{
@@ -136,12 +136,12 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 
 	room, err := c.roomsStorage.FindByID(info.RoomID)
 	if err != nil {
-		return []types.ConnectionServer{}, err
+		return []types.ConnectionServer{}, errors.ErrRoomNoFound
 	}
 
 	servers, err := c.serverStorage.FindByIDs(room.Servers)
 	if err != nil {
-		return []types.ConnectionServer{}, err
+		return []types.ConnectionServer{}, errors.ErrServerCreatingRoomAllServesOffError
 	}
 
 	config, err := c.gameConfigsStorage.GetConfig(info.GameID)

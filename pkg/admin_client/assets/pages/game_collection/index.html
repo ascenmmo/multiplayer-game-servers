@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <title>Коллекция Игр</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            margin: 0;
             padding: 0;
             background-color: #1c1c1c;
             color: #fff;
             line-height: 1.6;
+            margin-bottom: 100px;
         }
 
         header {
@@ -102,6 +103,16 @@
             transform: scale(1.05);
         }
 
+        footer {
+            position: fixed; /* Фиксируем футер внизу */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
     </style>
 </head>
 <body>
@@ -121,6 +132,7 @@
     <div class="button-container">
         <button id="add-game">Добавить игру</button>
         <button id="refresh-list">Обновить список</button>
+        <button id="delete-game">Удалить игру</button>
     </div>
     <p id="error-message" style="display:none;">Игры не найдены.</p>
 </section>
@@ -135,6 +147,7 @@
         const errorMessage = document.getElementById('error-message');
         const addGameButton = document.getElementById('add-game');
         const refreshListButton = document.getElementById('refresh-list');
+        const deleteGameButton = document.getElementById('delete-game');
         const developerInfoButton = document.getElementById('developer-info');
 
         // Определяем базовый URL для бэкенда
@@ -227,6 +240,46 @@
             }
         };
 
+        const deleteGameByID = async () => {
+            const deletingID = prompt('Введите gameID\n\n' +
+                'Помните что после удаления игры все пользователи автоматически удаляться\n' +
+                'Все информация об игре будет удаленна безвозвратно');
+
+            if (!deletingID) {
+                return
+            }
+
+            try {
+                const response = await fetch(`${backendUrl}/deleteGame`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Token': getCookie('token') // Получаем токен из куки
+                    },
+                    body: JSON.stringify({
+                        id: 1,
+                        jsonrpc: "2.0",
+                        params: {
+                            gameID: deletingID
+                        }
+                    })
+                });
+
+                if (!response.ok) throw new Error('Ошибка сети');
+
+                const data = await response.json();
+                    if (data.error) {
+                        handleApiError(data.error,fetchGames)
+                    }
+                    gamesBox.innerHTML = '';
+                    errorMessage.style.display = 'block';
+            } catch (error) {
+                console.error('Ошибка:', error);
+                errorMessage.style.display = 'block';
+            }
+            fetchGames();
+        };
+
         const renderGames = (games) => {
             gamesBox.innerHTML = ''; // Очищаем контейнер перед добавлением новых игр
             games.forEach(game => {
@@ -255,6 +308,7 @@
         };
 
         refreshListButton.onclick = fetchGames;
+        deleteGameButton.onclick = deleteGameByID;
 
         fetchGames();
 

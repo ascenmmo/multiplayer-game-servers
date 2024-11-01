@@ -2,6 +2,7 @@ package registration
 
 import (
 	"context"
+	"github.com/ascenmmo/multiplayer-game-servers/internal/errors"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/storage"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	tokengenerator "github.com/ascenmmo/token-generator/token_generator"
@@ -27,18 +28,18 @@ func (c *clientService) SignUp(ctx context.Context, client types.Client) (token 
 
 	game, err := c.gameStorage.FindByID(client.GameID)
 	if err != nil {
-		return
+		return token, refresh, errors.ErrGameNotFound
 	}
 
 	game.CountPlayers += 1
 	err = c.gameStorage.Update(game)
 	if err != nil {
-		return
+		return token, refresh, errors.ErrGameNotFound
 	}
 
 	err = c.clientStorage.CreateClient(client)
 	if err != nil {
-		return
+		return token, refresh, errors.ErrClientCreationError
 	}
 
 	token, err = c.token.GenerateToken(tokentype.Info{
@@ -66,12 +67,12 @@ func (c *clientService) SignIn(ctx context.Context, client types.Client) (token,
 	if client.Nickname != "" {
 		client, err = c.clientStorage.FindByNicknameAndPassword(client.GameID, client.Nickname, client.Password)
 		if err != nil {
-			return
+			return token, refresh, errors.ErrClientNotFound
 		}
 	} else {
 		client, err = c.clientStorage.FindByEmailAndPassword(client.GameID, client.Email, client.Password)
 		if err != nil {
-			return
+			return token, refresh, errors.ErrClientNotFound
 		}
 	}
 

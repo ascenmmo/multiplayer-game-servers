@@ -75,6 +75,79 @@ paths:
                                         jsonrpc:
                                             type: string
                                             example: "2.0"
+    /api/v1/devTools/deleteGame:
+        post:
+            tags:
+                - DevTools
+            summary: server deleteGame
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsDeleteGame'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsDeleteGame'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
     /api/v1/devTools/gameAddOwner:
         post:
             tags:
@@ -666,12 +739,12 @@ paths:
             summary: server refreshToken
             parameters:
                 - in: header
-                  name: RefreshToken
+                  name: Token
                   required: true
                   schema:
                     type: string
                 - in: header
-                  name: Token
+                  name: RefreshToken
                   required: true
                   schema:
                     type: string
@@ -2167,6 +2240,12 @@ components:
             properties:
                 game:
                     $ref: '#/components/schemas/types.Game'
+        requestDevToolsDeleteGame:
+            type: object
+            properties:
+                gameID:
+                    type: string
+                    format: uuid
         requestDevToolsGameAddOwner:
             type: object
             properties:
@@ -2332,6 +2411,8 @@ components:
                 id:
                     type: string
                     format: uuid
+        responseDevToolsDeleteGame:
+            type: object
         responseDevToolsGameAddOwner:
             type: object
         responseDevToolsGameConfigsCreateOrUpdateConfig:

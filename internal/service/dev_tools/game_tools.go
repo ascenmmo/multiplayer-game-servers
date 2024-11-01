@@ -125,6 +125,24 @@ func (g *devTools) UpdateGame(ctx context.Context, token string, gameID uuid.UUI
 	return game.ID, nil
 }
 
+func (g *devTools) DeleteGame(ctx context.Context, token string, gameID uuid.UUID) (err error) {
+	info, err := g.token.ParseToken(token)
+	if err != nil {
+		return err
+	}
+
+	err = g.accessGame.RemoveGame(gameID, info.UserID)
+	if err != nil {
+		return err
+	}
+
+	err = g.gameStorage.DeleteGame(gameID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (g *devTools) GetMyGames(ctx context.Context, token string) (games []types.Game, err error) {
 	info, err := g.token.ParseToken(token)
 	if err != nil {

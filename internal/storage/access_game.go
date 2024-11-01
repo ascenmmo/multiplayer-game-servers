@@ -15,6 +15,7 @@ type AccessGameStorage interface {
 	FindByGameID(gameID uuid.UUID) (accessGame types.AccessGame, err error)
 	FindByOwnerID(ownerID uuid.UUID) (accessGame []types.AccessGame, err error)
 	Update(accessGame types.AccessGame) (err error)
+	RemoveByGameID(gameID uuid.UUID, creatorID uuid.UUID) (err error)
 }
 
 type accessGameStorage struct {
@@ -96,5 +97,15 @@ func (d *accessGameStorage) Update(accessGame types.AccessGame) (err error) {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (d *accessGameStorage) RemoveByGameID(gameID uuid.UUID, creatorID uuid.UUID) (err error) {
+	filter := bson.M{"gameID": gameID, "creator_id": creatorID}
+	_, err = d.collection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

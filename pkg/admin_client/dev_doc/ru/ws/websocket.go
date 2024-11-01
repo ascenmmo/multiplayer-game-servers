@@ -27,26 +27,6 @@ func GetWsConnectionsStruct() []types.DocStruct {
 	"data": "данные от других клиентов"
 }`,
 				ResponseBodyInfo: "Ответ содержит данные, полученные от других игровых клиентов, подключённых к той же игровой комнате.",
-				ErrorBody: `{
-	"error": "информация об ошибке"
-}`,
-				DocErrorList: []types.DocErrorList{
-					{
-						Name:        "room not found",
-						Description: "Ошибка возникает, если игровая комната, к которой пытается подключиться клиент, не существует.",
-						Body:        `{"error": "room not found"}`,
-					},
-					{
-						Name:        "room bad value",
-						Description: "Ошибка возникает, если были переданы неверные параметры для подключения к игровой комнате.",
-						Body:        `{"error": "room bad value"}`,
-					},
-					{
-						Name:        "too many connections",
-						Description: "Ошибка возникает, если превышен лимит подключений или сообщений в секунду (максимум 200).",
-						Body:        `{"error": "too many requests"}`,
-					},
-				},
 			},
 		},
 	}

@@ -79,6 +79,19 @@ func (m metricsDevTools) UpdateGame(ctx context.Context, token string, gameID uu
 	return m.next.UpdateGame(ctx, token, gameID, newGame)
 }
 
+func (m metricsDevTools) DeleteGame(ctx context.Context, token string, gameID uuid.UUID) (err error) {
+
+	defer func(begin time.Time) {
+		m.requestLatency.With("method", "deleteGame", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	defer m.requestCount.With("method", "deleteGame", "success", fmt.Sprint(err == nil)).Add(1)
+
+	m.requestCountAll.With("method", "deleteGame").Add(1)
+
+	return m.next.DeleteGame(ctx, token, gameID)
+}
+
 func (m metricsDevTools) GetMyGames(ctx context.Context, token string) (games []types.Game, err error) {
 
 	defer func(begin time.Time) {
