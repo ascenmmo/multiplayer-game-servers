@@ -137,15 +137,15 @@ func (http *httpDevToolsClient) refreshToken(ctx *fiber.Ctx, requestBase baseJso
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
-	if _token := string(ctx.Request().Header.Peek("Token")); _token != "" {
-		var token string
-		token = _token
-		request.Token = token
-	}
 	if _refresh := string(ctx.Request().Header.Peek("RefreshToken")); _refresh != "" {
 		var refresh string
 		refresh = _refresh
 		request.Refresh = refresh
+	}
+	if _token := string(ctx.Request().Header.Peek("Token")); _token != "" {
+		var token string
+		token = _token
+		request.Token = token
 	}
 
 	var response responseDevToolsClientRefreshToken

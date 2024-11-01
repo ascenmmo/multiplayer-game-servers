@@ -69,6 +69,7 @@
             padding-right: 20px;
         }
 
+
         #config-description {
             width: 70%;
             border-left: 1px solid #00ff7f;
@@ -134,11 +135,30 @@
 
         .form-group input,
         .form-group select {
-            width: 100%;
+            width: calc(20%);
             padding: 10px;
             border: 1px solid #00ff7f;
             border-radius: 5px;
             background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            margin-left: 20px;
+            margin-right: 20px;
+            font-size: 12px;
+        }
+
+        input[type="text"] {
+            width: calc(80%);
+            padding: 10px;
+            border: 1px solid #00ff7f;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        input[type="text"]::placeholder {
+            color: #ccc; /* Цвет плейсхолдера */
         }
 
         footer {
@@ -186,11 +206,10 @@
             <div class="form-group">
                 <label for="run_func">Выберите действие:</label>
                 <select id="run_func">
-                    <option value="btn1">Btn1</option>
-                    <option value="btn2">Btn2</option>
-                    <option value="btn3">Btn3</option>
-                    <option value="btn4">Btn4</option>
-                    <option value="btn5">Btn5</option>
+                    <option value="IncrementResult">Добовляем к полю +1 {IncrementResult}</option>
+                    <option value="DecrementResult">Удаляем из поля -1 {DecrementResult}</option>
+                    <option value="AdditionDataResultToOld">Суммируем результаты oldData + newData {AdditionDataResultToOld}</option>
+                    <option value="SubtractDataResultToOld">Вычитаем результаты oldData - newData {SubtractDataResultToOld}</option>
                 </select>
             </div>
 

@@ -64,12 +64,12 @@ func (g *gameConfigs) GetGameConfig(ctx context.Context, token string, gameID uu
 
 	err = g.accessGame.GetOwnerAccess(gameID, info.UserID)
 	if err != nil {
-		return configs, err
+		return configs, errors.ErrAccessDenied
 	}
 
 	configs, err = g.gameConfigsStorage.GetConfig(gameID)
 	if err != nil {
-		return configs, err
+		return configs, errors.ErrGameConfigNotFound
 	}
 
 	return configs, nil
@@ -83,18 +83,18 @@ func (g *gameConfigs) GetGameResultConfigPreview(ctx context.Context, token stri
 
 	err = g.accessGame.GetOwnerAccess(gameID, info.UserID)
 	if err != nil {
-		return gameResult, err
-	}
-
-	configs, err := g.gameConfigsStorage.GetConfig(gameID)
-	if err != nil {
-		return gameResult, err
+		return gameResult, errors.ErrAccessDenied
 	}
 
 	gameResult.GameID = gameID
 	gameResult.RoomID = uuid.New()
+	gameResult.Result = make(map[string]interface{})
 
-	gameResult.Result = make(map[string]interface{}, len(configs.SortingConfig))
+	configs, err := g.gameConfigsStorage.GetConfig(gameID)
+	if err != nil {
+		gameResult.Result["error"] = "Game has no configs"
+		return gameResult, nil
+	}
 
 	for _, v := range configs.SortingConfig {
 		d := strings.ToLower(v.ResultType)

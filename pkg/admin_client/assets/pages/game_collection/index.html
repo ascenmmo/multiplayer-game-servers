@@ -132,6 +132,7 @@
     <div class="button-container">
         <button id="add-game">Добавить игру</button>
         <button id="refresh-list">Обновить список</button>
+        <button id="delete-game">Удалить игру</button>
     </div>
     <p id="error-message" style="display:none;">Игры не найдены.</p>
 </section>
@@ -146,6 +147,7 @@
         const errorMessage = document.getElementById('error-message');
         const addGameButton = document.getElementById('add-game');
         const refreshListButton = document.getElementById('refresh-list');
+        const deleteGameButton = document.getElementById('delete-game');
         const developerInfoButton = document.getElementById('developer-info');
 
         // Определяем базовый URL для бэкенда
@@ -238,6 +240,46 @@
             }
         };
 
+        const deleteGameByID = async () => {
+            const deletingID = prompt('Введите gameID\n\n' +
+                'Помните что после удаления игры все пользователи автоматически удаляться\n' +
+                'Все информация об игре будет удаленна безвозвратно');
+
+            if (!deletingID) {
+                return
+            }
+
+            try {
+                const response = await fetch(`${backendUrl}/deleteGame`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Token': getCookie('token') // Получаем токен из куки
+                    },
+                    body: JSON.stringify({
+                        id: 1,
+                        jsonrpc: "2.0",
+                        params: {
+                            gameID: deletingID
+                        }
+                    })
+                });
+
+                if (!response.ok) throw new Error('Ошибка сети');
+
+                const data = await response.json();
+                    if (data.error) {
+                        handleApiError(data.error,fetchGames)
+                    }
+                    gamesBox.innerHTML = '';
+                    errorMessage.style.display = 'block';
+            } catch (error) {
+                console.error('Ошибка:', error);
+                errorMessage.style.display = 'block';
+            }
+            fetchGames();
+        };
+
         const renderGames = (games) => {
             gamesBox.innerHTML = ''; // Очищаем контейнер перед добавлением новых игр
             games.forEach(game => {
@@ -266,6 +308,7 @@
         };
 
         refreshListButton.onclick = fetchGames;
+        deleteGameButton.onclick = deleteGameByID;
 
         fetchGames();
 

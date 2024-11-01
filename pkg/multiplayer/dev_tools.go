@@ -31,6 +31,9 @@ type DevTools interface {
 	// @tg summary=`server updateGame`
 	UpdateGame(ctx context.Context, token string, gameID uuid.UUID, newGame types.Game) (id uuid.UUID, err error)
 	// @tg http-headers=token|Token
+	// @tg summary=`server deleteGame`
+	DeleteGame(ctx context.Context, token string, gameID uuid.UUID) (err error)
+	// @tg http-headers=token|Token
 	// @tg summary=`server getMyGames`
 	GetMyGames(ctx context.Context, token string) (games []types.Game, err error)
 	// @tg http-headers=token|Token

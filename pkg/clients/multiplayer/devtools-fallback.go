@@ -6,6 +6,7 @@ type fallbackDevTools interface {
 	GameAddOwner(err error) bool
 	GameRemoveUser(err error) bool
 	UpdateGame(err error) bool
+	DeleteGame(err error) bool
 	GetMyGames(err error) bool
 	GetGameByGameID(err error) bool
 	TurnOnServerInGame(err error) bool

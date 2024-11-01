@@ -18,6 +18,7 @@ type retDevToolsCreateGame = func(id uuid.UUID, err error)
 type retDevToolsGameAddOwner = func(err error)
 type retDevToolsGameRemoveUser = func(err error)
 type retDevToolsUpdateGame = func(id uuid.UUID, err error)
+type retDevToolsDeleteGame = func(err error)
 type retDevToolsGetMyGames = func(games []types.Game, err error)
 type retDevToolsGetGameByGameID = func(game types.Game, err error)
 type retDevToolsTurnOnServerInGame = func(err error)
@@ -260,6 +261,65 @@ func (cli *ClientDevTools) ReqUpdateGame(ctx context.Context, callback retDevToo
 				}
 			}
 			callback(response.Id, cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response))
+		}
+	}
+	return
+}
+
+func (cli *ClientDevTools) DeleteGame(ctx context.Context, token string, gameID uuid.UUID) (err error) {
+
+	request := requestDevToolsDeleteGame{
+		GameID: gameID,
+		Token:  token,
+	}
+	var response responseDevToolsDeleteGame
+	var rpcResponse *jsonrpc.ResponseRPC
+	cacheKey, _ := hasher.Hash(request)
+	rpcResponse, err = cli.rpc.Call(ctx, "devtools.deletegame", request)
+	var fallbackCheck func(error) bool
+	if cli.fallbackDevTools != nil {
+		fallbackCheck = cli.fallbackDevTools.DeleteGame
+	}
+	if rpcResponse != nil && rpcResponse.Error != nil {
+		if cli.errorDecoder != nil {
+			err = cli.errorDecoder(rpcResponse.Error.Raw())
+		} else {
+			err = fmt.Errorf(rpcResponse.Error.Message)
+		}
+	}
+	if err = cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response); err != nil {
+		return
+	}
+	return err
+}
+
+func (cli *ClientDevTools) ReqDeleteGame(ctx context.Context, callback retDevToolsDeleteGame, token string, gameID uuid.UUID) (request RequestRPC) {
+
+	request = RequestRPC{rpcRequest: &jsonrpc.RequestRPC{
+		ID:      jsonrpc.NewID(),
+		JSONRPC: jsonrpc.Version,
+		Method:  "devtools.deletegame",
+		Params: requestDevToolsDeleteGame{
+			GameID: gameID,
+			Token:  token,
+		},
+	}}
+	if callback != nil {
+		var response responseDevToolsDeleteGame
+		request.retHandler = func(err error, rpcResponse *jsonrpc.ResponseRPC) {
+			cacheKey, _ := hasher.Hash(request.rpcRequest.Params)
+			var fallbackCheck func(error) bool
+			if cli.fallbackDevTools != nil {
+				fallbackCheck = cli.fallbackDevTools.DeleteGame
+			}
+			if rpcResponse != nil && rpcResponse.Error != nil {
+				if cli.errorDecoder != nil {
+					err = cli.errorDecoder(rpcResponse.Error.Raw())
+				} else {
+					err = fmt.Errorf(rpcResponse.Error.Message)
+				}
+			}
+			callback(cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response))
 		}
 	}
 	return

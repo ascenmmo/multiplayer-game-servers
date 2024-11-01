@@ -150,6 +150,8 @@ func (srv *Server) doSingleBatch(ctx *fiber.Ctx, request baseJsonRPC) (response 
 		return srv.httpDevTools.gameRemoveUser(ctx, request)
 	case "devtools.updategame":
 		return srv.httpDevTools.updateGame(ctx, request)
+	case "devtools.deletegame":
+		return srv.httpDevTools.deleteGame(ctx, request)
 	case "devtools.getmygames":
 		return srv.httpDevTools.getMyGames(ctx, request)
 	case "devtools.getgamebygameid":

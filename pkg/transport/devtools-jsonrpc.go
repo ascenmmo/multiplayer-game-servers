@@ -238,6 +238,63 @@ func (http *httpDevTools) updateGame(ctx *fiber.Ctx, requestBase baseJsonRPC) (r
 	}
 	return
 }
+func (http *httpDevTools) serveDeleteGame(ctx *fiber.Ctx) (err error) {
+	return http.serveMethod(ctx, "deletegame", http.deleteGame)
+}
+func (http *httpDevTools) deleteGame(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
+
+	var err error
+	var request requestDevToolsDeleteGame
+
+	methodCtx := ctx.UserContext()
+	span := otg.SpanFromContext(methodCtx)
+	span.SetTag("method", "deleteGame")
+
+	if requestBase.Params != nil {
+		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
+			ext.Error.Set(span, true)
+			span.SetTag("msg", "request body could not be decoded: "+err.Error())
+			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
+		}
+	}
+	if requestBase.Version != Version {
+		ext.Error.Set(span, true)
+		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
+		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
+	}
+
+	if _token := string(ctx.Request().Header.Peek("Token")); _token != "" {
+		var token string
+		token = _token
+		request.Token = token
+	}
+
+	var response responseDevToolsDeleteGame
+	err = http.svc.DeleteGame(methodCtx, request.Token, request.GameID)
+	if err != nil {
+		if http.errorHandler != nil {
+			err = http.errorHandler(err)
+		}
+		ext.Error.Set(span, true)
+		span.SetTag("msg", err)
+		span.SetTag("errData", toString(err))
+		code := internalError
+		if errCoder, ok := err.(withErrorCode); ok {
+			code = errCoder.Code()
+		}
+		return makeErrorResponseJsonRPC(requestBase.ID, code, err.Error(), err)
+	}
+	responseBase = &baseJsonRPC{
+		ID:      requestBase.ID,
+		Version: Version,
+	}
+	if responseBase.Result, err = json.Marshal(response); err != nil {
+		ext.Error.Set(span, true)
+		span.SetTag("msg", "response body could not be encoded: "+err.Error())
+		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
+	}
+	return
+}
 func (http *httpDevTools) serveGetMyGames(ctx *fiber.Ctx) (err error) {
 	return http.serveMethod(ctx, "getmygames", http.getMyGames)
 }
@@ -589,6 +646,8 @@ func (http *httpDevTools) doSingleBatch(ctx *fiber.Ctx, request baseJsonRPC) (re
 		return http.gameRemoveUser(ctx, request)
 	case "updategame":
 		return http.updateGame(ctx, request)
+	case "deletegame":
+		return http.deleteGame(ctx, request)
 	case "getmygames":
 		return http.getMyGames(ctx, request)
 	case "getgamebygameid":

@@ -113,6 +113,28 @@ func (m loggerDevTools) UpdateGame(ctx context.Context, token string, gameID uui
 	return m.next.UpdateGame(ctx, token, gameID, newGame)
 }
 
+func (m loggerDevTools) DeleteGame(ctx context.Context, token string, gameID uuid.UUID) (err error) {
+	logger := log.Ctx(ctx).With().Str("service", "DevTools").Str("method", "deleteGame").Logger()
+	defer func(begin time.Time) {
+		logHandle := func(ev *zerolog.Event) {
+			fields := map[string]interface{}{
+				"request": viewer.Sprintf("%+v", requestDevToolsDeleteGame{
+					GameID: gameID,
+					Token:  token,
+				}),
+				"response": viewer.Sprintf("%+v", responseDevToolsDeleteGame{}),
+			}
+			ev.Fields(fields).Str("took", time.Since(begin).String())
+		}
+		if err != nil {
+			logger.Error().Err(err).Func(logHandle).Msg("call deleteGame")
+			return
+		}
+		logger.Info().Func(logHandle).Msg("call deleteGame")
+	}(time.Now())
+	return m.next.DeleteGame(ctx, token, gameID)
+}
+
 func (m loggerDevTools) GetMyGames(ctx context.Context, token string) (games []types.Game, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevTools").Str("method", "getMyGames").Logger()
 	defer func(begin time.Time) {

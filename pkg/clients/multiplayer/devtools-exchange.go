@@ -43,6 +43,14 @@ type responseDevToolsUpdateGame struct {
 	Id uuid.UUID `json:"id"`
 }
 
+type requestDevToolsDeleteGame struct {
+	Token  string    `json:"token"`
+	GameID uuid.UUID `json:"gameID"`
+}
+
+// Formal exchange type, please do not delete.
+type responseDevToolsDeleteGame struct{}
+
 type requestDevToolsGetMyGames struct {
 	Token string `json:"token"`
 }

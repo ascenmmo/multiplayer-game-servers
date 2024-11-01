@@ -41,6 +41,12 @@ func (svc traceDevTools) UpdateGame(ctx context.Context, token string, gameID uu
 	return svc.next.UpdateGame(ctx, token, gameID, newGame)
 }
 
+func (svc traceDevTools) DeleteGame(ctx context.Context, token string, gameID uuid.UUID) (err error) {
+	span := opentracing.SpanFromContext(ctx)
+	span.SetTag("method", "DeleteGame")
+	return svc.next.DeleteGame(ctx, token, gameID)
+}
+
 func (svc traceDevTools) GetMyGames(ctx context.Context, token string) (games []types.Game, err error) {
 	span := opentracing.SpanFromContext(ctx)
 	span.SetTag("method", "GetMyGames")

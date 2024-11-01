@@ -333,12 +333,12 @@
 
             <button class="save-game" id="save-game">Сохранить изменения</button>
             <button class="game-config" id="game-config">Удаленные процедуры</button>
-            <button class="game-annalists" id="game-annalists">Аналитика</button>
+<!--            <button class="game-annalists" id="game-annalists">Аналитика</button>-->
 
         `;
             document.getElementById('save-game').onclick = () => fetchUpdateGame();
             document.getElementById('game-config').onclick = () => fetchGameConfigs();
-            document.getElementById('game-annalists').onclick = () => fetchGameAnnalists();
+            // document.getElementById('game-annalists').onclick = () => fetchGameAnnalists();
         };
 
         const fetchUpdateGame = async () => {
@@ -581,16 +581,16 @@
 
         // Добавляем обработчик события для кнопки "Добавить сервер"
         document.getElementById('add-server-button').onclick = () => {
-            const serverName = prompt('Введите имя сервера \n ' +
-                'он будет отображаться в вашей админке:');
+            const serverName = prompt('Введите имя сервера.\n' +
+                'Имя будет отображаться в вашей админке:');
 
             if (!serverName) {
                 return
             }
 
-            const serverAddress = prompt('Введите адрес или доменное имя сервера\n' +
-                'если вы используете не дефолтные порты подалуста введите по примеру\n' +
-                'ascenmmo.com:8081 или 127.0.0.1:8080');
+            const serverAddress = prompt('Введите адрес или доменное имя сервера.\n' +
+                'Если вы используете не дефолтные порты подалуста введите по примеру:\n' +
+                'ascenmmo.com:8081 или 127.0.0.1:8081');
 
             if (serverName && serverAddress) {
                 newServerAddress = serverAddress
