@@ -24,7 +24,7 @@ github.com/ascenmmo/tcp-server/pkg/transport/viewer
 ## explicit; go 1.23.2
 github.com/ascenmmo/token-generator/token_generator
 github.com/ascenmmo/token-generator/token_type
-# github.com/ascenmmo/udp-server v0.0.0-20241024213152-f807e90ce36c
+# github.com/ascenmmo/udp-server v0.0.0-20241104222117-5f30f0f99117
 ## explicit; go 1.23.2
 github.com/ascenmmo/udp-server/env
 github.com/ascenmmo/udp-server/internal/connection

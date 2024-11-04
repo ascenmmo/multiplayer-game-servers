@@ -2,12 +2,10 @@ package udp
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/ascenmmo/udp-server/internal/connection"
 	"github.com/ascenmmo/udp-server/internal/service"
 	memoryDB "github.com/ascenmmo/udp-server/internal/storage"
 	"github.com/ascenmmo/udp-server/internal/utils"
-	"github.com/ascenmmo/udp-server/pkg/restconnection/types"
 	"github.com/rs/zerolog"
 	"net"
 	"runtime"
@@ -29,7 +27,7 @@ type WorkerUDP struct {
 
 type ChanUDPMessage struct {
 	client  connection.DataSender
-	request types.Request
+	request []byte
 }
 
 func (w *WorkerUDP) Listener(ctx context.Context) error {
@@ -78,14 +76,6 @@ func (w *WorkerUDP) handleConnection(clientAddr *net.UDPAddr, buf []byte) error 
 		}
 	}()
 
-	var request types.Request
-
-	err := json.Unmarshal(buf, &request)
-	if err != nil {
-		w.logger.Error().Err(err).Msg("handleConnection Unmarshal")
-		return err
-	}
-
 	ds := connection.DataSender(&connection.UDPConnection{
 		ClientAddr: clientAddr,
 		Conn:       w.conn,
@@ -94,7 +84,7 @@ func (w *WorkerUDP) handleConnection(clientAddr *net.UDPAddr, buf []byte) error 
 	select {
 	case w.chMsg[w.counterChen()] <- ChanUDPMessage{
 		client:  ds,
-		request: request,
+		request: buf,
 	}:
 	default:
 		return nil //errors.New("counterChen is full")
@@ -121,7 +111,7 @@ func (w *WorkerUDP) sendWorker(ctx context.Context, ch chan ChanUDPMessage) {
 				err = user.Connection.Write(msg)
 				if err != nil {
 					w.logger.Warn().Err(err).Interface("senderWorker WriteToUDP", user.ID)
-					err := w.service.RemoveUser(chMsg.request.Token, user.ID)
+					err := w.service.RemoveUser(chMsg.client, user.ID)
 					if err != nil {
 						w.logger.Warn().Err(err).Interface("senderWorker  RemoveUser", user.ID)
 					}

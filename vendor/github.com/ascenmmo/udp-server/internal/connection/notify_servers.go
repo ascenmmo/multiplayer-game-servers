@@ -2,13 +2,12 @@ package connection
 
 import (
 	"encoding/json"
-	"github.com/ascenmmo/udp-server/pkg/restconnection/types"
 	"github.com/google/uuid"
 	"net"
 )
 
 type NotifyServers interface {
-	NotifyServers(ids []uuid.UUID, request types.Request) error
+	NotifyServers(ids []uuid.UUID, request []byte) error
 	AddServer(ID uuid.UUID, addr string) error
 }
 
@@ -27,7 +26,7 @@ type server struct {
 	Add        *net.UDPConn
 }
 
-func (n *notifier) NotifyServers(ids []uuid.UUID, request types.Request) error {
+func (n *notifier) NotifyServers(ids []uuid.UUID, request []byte) error {
 	if len(n.servers) == 0 {
 		return nil
 	}

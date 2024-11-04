@@ -8,8 +8,8 @@ github.com/ascenmmo/tcp-server v0.0.0-20241024213218-104f0955af07 h1:sAVYrtUU+Q0
 github.com/ascenmmo/tcp-server v0.0.0-20241024213218-104f0955af07/go.mod h1:14K6fwh/Sj958MMSPA+35xHzng0ZzVc2oq5kpXYLQbo=
 github.com/ascenmmo/token-generator v1.0.0 h1:+yUCIXfeO68tuWvYyStT4dnnYWfujfP4vPXqOrEf7No=
 github.com/ascenmmo/token-generator v1.0.0/go.mod h1:M3RdQKl1JfQeqM2hWNs0645G48GupB7idwdzQMkxlxM=
-github.com/ascenmmo/udp-server v0.0.0-20241024213152-f807e90ce36c h1:6XLXv+VJ1pI5SbQhLlB2ynVcJ6y2UN1lQKh5tBb99V4=
-github.com/ascenmmo/udp-server v0.0.0-20241024213152-f807e90ce36c/go.mod h1:uJBaE4CgtsgKsu7DFiW9+RYy+BXjjG3+N1V52saYEqY=
+github.com/ascenmmo/udp-server v0.0.0-20241104222117-5f30f0f99117 h1:aCM/QFPRKMC1PKwZwtMmEqgJEXHojfOuXi7U/9eTXGA=
+github.com/ascenmmo/udp-server v0.0.0-20241104222117-5f30f0f99117/go.mod h1:uJBaE4CgtsgKsu7DFiW9+RYy+BXjjG3+N1V52saYEqY=
 github.com/ascenmmo/websocket-server v0.0.0-20241024213056-3c1271cc0529 h1:Rwgx3hEykeJMIy9R/abLIz652Y1ZYnQR1cgSUOCV714=
 github.com/ascenmmo/websocket-server v0.0.0-20241024213056-3c1271cc0529/go.mod h1:P6ISIRo2rzqMDx5YzP7ixsFKXbYMw0DeYkAPsJS5ScE=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=

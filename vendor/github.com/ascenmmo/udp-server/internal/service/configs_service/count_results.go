@@ -42,7 +42,7 @@ func (c *IncrementResult) Execute(clientInfo tokentype.Info, config types.Sortin
 		values = append(values, value)
 	}
 
-	if len(values) != len(oldResult.Result) {
+	if len(values) != len(config.Params) {
 		return oldResult, nil
 	}
 
@@ -82,7 +82,7 @@ func (c *DecrementResult) Execute(clientInfo tokentype.Info, config types.Sortin
 		values = append(values, value)
 	}
 
-	if len(values) != len(oldResult.Result) {
+	if len(values) != len(config.Params) {
 		return oldResult, nil
 	}
 

@@ -6,6 +6,7 @@ import (
 	memoryDB "github.com/ascenmmo/udp-server/internal/storage"
 	"github.com/ascenmmo/udp-server/internal/utils"
 	"github.com/ascenmmo/udp-server/pkg/restconnection/types"
+	"github.com/google/uuid"
 )
 
 type GameConfigsService interface {
@@ -21,7 +22,7 @@ type gameConfig struct {
 }
 
 func (g *gameConfig) Do(token string, clientInfo tokentype.Info, gameConfig types.GameConfigs, data interface{}) {
-	if gameConfig.IsExists {
+	if !gameConfig.IsExists {
 		return
 	}
 	results, _ := g.getOldResults(clientInfo)
@@ -42,25 +43,25 @@ func (g *gameConfig) Do(token string, clientInfo tokentype.Info, gameConfig type
 func (g *gameConfig) GetDeletedRoomsResults(_ tokentype.Info, onlinePlayersTokens []string) (results []types.GameConfigResults, ok bool) {
 	ids := g.storage.GetAllConnection()
 
-	uniqueTokens := make(map[string]struct{}, len(onlinePlayersTokens))
+	uniqueTokens := make(map[string]struct{})
 	for _, token := range onlinePlayersTokens {
 		uniqueTokens[token] = struct{}{}
 	}
 
-	var notFoundTokens []string
+	var offlinePlayers []string
 	for _, token := range ids {
 		if _, exists := uniqueTokens[token]; !exists {
-			notFoundTokens = append(notFoundTokens, token)
+			offlinePlayers = append(offlinePlayers, token)
 		}
 	}
 
 	clientsInfo := make(map[string]tokentype.Info)
-	for _, token := range onlinePlayersTokens {
-		info, err := g.token.ParseToken(token)
-		if err != nil {
-			continue
+	for _, token := range offlinePlayers {
+		info, _ := g.token.ParseToken(token)
+		if info.RoomID != uuid.Nil {
+			clientsInfo[info.RoomID.String()] = info
 		}
-		clientsInfo[info.RoomID.String()] = info
+
 	}
 
 	for _, info := range clientsInfo {
