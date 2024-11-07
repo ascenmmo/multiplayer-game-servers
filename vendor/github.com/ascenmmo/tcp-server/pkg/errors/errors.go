@@ -7,7 +7,7 @@ var (
 	ErrRoomNotFound              = errors.New("room not found")
 	ErrRoomIsExists              = errors.New("room is exists")
 	ErrRoomBadValue              = errors.New("room bad value")
-	ErrTooManyRequests           = errors.New("too many connection")
+	ErrTooManyRequests           = errors.New("too many requests")
 	ErrNotifyServerNotFound      = errors.New("err notify server not found")
 	ErrNotifyServerNotValid      = errors.New("err notify server not valid")
 	ErrGameConfigMarshalUserData = errors.New("err game config marshal user data")

@@ -15,8 +15,8 @@ func TcpServer(ctx context.Context, logger zerolog.Logger) {
 		env.TokenKey,
 		env.TcpServerMaxRequestPerSecond,
 		10,
-		60,
 		logger.With().Str("server:", "tcp").Logger(),
+		false,
 	)
 	mastNil(err)
 }

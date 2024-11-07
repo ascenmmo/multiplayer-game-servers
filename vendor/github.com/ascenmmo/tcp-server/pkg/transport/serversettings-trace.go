@@ -3,17 +3,16 @@ package transport
 
 import (
 	"context"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection/types"
-	"github.com/google/uuid"
+	"github.com/ascenmmo/tcp-server/pkg/api"
+	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/opentracing/opentracing-go"
 )
 
 type traceServerSettings struct {
-	next restconnection.ServerSettings
+	next api.ServerSettings
 }
 
-func traceMiddlewareServerSettings(next restconnection.ServerSettings) restconnection.ServerSettings {
+func traceMiddlewareServerSettings(next api.ServerSettings) api.ServerSettings {
 	return &traceServerSettings{next: next}
 }
 
@@ -39,16 +38,4 @@ func (svc traceServerSettings) CreateRoom(ctx context.Context, token string, cre
 	span := opentracing.SpanFromContext(ctx)
 	span.SetTag("method", "CreateRoom")
 	return svc.next.CreateRoom(ctx, token, createRoom)
-}
-
-func (svc traceServerSettings) SetNotifyServer(ctx context.Context, token string, id uuid.UUID, url string) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "SetNotifyServer")
-	return svc.next.SetNotifyServer(ctx, token, id, url)
-}
-
-func (svc traceServerSettings) GetGameResults(ctx context.Context, token string) (gameConfigResults []types.GameConfigResults, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetGameResults")
-	return svc.next.GetGameResults(ctx, token)
 }

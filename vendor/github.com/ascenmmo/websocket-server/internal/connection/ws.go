@@ -1,9 +1,13 @@
 package connection
 
-import "github.com/gorilla/websocket"
+import (
+	"context"
+	"github.com/gorilla/websocket"
+)
 
 type WebSocketConnection struct {
-	Conn *websocket.Conn
+	Conn     *websocket.Conn
+	CtxClose context.CancelFunc
 }
 
 func (u *WebSocketConnection) GetID() string {
@@ -14,4 +18,10 @@ func (u *WebSocketConnection) Write(msg []byte) error {
 	err := u.Conn.WriteMessage(websocket.BinaryMessage, msg)
 
 	return err
+}
+
+func (u *WebSocketConnection) Close() {
+	if u.CtxClose != nil {
+		u.CtxClose()
+	}
 }

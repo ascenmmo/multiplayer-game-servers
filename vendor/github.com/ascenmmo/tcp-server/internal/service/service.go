@@ -1,41 +1,32 @@
 package service
 
 import (
-	"fmt"
-	entities2 "github.com/ascenmmo/tcp-server/internal/entities"
-	configsService "github.com/ascenmmo/tcp-server/internal/service/configs_service"
 	"github.com/ascenmmo/tcp-server/internal/storage"
 	utils2 "github.com/ascenmmo/tcp-server/internal/utils"
+	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/ascenmmo/tcp-server/pkg/errors"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection/types"
 	tokengenerator "github.com/ascenmmo/token-generator/token_generator"
 	tokentype "github.com/ascenmmo/token-generator/token_type"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
-	"runtime"
 	"sync"
 	"time"
 )
 
 type Service interface {
 	GetConnectionsNum() (countConn int, exists bool)
-	CreateRoom(token string, configs types.GameConfigs) (err error)
+	CreateRoom(token string) (err error)
 
 	SetMessage(token string, req types.RequestSetMessage) (err error)
 	GetMessages(token string) (msg types.ResponseGetMessage, err error)
 
 	RemoveUser(userID uuid.UUID, reqToken string) (err error)
-
-	SetRoomNotifyServer(token string, id uuid.UUID, url string) (err error)
-	NotifyAllServers(clientInfo tokentype.Info, req types.RequestSetMessage) (err error)
-	GetGameResults(token string) (results []types.GameConfigResults, err error)
 }
 
 type service struct {
 	maxConnections uint64
 
-	storage           memoryDB.IMemoryDB
-	gameConfigService configsService.GameConfigsService
+	storage memoryDB.IMemoryDB
 
 	token tokengenerator.TokenGenerator
 
@@ -53,7 +44,7 @@ func (s *service) GetConnectionsNum() (countConn int, exists bool) {
 	return count, true
 }
 
-func (s *service) CreateRoom(token string, configs types.GameConfigs) error {
+func (s *service) CreateRoom(token string) error {
 	clientInfo, err := s.token.ParseToken(token)
 	if err != nil {
 		return err
@@ -66,12 +57,9 @@ func (s *service) CreateRoom(token string, configs types.GameConfigs) error {
 		return errors.ErrRoomIsExists
 	}
 
-	configs = s.gameConfigService.SetServerExecuteToGameConfig(clientInfo, configs)
-
-	s.setRoom(clientInfo, &entities2.Room{
-		GameID:      clientInfo.GameID,
-		RoomID:      clientInfo.RoomID,
-		GameConfigs: configs,
+	s.setRoom(clientInfo, &types.Room{
+		GameID: clientInfo.GameID,
+		RoomID: clientInfo.RoomID,
 	})
 
 	return nil
@@ -103,23 +91,12 @@ func (s *service) SetMessage(token string, msg types.RequestSetMessage) (err err
 	}
 
 	if !isFound {
-		room.SetUser(&entities2.User{
+		room.SetUser(&types.User{
 			ID: clientInfo.UserID,
 		})
 	}
 
 	s.setRoom(clientInfo, room)
-
-	if msg.Server == nil {
-		s.gameConfigService.Do(token, clientInfo, room.GameConfigs, msg.Data)
-		id := uuid.New()
-		msg.Server = &id
-		msg.Token = token
-		err := s.NotifyAllServers(clientInfo, msg)
-		if err != nil {
-			s.logger.Warn().Err(err).Msg("failed to notify servers")
-		}
-	}
 
 	return nil
 }
@@ -148,7 +125,7 @@ func (s *service) GetMessages(token string) (msg types.ResponseGetMessage, err e
 	}
 
 	if !isFound {
-		room.SetUser(&entities2.User{
+		room.SetUser(&types.User{
 			ID: clientInfo.UserID,
 		})
 		//s.setRoom(clientInfo, room)
@@ -176,81 +153,7 @@ func (s *service) RemoveUser(userID uuid.UUID, reqToken string) (err error) {
 	return nil
 }
 
-func (s *service) SetRoomNotifyServer(token string, id uuid.UUID, url string) (err error) {
-	clientInfo, err := s.token.ParseToken(token)
-	if err != nil {
-		return err
-	}
-
-	room, err := s.getRoom(clientInfo)
-	if err != nil {
-		return err
-	}
-
-	room.SetServerID(id)
-
-	data, _ := s.storage.GetData(utils2.GenerateNotifyServerKey())
-
-	server, ok := data.(entities2.NotifyServers)
-	if !ok {
-		s.logger.Warn().Msg("NotifyServers cant get interfase")
-		server = entities2.NewNotifierServers()
-	}
-
-	err = server.AddServer(id, token, url)
-	if err != nil {
-		return err
-	}
-
-	s.storage.SetData(utils2.GenerateNotifyServerKey(), server)
-
-	return nil
-
-}
-
-func (s *service) NotifyAllServers(clientInfo tokentype.Info, req types.RequestSetMessage) (err error) {
-	room, err := s.getRoom(clientInfo)
-	if err != nil {
-		return err
-	}
-	if len(room.ServerID) == 0 {
-		return nil
-	}
-
-	data, ok := s.storage.GetData(utils2.GenerateNotifyServerKey())
-	if !ok {
-		return errors.ErrNotifyServerNotFound
-	}
-
-	servers, ok := data.(entities2.NotifyServers)
-	if !ok {
-		return errors.ErrNotifyServerNotValid
-	}
-
-	err = servers.NotifyServers(room.ServerID, req)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *service) GetGameResults(token string) (results []types.GameConfigResults, err error) {
-	clientInfo, err := s.token.ParseToken(token)
-	if err != nil {
-		return results, err
-	}
-
-	playersOnline := s.storage.GetAllConnection()
-	roomsResults, ok := s.gameConfigService.GetDeletedRoomsResults(clientInfo, playersOnline)
-	if !ok {
-		return results, errors.ErrGameResultsNotFound
-	}
-
-	return roomsResults, nil
-}
-
-func (s *service) getRoom(clientInfo tokentype.Info) (room *entities2.Room, err error) {
+func (s *service) getRoom(clientInfo tokentype.Info) (room *types.Room, err error) {
 	roomKey := utils2.GenerateRoomKey(clientInfo)
 
 	roomData, ok := s.storage.GetData(roomKey)
@@ -258,7 +161,7 @@ func (s *service) getRoom(clientInfo tokentype.Info) (room *entities2.Room, err 
 		return room, errors.ErrRoomNotFound
 	}
 
-	room, ok = roomData.(*entities2.Room)
+	room, ok = roomData.(*types.Room)
 	if !ok {
 		return room, errors.ErrRoomBadValue
 	}
@@ -268,25 +171,17 @@ func (s *service) getRoom(clientInfo tokentype.Info) (room *entities2.Room, err 
 	return room, nil
 }
 
-func (s *service) setRoom(clientInfo tokentype.Info, room *entities2.Room) {
+func (s *service) setRoom(clientInfo tokentype.Info, room *types.Room) {
 	roomKey := utils2.GenerateRoomKey(clientInfo)
 	s.storage.SetData(roomKey, room)
 }
 
-func NewService(token tokengenerator.TokenGenerator, storage memoryDB.IMemoryDB, gameConfigService configsService.GameConfigsService, logger zerolog.Logger) Service {
+func NewService(token tokengenerator.TokenGenerator, storage memoryDB.IMemoryDB, logger zerolog.Logger) Service {
 	srv := &service{
-		maxConnections:    uint64(types.CountConnectionsMAX()),
-		storage:           storage,
-		token:             token,
-		gameConfigService: gameConfigService,
-		logger:            logger,
+		maxConnections: uint64(types.CountConnectionsMAX()),
+		storage:        storage,
+		token:          token,
+		logger:         logger,
 	}
-	go func() {
-		ticker := time.NewTicker(time.Second * 3)
-		for range ticker.C {
-			fmt.Println(fmt.Sprintf("count connections: %d \t max conections: %d", srv.storage.CountConnection(), srv.maxConnections))
-			fmt.Println(fmt.Sprintf("count gorutines: %d ", runtime.NumGoroutine()))
-		}
-	}()
 	return srv
 }

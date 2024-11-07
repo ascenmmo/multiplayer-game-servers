@@ -3,8 +3,8 @@ package transport
 
 import (
 	"context"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection/types"
+	"github.com/ascenmmo/tcp-server/pkg/api"
+	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/google/uuid"
 )
 
@@ -12,7 +12,7 @@ type GameConnectionsSetSendMessage func(ctx context.Context, token string, messa
 type GameConnectionsGetMessage func(ctx context.Context, token string) (messages types.ResponseGetMessage, err error)
 type GameConnectionsRemoveUser func(ctx context.Context, token string, userID uuid.UUID) (err error)
 
-type MiddlewareGameConnections func(next restconnection.GameConnections) restconnection.GameConnections
+type MiddlewareGameConnections func(next api.GameConnections) api.GameConnections
 
 type MiddlewareGameConnectionsSetSendMessage func(next GameConnectionsSetSendMessage) GameConnectionsSetSendMessage
 type MiddlewareGameConnectionsGetMessage func(next GameConnectionsGetMessage) GameConnectionsGetMessage

@@ -1,22 +1,16 @@
 # github.com/andybalholm/brotli v1.0.5
 ## explicit; go 1.12
 github.com/andybalholm/brotli
-# github.com/ascenmmo/tcp-server v0.0.0-20241024213218-104f0955af07
+# github.com/ascenmmo/tcp-server v1.0.1
 ## explicit; go 1.23.2
 github.com/ascenmmo/tcp-server/env
-github.com/ascenmmo/tcp-server/internal/entities
 github.com/ascenmmo/tcp-server/internal/handler
 github.com/ascenmmo/tcp-server/internal/service
-github.com/ascenmmo/tcp-server/internal/service/configs_service
 github.com/ascenmmo/tcp-server/internal/storage
 github.com/ascenmmo/tcp-server/internal/utils
-github.com/ascenmmo/tcp-server/pkg/clients/tcpGameServer
-github.com/ascenmmo/tcp-server/pkg/clients/tcpGameServer/cb
-github.com/ascenmmo/tcp-server/pkg/clients/tcpGameServer/hasher
-github.com/ascenmmo/tcp-server/pkg/clients/tcpGameServer/jsonrpc
+github.com/ascenmmo/tcp-server/pkg/api
+github.com/ascenmmo/tcp-server/pkg/api/types
 github.com/ascenmmo/tcp-server/pkg/errors
-github.com/ascenmmo/tcp-server/pkg/restconnection
-github.com/ascenmmo/tcp-server/pkg/restconnection/types
 github.com/ascenmmo/tcp-server/pkg/start
 github.com/ascenmmo/tcp-server/pkg/transport
 github.com/ascenmmo/tcp-server/pkg/transport/viewer
@@ -24,41 +18,37 @@ github.com/ascenmmo/tcp-server/pkg/transport/viewer
 ## explicit; go 1.23.2
 github.com/ascenmmo/token-generator/token_generator
 github.com/ascenmmo/token-generator/token_type
-# github.com/ascenmmo/udp-server v0.0.0-20241104222117-5f30f0f99117
+# github.com/ascenmmo/udp-server v1.0.1
 ## explicit; go 1.23.2
 github.com/ascenmmo/udp-server/env
 github.com/ascenmmo/udp-server/internal/connection
-github.com/ascenmmo/udp-server/internal/entities
 github.com/ascenmmo/udp-server/internal/handler/tcp
 github.com/ascenmmo/udp-server/internal/handler/udp
 github.com/ascenmmo/udp-server/internal/service
-github.com/ascenmmo/udp-server/internal/service/configs_service
 github.com/ascenmmo/udp-server/internal/storage
 github.com/ascenmmo/udp-server/internal/utils
+github.com/ascenmmo/udp-server/pkg/api
+github.com/ascenmmo/udp-server/pkg/api/types
 github.com/ascenmmo/udp-server/pkg/clients/udpGameServer
 github.com/ascenmmo/udp-server/pkg/clients/udpGameServer/cb
 github.com/ascenmmo/udp-server/pkg/clients/udpGameServer/hasher
 github.com/ascenmmo/udp-server/pkg/clients/udpGameServer/jsonrpc
 github.com/ascenmmo/udp-server/pkg/errors
-github.com/ascenmmo/udp-server/pkg/restconnection
-github.com/ascenmmo/udp-server/pkg/restconnection/types
 github.com/ascenmmo/udp-server/pkg/start
 github.com/ascenmmo/udp-server/pkg/transport
 github.com/ascenmmo/udp-server/pkg/transport/viewer
-# github.com/ascenmmo/websocket-server v0.0.0-20241024213056-3c1271cc0529
+# github.com/ascenmmo/websocket-server v1.0.1
 ## explicit; go 1.23.2
 github.com/ascenmmo/websocket-server/env
 github.com/ascenmmo/websocket-server/internal/connection
 github.com/ascenmmo/websocket-server/internal/handler/tcp
 github.com/ascenmmo/websocket-server/internal/handler/ws
 github.com/ascenmmo/websocket-server/internal/service
-github.com/ascenmmo/websocket-server/internal/service/configs_service
 github.com/ascenmmo/websocket-server/internal/storage
 github.com/ascenmmo/websocket-server/internal/utils
-github.com/ascenmmo/websocket-server/pkg/entities
+github.com/ascenmmo/websocket-server/pkg/api
+github.com/ascenmmo/websocket-server/pkg/api/types
 github.com/ascenmmo/websocket-server/pkg/errors
-github.com/ascenmmo/websocket-server/pkg/restconnection
-github.com/ascenmmo/websocket-server/pkg/restconnection/types
 github.com/ascenmmo/websocket-server/pkg/start
 github.com/ascenmmo/websocket-server/pkg/transport
 github.com/ascenmmo/websocket-server/pkg/transport/viewer

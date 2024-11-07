@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/ascenmmo/tcp-server/internal/service"
 	"github.com/ascenmmo/tcp-server/internal/utils"
+	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/ascenmmo/tcp-server/pkg/errors"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection/types"
 	"github.com/google/uuid"
 )
 

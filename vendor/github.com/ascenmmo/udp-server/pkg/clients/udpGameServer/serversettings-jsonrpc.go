@@ -4,9 +4,9 @@ package udpGameServer
 import (
 	"context"
 	"fmt"
+	"github.com/ascenmmo/udp-server/pkg/api/types"
 	"github.com/ascenmmo/udp-server/pkg/clients/udpGameServer/hasher"
 	"github.com/ascenmmo/udp-server/pkg/clients/udpGameServer/jsonrpc"
-	"github.com/ascenmmo/udp-server/pkg/restconnection/types"
 	"github.com/google/uuid"
 )
 
@@ -18,7 +18,6 @@ type retServerSettingsGetConnectionsNum = func(countConn int, exists bool, err e
 type retServerSettingsHealthCheck = func(exists bool, err error)
 type retServerSettingsGetServerSettings = func(settings types.Settings, err error)
 type retServerSettingsCreateRoom = func(err error)
-type retServerSettingsGetGameResults = func(gameConfigResults []types.GameConfigResults, err error)
 type retServerSettingsSetNotifyServer = func(err error)
 
 func (cli *ClientServerSettings) GetConnectionsNum(ctx context.Context, token string) (countConn int, exists bool, err error) {
@@ -234,59 +233,6 @@ func (cli *ClientServerSettings) ReqCreateRoom(ctx context.Context, callback ret
 				}
 			}
 			callback(cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response))
-		}
-	}
-	return
-}
-
-func (cli *ClientServerSettings) GetGameResults(ctx context.Context, token string) (gameConfigResults []types.GameConfigResults, err error) {
-
-	request := requestServerSettingsGetGameResults{Token: token}
-	var response responseServerSettingsGetGameResults
-	var rpcResponse *jsonrpc.ResponseRPC
-	cacheKey, _ := hasher.Hash(request)
-	rpcResponse, err = cli.rpc.Call(ctx, "serversettings.getgameresults", request)
-	var fallbackCheck func(error) bool
-	if cli.fallbackServerSettings != nil {
-		fallbackCheck = cli.fallbackServerSettings.GetGameResults
-	}
-	if rpcResponse != nil && rpcResponse.Error != nil {
-		if cli.errorDecoder != nil {
-			err = cli.errorDecoder(rpcResponse.Error.Raw())
-		} else {
-			err = fmt.Errorf(rpcResponse.Error.Message)
-		}
-	}
-	if err = cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response); err != nil {
-		return
-	}
-	return response.GameConfigResults, err
-}
-
-func (cli *ClientServerSettings) ReqGetGameResults(ctx context.Context, callback retServerSettingsGetGameResults, token string) (request RequestRPC) {
-
-	request = RequestRPC{rpcRequest: &jsonrpc.RequestRPC{
-		ID:      jsonrpc.NewID(),
-		JSONRPC: jsonrpc.Version,
-		Method:  "serversettings.getgameresults",
-		Params:  requestServerSettingsGetGameResults{Token: token},
-	}}
-	if callback != nil {
-		var response responseServerSettingsGetGameResults
-		request.retHandler = func(err error, rpcResponse *jsonrpc.ResponseRPC) {
-			cacheKey, _ := hasher.Hash(request.rpcRequest.Params)
-			var fallbackCheck func(error) bool
-			if cli.fallbackServerSettings != nil {
-				fallbackCheck = cli.fallbackServerSettings.GetGameResults
-			}
-			if rpcResponse != nil && rpcResponse.Error != nil {
-				if cli.errorDecoder != nil {
-					err = cli.errorDecoder(rpcResponse.Error.Raw())
-				} else {
-					err = fmt.Errorf(rpcResponse.Error.Message)
-				}
-			}
-			callback(response.GameConfigResults, cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response))
 		}
 	}
 	return

@@ -1,13 +1,11 @@
 package start
 
 import (
-	"context"
 	"fmt"
 	"github.com/ascenmmo/multiplayer-game-servers/env"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/service/access"
 	devtools "github.com/ascenmmo/multiplayer-game-servers/internal/service/dev_tools"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/service/registration"
-	"github.com/ascenmmo/multiplayer-game-servers/internal/service/scheduler"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/storage"
 	adminclient "github.com/ascenmmo/multiplayer-game-servers/pkg/admin_client"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/admin_client/dev_doc"
@@ -40,17 +38,13 @@ func Multiplayer(logger zerolog.Logger) {
 	mastNil(err)
 	gameConfigStorage, err := storage.NewGameConfigsStorage(client)
 	mastNil(err)
-	gameConfigResultsStorage, err := storage.NewGameConfigsResultsStorage(client)
-	mastNil(err)
 
 	accessGameService := access.NewAccessGame(accessGameStorage)
-
-	newScheduler := scheduler.NewScheduler(gameStorage, roomStorage, serverStorage, gameConfigResultsStorage, token)
 
 	developerService := registration.NewDeveloperService(developerStorage, token, &logger)
 	clientService := registration.NewClientService(clientStorage, gameStorage, roomStorage, token, &logger)
 
-	devToolsConnectionServicc := devtools.NewConnections(gameStorage, serverStorage, roomStorage, gameConfigStorage, token, &logger)
+	devToolsConnectionServicc := devtools.NewConnections(gameStorage, serverStorage, roomStorage, token, &logger)
 	devToolsService := devtools.NewDevTools(accessGameService, gameStorage, serverStorage, token, &logger)
 	devToolsServerService := devtools.NewServerService(accessGameService, gameStorage, serverStorage, token, &logger)
 	devToolsGameConfigs := devtools.NewGameConfigs(accessGameService, gameConfigStorage, token, &logger)
@@ -71,8 +65,6 @@ func Multiplayer(logger zerolog.Logger) {
 		app := srv.Fiber()
 		adminPanel(app)
 	}
-
-	go newScheduler.Run(context.Background())
 
 	logger.Info().Str("bind", fmt.Sprintf("http://%s:%s", env.ServerAddress, env.MultiplayerPort)).Msg("listen on")
 	if err := srv.Fiber().Listen(":" + env.MultiplayerPort); err != nil {

@@ -16,8 +16,8 @@ func WebsocketRun(ctx context.Context, logger zerolog.Logger) {
 		env.TokenKey,
 		env.WebsocketServerMaxRequestPerSecond,
 		10,
-		60,
 		logger.With().Str("server:", "websocket").Logger(),
+		false,
 	)
 	mastNil(err)
 }

@@ -3,19 +3,16 @@ package transport
 
 import (
 	"context"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection/types"
-	"github.com/google/uuid"
+	"github.com/ascenmmo/tcp-server/pkg/api"
+	"github.com/ascenmmo/tcp-server/pkg/api/types"
 )
 
 type serverServerSettings struct {
-	svc               restconnection.ServerSettings
+	svc               api.ServerSettings
 	getConnectionsNum ServerSettingsGetConnectionsNum
 	healthCheck       ServerSettingsHealthCheck
 	getServerSettings ServerSettingsGetServerSettings
 	createRoom        ServerSettingsCreateRoom
-	setNotifyServer   ServerSettingsSetNotifyServer
-	getGameResults    ServerSettingsGetGameResults
 }
 
 type MiddlewareSetServerSettings interface {
@@ -24,21 +21,17 @@ type MiddlewareSetServerSettings interface {
 	WrapHealthCheck(m MiddlewareServerSettingsHealthCheck)
 	WrapGetServerSettings(m MiddlewareServerSettingsGetServerSettings)
 	WrapCreateRoom(m MiddlewareServerSettingsCreateRoom)
-	WrapSetNotifyServer(m MiddlewareServerSettingsSetNotifyServer)
-	WrapGetGameResults(m MiddlewareServerSettingsGetGameResults)
 
 	WithTrace()
 	WithLog()
 }
 
-func newServerServerSettings(svc restconnection.ServerSettings) *serverServerSettings {
+func newServerServerSettings(svc api.ServerSettings) *serverServerSettings {
 	return &serverServerSettings{
 		createRoom:        svc.CreateRoom,
 		getConnectionsNum: svc.GetConnectionsNum,
-		getGameResults:    svc.GetGameResults,
 		getServerSettings: svc.GetServerSettings,
 		healthCheck:       svc.HealthCheck,
-		setNotifyServer:   svc.SetNotifyServer,
 		svc:               svc,
 	}
 }
@@ -49,8 +42,6 @@ func (srv *serverServerSettings) Wrap(m MiddlewareServerSettings) {
 	srv.healthCheck = srv.svc.HealthCheck
 	srv.getServerSettings = srv.svc.GetServerSettings
 	srv.createRoom = srv.svc.CreateRoom
-	srv.setNotifyServer = srv.svc.SetNotifyServer
-	srv.getGameResults = srv.svc.GetGameResults
 }
 
 func (srv *serverServerSettings) GetConnectionsNum(ctx context.Context, token string) (countConn int, exists bool, err error) {
@@ -69,14 +60,6 @@ func (srv *serverServerSettings) CreateRoom(ctx context.Context, token string, c
 	return srv.createRoom(ctx, token, createRoom)
 }
 
-func (srv *serverServerSettings) SetNotifyServer(ctx context.Context, token string, id uuid.UUID, url string) (err error) {
-	return srv.setNotifyServer(ctx, token, id, url)
-}
-
-func (srv *serverServerSettings) GetGameResults(ctx context.Context, token string) (gameConfigResults []types.GameConfigResults, err error) {
-	return srv.getGameResults(ctx, token)
-}
-
 func (srv *serverServerSettings) WrapGetConnectionsNum(m MiddlewareServerSettingsGetConnectionsNum) {
 	srv.getConnectionsNum = m(srv.getConnectionsNum)
 }
@@ -91,14 +74,6 @@ func (srv *serverServerSettings) WrapGetServerSettings(m MiddlewareServerSetting
 
 func (srv *serverServerSettings) WrapCreateRoom(m MiddlewareServerSettingsCreateRoom) {
 	srv.createRoom = m(srv.createRoom)
-}
-
-func (srv *serverServerSettings) WrapSetNotifyServer(m MiddlewareServerSettingsSetNotifyServer) {
-	srv.setNotifyServer = m(srv.setNotifyServer)
-}
-
-func (srv *serverServerSettings) WrapGetGameResults(m MiddlewareServerSettingsGetGameResults) {
-	srv.getGameResults = m(srv.getGameResults)
 }
 
 func (srv *serverServerSettings) WithTrace() {

@@ -156,10 +156,6 @@ func (srv *Server) doSingleBatch(ctx *fiber.Ctx, request baseJsonRPC) (response 
 		return srv.httpServerSettings.getServerSettings(ctx, request)
 	case "serversettings.createroom":
 		return srv.httpServerSettings.createRoom(ctx, request)
-	case "serversettings.setnotifyserver":
-		return srv.httpServerSettings.setNotifyServer(ctx, request)
-	case "serversettings.getgameresults":
-		return srv.httpServerSettings.getGameResults(ctx, request)
 	default:
 		ext.Error.Set(span, true)
 		span.SetTag("msg", "invalid method '"+methodNameOrigin+"'")

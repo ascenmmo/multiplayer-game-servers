@@ -2,10 +2,8 @@ package types
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"github.com/ascenmmo/tcp-server/pkg/clients/tcpGameServer"
-	restType "github.com/ascenmmo/tcp-server/pkg/restconnection/types"
+	"github.com/ascenmmo/udp-server/pkg/api/types"
 	"github.com/ascenmmo/udp-server/pkg/clients/udpGameServer"
 	"github.com/google/uuid"
 	"strings"
@@ -62,42 +60,15 @@ func (s *Server) IsExists(ctx context.Context, token string) (bool, error) {
 	return exists, err
 }
 
-func (s *Server) CreateRoom(ctx context.Context, token string, gameConfigs GameConfigs) (err error) {
-	cli := tcpGameServer.New(s.getRestUrl())
+func (s *Server) CreateRoom(ctx context.Context, token string) (err error) {
+	cli := udpGameServer.New(s.getRestUrl())
 
-	confBuf, err := json.Marshal(gameConfigs)
-
-	var config restType.GameConfigs
-	err = json.Unmarshal(confBuf, &config)
-	if err != nil {
-		return err
-	}
-
-	err = cli.ServerSettings().CreateRoom(ctx, token, restType.CreateRoomRequest{
-		GameConfigs: config,
-	})
+	err = cli.ServerSettings().CreateRoom(ctx, token, types.CreateRoomRequest{})
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func (s *Server) GetGameConfigResults(ctx context.Context, token string) (gameResults []GameConfigResults, err error) {
-	cli := tcpGameServer.New(s.getRestUrl())
-	results, err := cli.ServerSettings().GetGameResults(ctx, token)
-	if err != nil {
-		return nil, err
-	}
-	for _, v := range results {
-		gameResults = append(gameResults, GameConfigResults{
-			ID:     uuid.New(),
-			GameID: v.GameID,
-			RoomID: v.RoomID,
-			Result: v.Result,
-		})
-	}
-	return gameResults, err
 }
 
 func (s *Server) RemoveOwner(ownerID uuid.UUID) {

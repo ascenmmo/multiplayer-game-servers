@@ -3,23 +3,18 @@ package transport
 
 import (
 	"context"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection/types"
-	"github.com/google/uuid"
+	"github.com/ascenmmo/tcp-server/pkg/api"
+	"github.com/ascenmmo/tcp-server/pkg/api/types"
 )
 
 type ServerSettingsGetConnectionsNum func(ctx context.Context, token string) (countConn int, exists bool, err error)
 type ServerSettingsHealthCheck func(ctx context.Context, token string) (exists bool, err error)
 type ServerSettingsGetServerSettings func(ctx context.Context, token string) (settings types.Settings, err error)
 type ServerSettingsCreateRoom func(ctx context.Context, token string, createRoom types.CreateRoomRequest) (err error)
-type ServerSettingsSetNotifyServer func(ctx context.Context, token string, id uuid.UUID, url string) (err error)
-type ServerSettingsGetGameResults func(ctx context.Context, token string) (gameConfigResults []types.GameConfigResults, err error)
 
-type MiddlewareServerSettings func(next restconnection.ServerSettings) restconnection.ServerSettings
+type MiddlewareServerSettings func(next api.ServerSettings) api.ServerSettings
 
 type MiddlewareServerSettingsGetConnectionsNum func(next ServerSettingsGetConnectionsNum) ServerSettingsGetConnectionsNum
 type MiddlewareServerSettingsHealthCheck func(next ServerSettingsHealthCheck) ServerSettingsHealthCheck
 type MiddlewareServerSettingsGetServerSettings func(next ServerSettingsGetServerSettings) ServerSettingsGetServerSettings
 type MiddlewareServerSettingsCreateRoom func(next ServerSettingsCreateRoom) ServerSettingsCreateRoom
-type MiddlewareServerSettingsSetNotifyServer func(next ServerSettingsSetNotifyServer) ServerSettingsSetNotifyServer
-type MiddlewareServerSettingsGetGameResults func(next ServerSettingsGetGameResults) ServerSettingsGetGameResults
