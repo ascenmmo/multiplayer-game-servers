@@ -40,12 +40,6 @@ type ConnectionServer struct {
 func (s *Server) IsExists(ctx context.Context, token string) (bool, error) {
 	var err error
 	cli := udpGameServer.New(s.getRestUrl())
-	exists, err := cli.ServerSettings().HealthCheck(context.TODO(), token)
-	if err != nil {
-		s.IsActive = false
-		return false, err
-	}
-
 	settings, err := cli.ServerSettings().GetServerSettings(ctx, token)
 	if err != nil {
 		s.IsActive = false
@@ -56,8 +50,7 @@ func (s *Server) IsExists(ctx context.Context, token string) (bool, error) {
 	s.ConnectionPort = settings.ConnectionPort
 	s.IsActive = true
 
-	s.IsActive = exists
-	return exists, err
+	return s.IsActive, err
 }
 
 func (s *Server) CreateRoom(ctx context.Context, token string) (err error) {

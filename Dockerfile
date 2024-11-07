@@ -5,6 +5,8 @@ WORKDIR $GOPATH/src
 ADD . .
 ENV GO111MODULE=on
 
+RUN go mod vendor
+
 RUN go build -o /bin/app ./cmd/multiplayer
 
 FROM ubuntu:24.04

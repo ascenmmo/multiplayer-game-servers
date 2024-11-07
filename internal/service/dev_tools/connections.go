@@ -51,7 +51,7 @@ func (c *connections) CreateRoom(ctx context.Context, token string, gameID uuid.
 	for i := range servers {
 		exists, err := servers[i].IsExists(ctx, token)
 		if err != nil {
-			c.logger.Error().Err(err)
+			c.logger.Error().Err(err).Msg("IsExists error")
 			continue
 		}
 		if exists {
