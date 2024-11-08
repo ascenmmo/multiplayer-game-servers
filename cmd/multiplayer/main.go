@@ -5,6 +5,9 @@ import (
 	"github.com/ascenmmo/multiplayer-game-servers/env"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/start"
 	"github.com/rs/zerolog"
+	"log"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -33,5 +36,13 @@ func main() {
 		go start.TcpServer(ctx, logger)
 	}
 
+	prof()
+
 	<-shutdown
+}
+
+func prof() {
+	go func() {
+		log.Println(http.ListenAndServe(":6060", nil))
+	}()
 }

@@ -14,6 +14,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog"
 	"html/template"
+	"runtime"
+	"time"
 )
 
 func Multiplayer(logger zerolog.Logger) {
@@ -59,6 +61,8 @@ func Multiplayer(logger zerolog.Logger) {
 		transport.DevToolsGameConfigs(transport.NewDevToolsGameConfigs(devToolsGameConfigs)),
 	}
 
+	logMemoryUsage(logger)
+
 	srv := transport.New(logger, services...).WithLog()
 
 	if env.RunAdminPanel {
@@ -70,6 +74,22 @@ func Multiplayer(logger zerolog.Logger) {
 	if err := srv.Fiber().Listen(":" + env.MultiplayerPort); err != nil {
 		logger.Panic().Err(err).Stack().Msg("server error")
 	}
+}
+
+func logMemoryUsage(logger zerolog.Logger) {
+	ticker := time.NewTicker(time.Second * 10)
+	go func() {
+		for range ticker.C {
+			var stats runtime.MemStats
+			runtime.ReadMemStats(&stats)
+			logger.Info().
+				Interface("num cpu", runtime.NumCPU()).
+				Interface("Memory Usage", stats.Alloc/1024/1024).
+				Interface("TotalAlloc", stats.TotalAlloc/1024/1024).
+				Interface("Sys", stats.Sys/1024/1024).
+				Interface("NumGC", stats.NumGC)
+		}
+	}()
 }
 
 func mastNil(err error) {

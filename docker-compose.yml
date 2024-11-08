@@ -14,6 +14,7 @@ services:
       - "8083:8083"  # TCP Server
       - "4500:4500/udp"  # UDP Connection Port
       - "4240:4240"  # WebSocket Connection Port
+      - "6060:6060"  # WebSocket Connection Port
 
   mongodb:
     image: mongo:8.0

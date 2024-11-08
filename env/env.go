@@ -2,7 +2,7 @@ package env
 
 var (
 	ServerAddress = "ascenmmo.com"
-	TokenKey      = "_remember_token_must_be_32_bytes"
+	TokenKey      = "_remember_token_mast_be_32_bytes"
 )
 
 var (
