@@ -3,25 +3,32 @@ package connection
 import (
 	"context"
 	"github.com/gorilla/websocket"
+	"sync"
 )
 
 type WebSocketConnection struct {
 	Conn     *websocket.Conn
 	CtxClose context.CancelFunc
+	mutex    sync.Mutex
 }
 
-func (u *WebSocketConnection) GetID() string {
-	return u.Conn.RemoteAddr().String()
+func (ws *WebSocketConnection) GetID() string {
+	ws.mutex.Lock()
+	defer ws.mutex.Unlock()
+	return ws.Conn.RemoteAddr().String()
 }
 
-func (u *WebSocketConnection) Write(msg []byte) error {
-	err := u.Conn.WriteMessage(websocket.BinaryMessage, msg)
-
+func (ws *WebSocketConnection) Write(msg []byte) error {
+	ws.mutex.Lock()
+	defer ws.mutex.Unlock()
+	err := ws.Conn.WriteMessage(websocket.BinaryMessage, msg)
 	return err
 }
 
-func (u *WebSocketConnection) Close() {
-	if u.CtxClose != nil {
-		u.CtxClose()
+func (ws *WebSocketConnection) Close() {
+	ws.mutex.Lock()
+	defer ws.mutex.Unlock()
+	if ws.CtxClose != nil {
+		ws.CtxClose()
 	}
 }
