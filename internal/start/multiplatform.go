@@ -3,6 +3,7 @@ package start
 import (
 	"fmt"
 	"github.com/ascenmmo/multiplayer-game-servers/env"
+	"github.com/ascenmmo/multiplayer-game-servers/internal/errors"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/service/access"
 	devtools "github.com/ascenmmo/multiplayer-game-servers/internal/service/dev_tools"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/service/registration"
@@ -12,6 +13,8 @@ import (
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/transport"
 	tokengenerator "github.com/ascenmmo/token-generator/token_generator"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
+	_ "github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/rs/zerolog"
 	"html/template"
 	"runtime"
@@ -65,10 +68,18 @@ func Multiplayer(logger zerolog.Logger) {
 
 	srv := transport.New(logger, services...).WithLog()
 
+	app := srv.Fiber()
 	if env.RunAdminPanel {
-		app := srv.Fiber()
 		adminPanel(app)
 	}
+
+	app.Use(limiter.New(limiter.Config{
+		Max:        env.MultiplayerMaxRequestPerSecond,
+		Expiration: 1 * time.Second,
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).SendString(errors.ErrTooManyRequests.Error())
+		},
+	}))
 
 	logger.Info().Str("bind", fmt.Sprintf("http://%s:%s", env.ServerAddress, env.MultiplayerPort)).Msg("listen on")
 	if err := srv.Fiber().Listen(":" + env.MultiplayerPort); err != nil {

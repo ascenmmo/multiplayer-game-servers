@@ -72,8 +72,10 @@ github.com/gofiber/adaptor/v2
 # github.com/gofiber/fiber/v2 v2.52.5
 ## explicit; go 1.20
 github.com/gofiber/fiber/v2
+github.com/gofiber/fiber/v2/internal/memory
 github.com/gofiber/fiber/v2/internal/schema
 github.com/gofiber/fiber/v2/log
+github.com/gofiber/fiber/v2/middleware/limiter
 github.com/gofiber/fiber/v2/utils
 # github.com/golang/snappy v0.0.4
 ## explicit
@@ -134,6 +136,9 @@ github.com/openzipkin/zipkin-go/propagation
 github.com/openzipkin/zipkin-go/propagation/b3
 github.com/openzipkin/zipkin-go/reporter
 github.com/openzipkin/zipkin-go/reporter/http
+# github.com/philhofer/fwd v1.1.2
+## explicit; go 1.15
+github.com/philhofer/fwd
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
@@ -165,6 +170,9 @@ github.com/rs/zerolog
 github.com/rs/zerolog/internal/cbor
 github.com/rs/zerolog/internal/json
 github.com/rs/zerolog/log
+# github.com/tinylib/msgp v1.1.8
+## explicit; go 1.15
+github.com/tinylib/msgp/msgp
 # github.com/uber/jaeger-client-go v2.30.0+incompatible
 ## explicit
 github.com/uber/jaeger-client-go

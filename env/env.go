@@ -11,7 +11,7 @@ var (
 	RunAdminPanel                  = true
 	MultiplayerPort                = "8080"
 	MongoURL                       = "mongodb://username:userpassword@ascenmmo.com:27017"
-	MultiplayerMaxRequestPerSecond = 5
+	MultiplayerMaxRequestPerSecond = 100
 )
 
 var (
