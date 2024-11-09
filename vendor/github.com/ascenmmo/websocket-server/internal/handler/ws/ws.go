@@ -84,13 +84,14 @@ func (ws *WebSocket) handleConnection(ctx context.Context, token string, clientI
 	defer pingTicker.Stop()
 
 	ctx, cancel := context.WithCancel(ctx)
+	ds := connection.DataSender(&connection.WebSocketConnection{Conn: conn, CtxClose: cancel})
 
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		case <-pingTicker.C:
-			if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+			if err := ds.Write(websocket.PingMessage, []byte("ping")); err != nil {
 				ws.logger.Error().Err(err).Msg("ping failed")
 				return
 			}
@@ -118,7 +119,6 @@ func (ws *WebSocket) handleConnection(ctx context.Context, token string, clientI
 				continue
 			}
 
-			ds := connection.DataSender(&connection.WebSocketConnection{Conn: conn, CtxClose: cancel})
 			users, newMessage, err := ws.service.GetUsersAndMessage(ds, clientInfo, message)
 			if err != nil {
 				if err := conn.WriteMessage(websocket.TextMessage, []byte(err.Error())); err != nil {
@@ -128,7 +128,7 @@ func (ws *WebSocket) handleConnection(ctx context.Context, token string, clientI
 			}
 
 			for _, user := range users {
-				if err := user.Connection.Write(newMessage); err != nil {
+				if err := user.Connection.Write(messageType, newMessage); err != nil {
 					ws.logger.Error().Err(err).Msg("failed to send message to user")
 					if err := ws.service.RemoveUser(clientInfo, user.ID); err != nil {
 						ws.logger.Error().Err(err).Msg("failed to remove user")

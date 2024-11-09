@@ -10,8 +10,8 @@ github.com/ascenmmo/token-generator v1.0.0 h1:+yUCIXfeO68tuWvYyStT4dnnYWfujfP4vP
 github.com/ascenmmo/token-generator v1.0.0/go.mod h1:M3RdQKl1JfQeqM2hWNs0645G48GupB7idwdzQMkxlxM=
 github.com/ascenmmo/udp-server v1.0.1 h1:bOKY/+IJt9wesYYUh5GEmWwgSXpffN+eSKBqdL+/Hc4=
 github.com/ascenmmo/udp-server v1.0.1/go.mod h1:uJBaE4CgtsgKsu7DFiW9+RYy+BXjjG3+N1V52saYEqY=
-github.com/ascenmmo/websocket-server v0.0.0-20241109221422-52af911d4d0f h1:UaAIZI0w9igJpmSUCQDyGo5FZmJJel0F1Yuo0iK3cF8=
-github.com/ascenmmo/websocket-server v0.0.0-20241109221422-52af911d4d0f/go.mod h1:P6ISIRo2rzqMDx5YzP7ixsFKXbYMw0DeYkAPsJS5ScE=
+github.com/ascenmmo/websocket-server v0.0.0-20241109223107-320f151abbae h1:+UgiuDE3dml/mc0MT1nUCJA00NrA7OEmKa98n79ELTY=
+github.com/ascenmmo/websocket-server v0.0.0-20241109223107-320f151abbae/go.mod h1:P6ISIRo2rzqMDx5YzP7ixsFKXbYMw0DeYkAPsJS5ScE=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
