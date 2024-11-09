@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <title>Конфигурация Игры</title>
+    <style>
+        /* Основные стили */
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 0;
+            background-color: #1c1c1c;
+            color: #fff;
+            line-height: 1.6;
+            margin-bottom: 100px;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.3s ease;
+            z-index: 1000;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-family: 'Dancing Script', cursive;
+            color: #00ff7f;
+            margin-left: 5%;
+            text-decoration: none;
+        }
+
+        header nav {
+            display: flex;
+            gap: 20px;
+            margin-right: 5%;
+        }
+
+        header nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 2px solid #00ff7f;
+            border-radius: 5px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        header nav a:hover {
+            background: #00ff7f;
+            color: #1c1c1c;
+        }
+
+        #config-section {
+            padding: 80px 20px;
+            display: flex;
+        }
+
+        #config-list {
+            width: 30%;
+            padding-right: 20px;
+        }
+
+
+        #config-description {
+            width: 70%;
+            border-left: 1px solid #00ff7f;
+            padding-left: 20px;
+        }
+
+        .config-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .config-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 127, 0.5);
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        button {
+            background: #00ff7f;
+            color: #1c1c1c;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background: rgba(0, 255, 127, 0.8);
+            transform: scale(1.05);
+        }
+
+        pre {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        .config-form {
+            display: none;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: calc(20%);
+            padding: 10px;
+            border: 1px solid #00ff7f;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            margin-left: 20px;
+            margin-right: 20px;
+            font-size: 12px;
+        }
+
+        input[type="text"] {
+            width: calc(80%);
+            padding: 10px;
+            border: 1px solid #00ff7f;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        input[type="text"]::placeholder {
+            color: #ccc; /* Цвет плейсхолдера */
+        }
+
+        footer {
+            position: fixed; /* Фиксируем футер внизу */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+<header>
+    <a href="/"><h1>ASCENMMO</h1></a>
+    <nav>
+        <a href="/developer/doc">Документация</a>
+        <a href="/admin/info">Информация о разработчике</a>
+        <a href="/admin/games">Мои игры</a>
+    </nav>
+</header>
+
+<section id="config-section">
+    <div id="config-list">
+        <h3>Конфигурации</h3>
+        <div id="configs-box">
+            <!-- Список конфигураций -->
+        </div>
+        <div class="button-container">
+            <button id="add-config">Добавить конфигурацию</button>
+        </div>
+        <p id="error-message" style="display:none;">Конфигурации не найдены.</p>
+    </div>
+    <div id="config-description">
+        <h3>Описание Конфигурации</h3>
+        <pre id="config-json">
+            <button id="refresh-result" style="margin: 10px; float: right;">Обновить результат</button>
+            Выберите конфигурацию, чтобы увидеть её описание.
+        </pre>
+        <div class="config-form" id="config-form">
+            <h3>Добавление Конфигурации</h3>
+
+            <!-- Выпадающий список действий -->
+            <div class="form-group">
+                <label for="run_func">Выберите действие:</label>
+                <select id="run_func">
+                    <option value="IncrementResult">Добовляем к полю +1 {IncrementResult}</option>
+                    <option value="DecrementResult">Удаляем из поля -1 {DecrementResult}</option>
+                    <option value="AdditionDataResultToOld">Суммируем результаты oldData + newData {AdditionDataResultToOld}</option>
+                    <option value="SubtractDataResultToOld">Вычитаем результаты oldData - newData {SubtractDataResultToOld}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="result_name">Имя результата:</label>
+                <input type="text" id="result_name" placeholder="Введите имя результата">
+            </div>
+            <div class="form-group">
+                <label for="result_type">Тип результата:</label>
+                <select id="result_type">
+                    <option value="int">Integer</option>
+                    <option value="string">String</option>
+                    <option value="float">Float</option>
+                </select>
+            </div>
+
+            <!-- Параметры пары значений -->
+            <div id="pairs-container">
+                <div class="pair-fields">
+                    <div class="form-group">
+                        <label for="param-column-name">Имя столбца:</label>
+                        <input type="text" class="column-name" placeholder="Введите имя столбца">
+                    </div>
+                    <div class="form-group">
+                        <label for="param-value-type">Тип значения:</label>
+                        <select class="value-type">
+                            <option value="int">Integer</option>
+                            <option value="float">Float</option>
+                            <option value="string">String</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button id="add-pair">Добавить пару</button>
+
+            <!-- Выбор типа сервера -->
+            <div class="form-group">
+                <label for="use_on_server_type">Тип сервера:</label>
+                <select id="use_on_server_type">
+                    <option value="UDP">UDP</option>
+                    <option value="TCP">TCP</option>
+                    <option value="WS">WebSocket</option>
+                </select>
+            </div>
+
+            <button id="save-config">Сохранить</button>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>© 2024 Ascenmmo. Все права защищены.</p>
+</footer>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const configsBox = document.getElementById('configs-box');
+        const errorMessage = document.getElementById('error-message');
+        const addConfigButton = document.getElementById('add-config');
+        const configJson = document.getElementById('config-json');
+        const configForm = document.getElementById('config-form');
+        const saveConfigButton = document.getElementById('save-config');
+        const addPairButton = document.getElementById('add-pair');
+        const pairsContainer = document.getElementById('pairs-container');
+        const refreshResultButton = document.getElementById('refresh-result'); // Кнопка обновления результата
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameID = urlParams.get('gameID'); // Получаем gameID из GET-параметра
+
+        const backendUrl = `${window.location.origin}/api/v1/devToolsGameConfigs/getGameConfig`;
+        const gameResultConfigUrl = `${window.location.origin}/api/v1/devToolsGameConfigs/getGameResultConfigPreview`;
+        let existingConfigs = []; // Массив для хранения текущих конфигураций
+
+        // Добавляем токен авторизации
+        let token = getCookie("token");
+
+        let isRetred = false
+
+        const handleApiError = async (error, retryFunc) => {
+            console.error('Ошибка:', error);
+            if (error.message && error.message.includes('token')) {
+                await refreshToken(retryFunc);
+            }else{
+                alert(error.message);
+            }
+        };
+
+
+
+        const refreshToken = async (retryFunc) => {
+            const refreshToken = getCookie('refresh');
+            if (isRetred) {
+                return
+            }
+
+            isRetred = true
+
+            try {
+                const response = await fetch(`${window.location.origin}/api/v1/developers/refreshToken`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Token': token,
+                        'RefreshToken': refreshToken
+                    },
+                    body: JSON.stringify({
+                        id: 1,
+                        jsonrpc: "2.0",
+                        params: {}
+                    })
+                });
+
+                if (!response.ok) throw new Error('Ошибка обновления токенов');
+
+                const data = await response.json();
+                if (data.result && data.result.newToken && data.result.newRefresh) {
+                    document.cookie = `token=${data.result.newToken}; path=/`;
+                    document.cookie = `refresh=${data.result.newRefresh}; path=/`;
+                    retryFunc()
+                } else {
+                    throw new Error('Ошибка обновления токенов');
+                }
+            } catch (error) {
+                console.error('Ошибка обновления токенов:', error);
+                window.location.href = '/admin/auth';  // Редирект на страницу аутентификации
+            }
+            token = getCookie("token")
+        };
+
+        // Получение текущих конфигураций
+        function fetchGameConfig() {
+            fetch(backendUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': `${token}`
+                },
+                body: JSON.stringify({
+                    id: 1,
+                    jsonrpc: '2.0',
+                    params: {
+                        gameID: gameID
+                    }
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        handleApiError(data.error, fetchGameConfig)
+                    }
+                    renderGameConfig(data)
+                })
+                .catch(err => {
+                    console.error('Error fetching configurations:', err);
+                });
+        }
+
+        // Получение результата конфигурации игры
+        function fetchGameResultConfigPreview() {
+            fetch(gameResultConfigUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': `${token}`
+                },
+                body: JSON.stringify({
+                    id: 1,
+                    jsonrpc: '2.0',
+                    params: {
+                        gameID: gameID
+                    }
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        handleApiError(data.error, fetchGameResultConfigPreview)
+                    }
+                    renderGameResultConfig(data)
+                })
+                .catch(err => {
+                    console.error('Error fetching game result config:', err);
+                });
+        }
+
+        // Отображение конфигураций
+        function renderGameConfig(data) {
+            if (!data.result || !data.result.configs || data.result.configs.sorting_config.length === 0) {
+                errorMessage.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'none';
+                existingConfigs = data.result.configs.sorting_config; // Сохраняем текущие конфигурации
+                configsBox.innerHTML = ''; // Очищаем перед рендерингом
+
+                data.result.configs.sorting_config.forEach((config, index) => {
+                    const configItem = document.createElement('div');
+                    configItem.className = 'config-item';
+                    configItem.style.display = 'flex';
+                    configItem.style.alignItems = 'center'; // Выравнивание по центру
+
+                    // Кнопка для удаления конфигурации
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'X';
+                    deleteButton.style.marginRight = '10px'; // Отступ справа от кнопки
+                    deleteButton.style.backgroundColor = 'gray';
+                    deleteButton.style.color = '#fff';
+                    deleteButton.style.border = 'none';
+                    deleteButton.style.cursor = 'pointer';
+                    deleteButton.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Чтобы не вызывалось событие клика на configItem
+                        deleteConfig(index);
+                    });
+
+                    configItem.appendChild(deleteButton); // Добавляем кнопку "Удалить" в элемент конфигурации
+                    configItem.appendChild(document.createTextNode(`${config.result_name}: ${config.name}`)); // Текст конфигурации
+
+                    configItem.addEventListener('click', () => {
+                        configJson.textContent = JSON.stringify(config, null, 2);
+                        configJson.appendChild(refreshResultButton);
+                    });
+                    configsBox.appendChild(configItem);
+                });
+            }
+        }
+
+        // Удаление конфигурации
+        function deleteConfig(index) {
+            existingConfigs.splice(index, 1); // Удаляем элемент по индексу
+            update(); // Обновляем конфигурации на сервере
+        }
+
+        // Отображение результата конфигурации игры
+        function renderGameResultConfig(data) {
+            if (!data.result || !data.result.gameResult) {
+                configJson.textContent = 'Нет данных для отображения.';
+                configJson.appendChild(refreshResultButton);
+                return;
+            }
+
+            const formattedJson = JSON.stringify(data.result.gameResult, null, 2);
+            configJson.textContent = formattedJson;
+            configJson.appendChild(refreshResultButton);
+        }
+
+        // Функция для обновления конфигураций на сервере
+        function update() {
+            const updatedConfigs = {
+                gameID: gameID,
+                sorting_config: existingConfigs
+            };
+
+            fetch(`${window.location.origin}/api/v1/devToolsGameConfigs/createOrUpdateConfig`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': `${token}`
+                },
+                body: JSON.stringify({
+                    id: 1,
+                    jsonrpc: '2.0',
+                    params: {
+                        configs: updatedConfigs
+                    }
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        handleApiError(data.error, update)
+                    }
+                })
+                .catch(err => {
+
+                    console.error('Ошибка при отправке запроса:', err);
+                })
+                .finally(() => {
+                    fetchGameConfig(); // Обновляем конфигурации после обновления на сервере
+                });
+        }
+
+        // Инициализация
+        fetchGameConfig();
+        fetchGameResultConfigPreview();
+
+        // Обработчик для кнопки обновления результата
+        refreshResultButton.addEventListener('click', fetchGameResultConfigPreview);
+
+        addConfigButton.addEventListener('click', () => {
+            configForm.style.display = 'block';
+        });
+
+        saveConfigButton.addEventListener('click', () => {
+            const use_on_server_type = document.getElementById('use_on_server_type').value;
+            const name = document.getElementById('run_func').value;
+            const result_name = document.getElementById('result_name').value;
+            const result_type = document.getElementById('result_type').value;
+
+            // Собираем значения для параметров пар
+            const pairs = Array.from(document.getElementsByClassName('pair-fields')).map(pairField => {
+                const column_name = pairField.querySelector('.column-name').value;
+                const value_type = pairField.querySelector('.value-type').value;
+                return { column_name, value_type };
+            });
+
+            // Новая конфигурация
+            const newConfig = {
+                use_on_server_type: use_on_server_type,
+                name: name,
+                result_name: result_name,
+                result_type: result_type,
+                params: pairs
+            };
+
+            // Добавляем новую конфигурацию в массив existingConfigs
+            existingConfigs.push(newConfig);
+            update(); // Обновляем конфигурации на сервере после добавления
+        });
+
+        addPairButton.addEventListener('click', () => {
+            const newPair = document.createElement('div');
+            newPair.className = 'pair-fields';
+            newPair.innerHTML = `
+                <div class="form-group">
+                    <label for="param-column-name">Имя столбца:</label>
+                    <input type="text" class="column-name" placeholder="Введите имя столбца">
+                </div>
+                <div class="form-group">
+                    <label for="param-value-type">Тип значения:</label>
+                    <select class="value-type">
+                        <option value="int">Integer</option>
+                        <option value="float">Float</option>
+                        <option value="string">String</option>
+                    </select>
+                </div>
+            `;
+            pairsContainer.appendChild(newPair);
+        });
+
+        function getCookie(name) {
+            const matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : undefined;
+        }
+    });
+</script>
+
+
+</body>
+</html>

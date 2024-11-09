@@ -18,6 +18,7 @@ import (
 	"github.com/rs/zerolog"
 	"html/template"
 	"runtime"
+	"strings"
 	"time"
 )
 
@@ -111,7 +112,7 @@ func mastNil(err error) {
 
 func adminPanel(app *fiber.App) {
 	app.Get("/", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.MainPage("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.MainPage(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
@@ -124,7 +125,7 @@ func adminPanel(app *fiber.App) {
 	})
 
 	app.Get("/developer/doc", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.DevDocs("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.DevDocs(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
@@ -138,7 +139,7 @@ func adminPanel(app *fiber.App) {
 	})
 
 	app.Get("/admin/auth", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.Auth("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.Auth(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
@@ -151,7 +152,7 @@ func adminPanel(app *fiber.App) {
 	})
 
 	app.Get("/admin/games", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.GameCollection("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.GameCollection(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
@@ -164,7 +165,7 @@ func adminPanel(app *fiber.App) {
 	})
 
 	app.Get("/admin/game_info", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.GameInfo("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.GameInfo(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
@@ -177,7 +178,7 @@ func adminPanel(app *fiber.App) {
 	})
 
 	app.Get("/admin/game_info/config", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.GameConfig("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.GameConfig(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
@@ -190,7 +191,7 @@ func adminPanel(app *fiber.App) {
 	})
 
 	app.Get("/admin/info", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.DeveloperInfo("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.DeveloperInfo(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
@@ -201,4 +202,17 @@ func adminPanel(app *fiber.App) {
 		}
 		return nil
 	})
+}
+
+func detectLanguage(c *fiber.Ctx) string {
+	acceptLanguage := c.Get("Accept-Language")
+
+	admin := c.Cookies("AdminLanguageLanguage")
+	if admin != "" {
+		return admin
+	}
+	if strings.Contains(acceptLanguage, detectLanguage(c)) {
+		return adminclient.Ru
+	}
+	return adminclient.Eng
 }

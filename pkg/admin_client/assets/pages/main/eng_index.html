@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -198,14 +198,14 @@
         #admin h3 {
             margin-bottom: 20px;
             font-size: 36px;
-            color: #00ff7f; /* Цвет заголовка */
-            animation: slideIn 0.5s ease; /* Анимация заголовка */
+            color: #00ff7f;
+            animation: slideIn 0.5s ease;
         }
 
         #admin p {
             margin-bottom: 40px;
-            font-size: 20px; /* Увеличенный размер текста */
-            color: #e0e0e0; /* Цвет текста для лучшего контраста */
+            font-size: 20px;
+            color: #e0e0e0;
         }
 
         .download-section {
@@ -213,9 +213,9 @@
             padding: 60px 20px;
             text-align: center;
             color: #fff;
-            animation: fadeIn 1s ease-in; /* Анимация появления */
-            position: relative; /* Для абсолютного позиционирования внутренних элементов */
-            overflow: hidden; /* Скрыть элементы, выходящие за пределы секции */
+            animation: fadeIn 1s ease-in;
+            position: relative;
+            overflow: hidden;
         }
 
         .download-section::before {
@@ -225,32 +225,32 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный фон для улучшения читаемости текста */
-            z-index: 1; /* Поместить под контентом */
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
         }
 
         .download-content {
-            position: relative; /* Для обеспечения правильного позиционирования текста и кнопки */
-            z-index: 2; /* Чтобы текст был выше фона */
+            position: relative;
+            z-index: 2;
         }
 
         .download-content h3 {
             font-size: 36px;
             margin-bottom: 20px;
-            animation: slideIn 0.5s ease-in-out; /* Анимация заголовка */
+            animation: slideIn 0.5s ease-in-out;
         }
 
         .download-content p {
             font-size: 18px;
-            margin-bottom: 10px; /* Уменьшено расстояние между параграфами */
-            animation: fadeIn 1s ease-in-out; /* Анимация текста */
+            margin-bottom: 10px;
+            animation: fadeIn 1s ease-in-out;
         }
 
         .info-text {
             font-size: 16px;
             font-weight: bold;
-            margin-bottom: 30px; /* Добавлено расстояние под информационным текстом */
-            color: #ffd700; /* Цвет текста для выделения */
+            margin-bottom: 30px;
+            color: #ffd700;
         }
 
     </style>
@@ -317,7 +317,6 @@
 </footer>
 
 <script>
-    // Функция для получения куки по имени
     function getCookie(name) {
         let matches = document.cookie.match(new RegExp(
             "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
@@ -325,25 +324,30 @@
         return matches ? decodeURIComponent(matches[1]) : undefined;
     }
 
-    // Проверяем наличие токенов в куках
     const token = getCookie('token');
     const refreshToken = getCookie('refresh');
 
-    // Получаем элемент навигации
     const navLinks = document.getElementById('nav-links');
 
-    // В зависимости от наличия токенов, показываем соответствующие кнопки
     if (token && refreshToken) {
         navLinks.innerHTML = `
             <a href="/admin/games">Мои игры</a>
             <a href="/developer/doc">Документация</a>
+            <button id="eng-button" class="button">Eng</button>
         `;
     } else {
         navLinks.innerHTML = `
             <a href="/admin/auth">Авторизоваться</a>
             <a href="/developer/doc">Документация</a>
+            <button id="eng-button" class="button">Eng</button>
         `;
     }
+
+    document.getElementById('eng-button').addEventListener('click', function() {
+        document.cookie = "AdminLanguageLanguage=eng; path=/; max-age=" + 60*60*24*30;
+    });
+
+
 </script>
 </body>
 </html>
