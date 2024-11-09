@@ -3,6 +3,7 @@ package env
 var (
 	ServerAddress = "ascenmmo.com"
 	TokenKey      = "_remember_token_mast_be_32_bytes"
+	DebugLogs     = true
 )
 
 var (

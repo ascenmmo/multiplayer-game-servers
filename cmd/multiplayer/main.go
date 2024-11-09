@@ -14,11 +14,16 @@ import (
 )
 
 func main() {
-	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
+	logger := zerolog.Logger{}
+
 	ctx := context.Background()
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT)
+
+	if env.DebugLogs {
+		logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
+	}
 
 	if env.RunMultiplayer {
 		go start.Multiplayer(logger)

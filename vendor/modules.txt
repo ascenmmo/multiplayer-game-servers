@@ -37,7 +37,7 @@ github.com/ascenmmo/udp-server/pkg/errors
 github.com/ascenmmo/udp-server/pkg/start
 github.com/ascenmmo/udp-server/pkg/transport
 github.com/ascenmmo/udp-server/pkg/transport/viewer
-# github.com/ascenmmo/websocket-server v0.0.0-20241109223107-320f151abbae
+# github.com/ascenmmo/websocket-server v0.0.0-20241109224646-bb98a1bf038f
 ## explicit; go 1.23.2
 github.com/ascenmmo/websocket-server/env
 github.com/ascenmmo/websocket-server/internal/connection

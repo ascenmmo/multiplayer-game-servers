@@ -75,16 +75,16 @@ func (ws *WebSocket) handleConnection(ctx context.Context, token string, clientI
 		fmt.Println(err)
 	}
 
-	err = ws.service.SetNewConnection(clientInfo, connection.DataSender(&connection.WebSocketConnection{Conn: conn}))
+	ctx, cancel := context.WithCancel(ctx)
+	ds := connection.DataSender(&connection.WebSocketConnection{Conn: conn, CtxClose: cancel})
+
+	err = ws.service.SetNewConnection(clientInfo, ds)
 	if err != nil {
 		ws.logger.Error().Err(err).Msg("failed to set new connection")
 	}
 
 	pingTicker := time.NewTicker(pingInterval)
 	defer pingTicker.Stop()
-
-	ctx, cancel := context.WithCancel(ctx)
-	ds := connection.DataSender(&connection.WebSocketConnection{Conn: conn, CtxClose: cancel})
 
 	for {
 		select {
