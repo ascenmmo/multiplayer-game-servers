@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    <title>Информация о разработчике</title>
+    <title>Developer Info</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -123,31 +123,32 @@
 <header>
     <a href="/"> <h1>ASCENMMO</h1></a>
     <nav>
-        <a href="/developer/doc">Документация</a>
-        <a href="/admin/games">Мои игры</a>
-        <a href="#" id="eng-button">Eng</a>
+        <a href="/developer/doc">Documentation</a>
+        <a href="/admin/games">My Games</a>
+        <a href="#" id="eng-button">Ру</a>
     </nav>
 </header>
 
-<div class="box"> <!-- Добавляем контейнер с классом box -->
+<div class="box"> <!-- Adding container with class box -->
     <section>
-        <h3>Информация о разработчике</h3>
+        <h3>Developer Information</h3>
         <div id="developer-info">
             <input type="text" id="email" placeholder="Email">
-            <input type="text" id="nickname" placeholder="Никнейм">
-            <input type="password" id="old-password" placeholder="Старый пароль">
-            <input type="password" id="new-password" placeholder="Новый пароль">
-            <button id="update-developer">Изменить информацию</button>
-            <p class="error-message" id="error-message">Ошибка при обновлении информации.</p>
+            <input type="text" id="nickname" placeholder="Nickname">
+            <input type="password" id="old-password" placeholder="Old Password">
+            <input type="password" id="new-password" placeholder="New Password">
+            <button id="update-developer">Update Information</button>
+            <p class="error-message" id="error-message">Error updating information.</p>
         </div>
 
-        <button id="logout">Выйти из админки</button> <!-- Кнопка выхода -->
+        <button id="logout">Log Out</button> <!-- Log out button -->
     </section>
 </div>
 
 <footer>
-    <p>© 2024 Ascenmmo. Все права защищены.</p>
+    <p>© 2024 Ascenmmo. All rights reserved.</p>
 </footer>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -161,10 +162,10 @@
 
         const backendUrl = `${window.location.origin}/api/v1/developers`;
 
-        let isRetred = false;
+        let isRetried = false;
 
         const handleApiError = async (error, retryFunc) => {
-            console.error('Ошибка:', error);
+            console.error('Error:', error);
             if (error.message && error.message.includes('token')) {
                 await refreshToken(retryFunc);
             } else {
@@ -175,11 +176,11 @@
         const refreshToken = async (retryFunc) => {
             const refreshToken = getCookie('refresh');
             const token = getCookie('token');
-            if (isRetred) {
+            if (isRetried) {
                 return;
             }
 
-            isRetred = true;
+            isRetried = true;
 
             try {
                 const response = await fetch(`${window.location.origin}/api/v1/developers/refreshToken`, {
@@ -196,7 +197,7 @@
                     })
                 });
 
-                if (!response.ok) throw new Error('Ошибка обновления токенов');
+                if (!response.ok) throw new Error('Error refreshing tokens');
 
                 const data = await response.json();
                 if (data.result && data.result.newToken && data.result.newRefresh) {
@@ -204,11 +205,11 @@
                     document.cookie = `refresh=${data.result.newRefresh}; path=/`;
                     retryFunc();
                 } else {
-                    throw new Error('Ошибка обновления токенов');
+                    throw new Error('Error refreshing tokens');
                 }
             } catch (error) {
-                console.error('Ошибка обновления токенов:', error);
-                window.location.href = '/admin/auth';  // Редирект на страницу аутентификации
+                console.error('Error refreshing tokens:', error);
+                window.location.href = '/admin/auth';  // Redirect to authentication page
             }
         };
 
@@ -227,7 +228,7 @@
                     })
                 });
 
-                if (!response.ok) throw new Error('Ошибка сети');
+                if (!response.ok) throw new Error('Network error');
 
                 const data = await response.json();
                 if (data.result && data.result.developer) {
@@ -239,8 +240,8 @@
                     }
                 }
             } catch (error) {
-                console.error('Ошибка:', error);
-                errorMessage.style.display = 'block'; // Показываем сообщение об ошибке
+                console.error('Error:', error);
+                errorMessage.style.display = 'block'; // Show error message
             }
         };
 
@@ -266,19 +267,19 @@
                     })
                 });
 
-                if (!response.ok) throw new Error('Ошибка сети');
+                if (!response.ok) throw new Error('Network error');
 
                 const data = await response.json();
                 if (data.result) {
-                    alert('Информация успешно обновлена');
+                    alert('Information successfully updated');
                 } else {
                     if (data.error) {
                         handleApiError(data.error, updateDeveloperInfo);
                     }
                 }
             } catch (error) {
-                console.error('Ошибка:', error);
-                errorMessage.style.display = 'block'; // Показываем сообщение об ошибке
+                console.error('Error:', error);
+                errorMessage.style.display = 'block'; // Show error message
             }
             fetchDeveloperInfo();
         };
@@ -294,17 +295,18 @@
 
         updateDeveloperButton.addEventListener('click', updateDeveloperInfo);
         logoutButton.addEventListener('click', () => {
-            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/'; // Удаляем токен
-            document.cookie = 'refresh=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/'; // Удаляем refresh токен
-            window.location.href = '/admin/auth'; // Редирект на страницу аутентификации
+            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/'; // Delete token
+            document.cookie = 'refresh=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/'; // Delete refresh token
+            window.location.href = '/admin/auth'; // Redirect to authentication page
         });
 
-        fetchDeveloperInfo(); // Запрашиваем информацию о разработчике
+        fetchDeveloperInfo(); // Request developer information
     });
     document.getElementById('eng-button').addEventListener('click', function() {
-        document.cookie = "AdminLanguageLanguage=eng; path=/; max-age=" + 60*60*24*30;
+        document.cookie = "AdminLanguageLanguage=ru; path=/; max-age=" + 60*60*24*30;
         window.location.reload(true);
     });
 </script>
+
 </body>
 </html>

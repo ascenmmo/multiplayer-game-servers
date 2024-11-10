@@ -216,13 +216,18 @@
         });
 
         const result = await response.json();
-        if (result.result.token) {
-            document.cookie = `token=${result.result.token}; path=/`;
-            document.cookie = `refresh=${result.result.refresh}; path=/`;
-            window.location.href = '/admin/games';
-        } else {
+        if (result.error) {
             alert('Ошибка авторизации!\n' +
                 'Не верный логин или пароль');
+        } else {
+            if (result.result.token) {
+                document.cookie = `token=${result.result.token}; path=/`;
+                document.cookie = `refresh=${result.result.refresh}; path=/`;
+                window.location.href = '/admin/games';
+            } else {
+                alert('Ошибка авторизации!\n' +
+                    'Не верный логин или пароль');
+            }
         }
     });
 
@@ -244,12 +249,16 @@
         });
 
         const result = await response.json();
-        if (result.result.token) {
-            document.cookie = `token=${result.result.token}; path=/`;
-            document.cookie = `refresh=${result.result.refresh}; path=/`;
-            window.location.href = '/admin/games';
-        } else {
+        if (result.error) {
             alert('Ошибка регистрации!\nПопробуйте поменять mail');
+        } else {
+            if (result.result.token) {
+                document.cookie = `token=${result.result.token}; path=/`;
+                document.cookie = `refresh=${result.result.refresh}; path=/`;
+                window.location.href = '/admin/games';
+            } else {
+                alert('Ошибка регистрации!\nПопробуйте поменять mail');
+            }
         }
     });
     document.getElementById('eng-button').addEventListener('click', function() {

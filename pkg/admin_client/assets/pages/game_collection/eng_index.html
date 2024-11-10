@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    <title>Коллекция Игр</title>
+    <title>My Games</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -119,27 +119,27 @@
 <header>
     <a href="/"> <h1>ASCENMMO</h1></a>
     <nav>
-        <a href="/developer/doc">Документация</a>
-        <a href="/admin/info">Информация о разработчике</a>
-        <a href="#" id="eng-button">Eng</a>
+        <a href="/developer/doc">Documentation</a>
+        <a href="/admin/info">Developer Information</a>
+        <a href="#" id="eng-button">Ру</a>
     </nav>
 </header>
 
 <section id="games-collection">
-    <h3>Коллекция Игр</h3>
+    <h3>Game Collection</h3>
     <div id="games-box">
-        <!-- Здесь будет отображаться список игр -->
+        <!-- The list of games will be displayed here -->
     </div>
     <div class="button-container">
-        <button id="add-game">Добавить игру</button>
-        <button id="refresh-list">Обновить список</button>
-        <button id="delete-game">Удалить игру</button>
+        <button id="add-game">Add Game</button>
+        <button id="refresh-list">Refresh List</button>
+        <button id="delete-game">Delete Game</button>
     </div>
-    <p id="error-message" style="display:none;">Игры не найдены.</p>
+    <p id="error-message" style="display:none;">No games found.</p>
 </section>
 
 <footer>
-    <p>© 2024 Ascenmmo. Все права защищены.</p>
+    <p>© 2024 Ascenmmo. All rights reserved.</p>
 </footer>
 
 <script>
@@ -151,21 +151,19 @@
         const deleteGameButton = document.getElementById('delete-game');
         const developerInfoButton = document.getElementById('developer-info');
 
-        // Определяем базовый URL для бэкенда
+        // Define the base URL for the backend
         const backendUrl = `${window.location.origin}/api/v1/devTools`;
 
         let isRetred = false
 
         const handleApiError = async (error, retryFunc) => {
-            console.error('Ошибка:', error);
+            console.error('Error:', error);
             if (error.message && error.message.includes('token')) {
                 await refreshToken(retryFunc);
             }else{
                 alert(error.message);
             }
         };
-
-
 
         const refreshToken = async (retryFunc) => {
             const refreshToken = getCookie('refresh');
@@ -191,7 +189,7 @@
                     })
                 });
 
-                if (!response.ok) throw new Error('Ошибка обновления токенов');
+                if (!response.ok) throw new Error('Token refresh error');
 
                 const data = await response.json();
                 if (data.result && data.result.newToken && data.result.newRefresh) {
@@ -199,11 +197,11 @@
                     document.cookie = `refresh=${data.result.newRefresh}; path=/`;
                     retryFunc()
                 } else {
-                    throw new Error('Ошибка обновления токенов');
+                    throw new Error('Token refresh error');
                 }
             } catch (error) {
-                console.error('Ошибка обновления токенов:', error);
-                window.location.href = '/admin/auth';  // Редирект на страницу аутентификации
+                console.error('Token refresh error:', error);
+                window.location.href = '/admin/auth';  // Redirect to authentication page
             }
         };
 
@@ -213,7 +211,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Token': getCookie('token') // Получаем токен из куки
+                        'Token': getCookie('token') // Get token from cookie
                     },
                     body: JSON.stringify({
                         id: 1,
@@ -222,29 +220,29 @@
                     })
                 });
 
-                if (!response.ok) throw new Error('Ошибка сети');
+                if (!response.ok) throw new Error('Network error');
 
                 const data = await response.json();
                 if (data.result && data.result.games.length > 0) {
-                    errorMessage.style.display = 'none'; // Скрываем сообщение об ошибке
+                    errorMessage.style.display = 'none'; // Hide error message
                     renderGames(data.result.games);
                 } else {
                     if (data.error) {
-                        handleApiError(data.error,fetchGames)
+                        handleApiError(data.error, fetchGames)
                     }
-                    gamesBox.innerHTML = ''; // Очищаем контейнер с играми
-                    errorMessage.style.display = 'block'; // Показываем сообщение об ошибке
+                    gamesBox.innerHTML = ''; // Clear games container
+                    errorMessage.style.display = 'block'; // Show error message
                 }
             } catch (error) {
-                console.error('Ошибка:', error);
-                errorMessage.style.display = 'block'; // Показываем сообщение об ошибке
+                console.error('Error:', error);
+                errorMessage.style.display = 'block'; // Show error message
             }
         };
 
         const deleteGameByID = async () => {
-            const deletingID = prompt('Введите gameID\n\n' +
-                'Помните что после удаления игры все пользователи автоматически удаляться\n' +
-                'Все информация об игре будет удаленна безвозвратно');
+            const deletingID = prompt('Enter gameID\n\n' +
+                'Remember, once the game is deleted, all users will be automatically removed\n' +
+                'All information about the game will be deleted permanently');
 
             if (!deletingID) {
                 return
@@ -255,7 +253,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Token': getCookie('token') // Получаем токен из куки
+                        'Token': getCookie('token') // Get token from cookie
                     },
                     body: JSON.stringify({
                         id: 1,
@@ -266,33 +264,33 @@
                     })
                 });
 
-                if (!response.ok) throw new Error('Ошибка сети');
+                if (!response.ok) throw new Error('Network error');
 
                 const data = await response.json();
                 if (data.error) {
-                    handleApiError(data.error,fetchGames)
+                    handleApiError(data.error, fetchGames)
                 }
                 gamesBox.innerHTML = '';
                 errorMessage.style.display = 'block';
             } catch (error) {
-                console.error('Ошибка:', error);
+                console.error('Error:', error);
                 errorMessage.style.display = 'block';
             }
             fetchGames();
         };
 
         const renderGames = (games) => {
-            gamesBox.innerHTML = ''; // Очищаем контейнер перед добавлением новых игр
+            gamesBox.innerHTML = ''; // Clear container before adding new games
             games.forEach(game => {
                 const gameItem = document.createElement('div');
                 gameItem.className = 'game-item';
                 gameItem.innerHTML = `
                 <h4>${game.name}</h4>
-                <p>Количество игроков: ${game.count_players}</p>
-                <p>Количество игроков онлайн: ${game.count_online}</p>
+                <p>Players count: ${game.count_players}</p>
+                <p>Online players count: ${game.count_online}</p>
             `;
                 gameItem.onclick = () => {
-                    window.location.href = `game_info?gameID=${game.gameID}`; // Редирект на страницу с игрой
+                    window.location.href = `game_info?gameID=${game.gameID}`; // Redirect to game info page
                 };
                 gamesBox.appendChild(gameItem);
             });
@@ -305,7 +303,7 @@
         };
 
         addGameButton.onclick = () => {
-            window.location.href = 'game_info'; // Редирект на страницу добавления игры
+            window.location.href = 'game_info'; // Redirect to add game page
         };
 
         refreshListButton.onclick = fetchGames;
@@ -317,15 +315,16 @@
             window.location.href = 'developer-info';
         };
 
-        // Первоначальный вызов для загрузки игр
+        // Initial call to load games
 
     });
 
     document.getElementById('eng-button').addEventListener('click', function() {
-        document.cookie = "AdminLanguageLanguage=eng; path=/; max-age=" + 60*60*24*30;
+        document.cookie = "AdminLanguageLanguage=ru; path=/; max-age=" + 60*60*24*30;
         window.location.reload(true);
     });
 
 </script>
+
 </body>
 </html>

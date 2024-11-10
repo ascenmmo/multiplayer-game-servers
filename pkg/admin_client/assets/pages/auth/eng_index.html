@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Авторизация | ASCENMMO</title>
+    <title>Auth | ASCENMMO</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -140,38 +140,38 @@
 <header>
     <a href="/"> <h1>ASCENMMO</h1></a>
     <nav>
-        <a href="/developer/doc">Документация</a>
-        <a href="#" id="eng-button">Eng</a>
+        <a href="/developer/doc">Documentation</a>
+        <a href="#" id="eng-button">Ру</a>
     </nav>
 </header>
 
 <div id="auth-section">
-    <h1>Авторизация ASCENMMO</h1>
+    <h1>ASCENMMO Authentication</h1>
 
     <div id="signin-form" style="display: block;">
-        <h2>Вход</h2>
+        <h2>Sign In</h2>
         <form>
             <input type="email" id="login-email" placeholder="Email" required />
-            <input type="password" id="login-password" placeholder="Пароль" required />
-            <button type="submit">Войти</button>
+            <input type="password" id="login-password" placeholder="Password" required />
+            <button type="submit">Log In</button>
         </form>
     </div>
 
     <div id="signup-form" style="display: none;">
-        <h2>Регистрация</h2>
+        <h2>Sign Up</h2>
         <form>
-            <input type="text" id="signup-nickname" placeholder="Никнейм" required />
+            <input type="text" id="signup-nickname" placeholder="Nickname" required />
             <input type="email" id="signup-email" placeholder="Email" required />
-            <input type="password" id="signup-password" placeholder="Пароль" required />
-            <button type="submit">Зарегистрироваться</button>
+            <input type="password" id="signup-password" placeholder="Password" required />
+            <button type="submit">Register</button>
         </form>
     </div>
 
-    <button class="toggle-button" id="toggle-auth" onclick="toggleForm()">Переключиться на регистрацию</button>
+    <button class="toggle-button" id="toggle-auth" onclick="toggleForm()">Switch to Sign Up</button>
 </div>
 
 <footer>
-    <p>© 2024 Ascenmmo. Все права защищены.</p>
+    <p>© 2024 Ascenmmo. All rights reserved.</p>
 </footer>
 
 <script>
@@ -179,32 +179,30 @@
     document.cookie = `token=; path=/`;
     document.cookie = `refresh=; path=/`;
 
-    // Определяем домен и порт динамически
+    // Dynamically define domain and port
     const backendUrl = `${window.location.origin}/api/v1/developers`;
 
-
-
-    // Функция для переключения форм (вход/регистрация)
+    // Function to toggle forms (sign in / sign up)
     function toggleForm() {
         if (isSignIn) {
             document.getElementById('signin-form').style.display = 'none';
             document.getElementById('signup-form').style.display = 'block';
-            document.getElementById('toggle-auth').textContent = 'Переключиться на вход';
+            document.getElementById('toggle-auth').textContent = 'Switch to Sign In';
         } else {
             document.getElementById('signin-form').style.display = 'block';
             document.getElementById('signup-form').style.display = 'none';
-            document.getElementById('toggle-auth').textContent = 'Переключиться на регистрацию';
+            document.getElementById('toggle-auth').textContent = 'Switch to Sign Up';
         }
         isSignIn = !isSignIn;
     }
 
-    // Авторизация
+    // Sign In
     document.querySelector('#signin-form form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
 
-        // Используем динамически сформированный URL для обращения к бэкенду
+        // Use dynamically generated URL to call the backend
         const response = await fetch(`${backendUrl}/signIn`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -216,17 +214,22 @@
         });
 
         const result = await response.json();
-        if (result.result.token) {
-            document.cookie = `token=${result.result.token}; path=/`;
-            document.cookie = `refresh=${result.result.refresh}; path=/`;
-            window.location.href = '/admin/games';
-        } else {
-            alert('Ошибка авторизации!\n' +
-                'Не верный логин или пароль');
+        if (result.error) {
+            alert('Authentication Error!\n' +
+                'Incorrect email or password');
+        }else {
+            if (result.result.token) {
+                document.cookie = `token=${result.result.token}; path=/`;
+                document.cookie = `refresh=${result.result.refresh}; path=/`;
+                window.location.href = '/admin/games';
+            } else {
+                alert('Authentication Error!\n' +
+                    'Incorrect email or password');
+            }
         }
     });
 
-    // Регистрация
+    // Sign Up
     document.querySelector('#signup-form form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const nickname = document.getElementById('signup-nickname').value;
@@ -244,18 +247,24 @@
         });
 
         const result = await response.json();
-        if (result.result.token) {
-            document.cookie = `token=${result.result.token}; path=/`;
-            document.cookie = `refresh=${result.result.refresh}; path=/`;
-            window.location.href = '/admin/games';
+        if (result.error) {
+            alert('Registration Error!\nTry changing the email');
         } else {
-            alert('Ошибка регистрации!\nПопробуйте поменять mail');
+            if (result.result.token) {
+                document.cookie = `token=${result.result.token}; path=/`;
+                document.cookie = `refresh=${result.result.refresh}; path=/`;
+                window.location.href = '/admin/games';
+            } else {
+                alert('Registration Error!\nTry changing the email');
+            }
         }
     });
+
     document.getElementById('eng-button').addEventListener('click', function() {
-        document.cookie = "AdminLanguageLanguage=eng; path=/; max-age=" + 60*60*24*30;
+        document.cookie = "AdminLanguageLanguage=ru; path=/; max-age=" + 60*60*24*30;
         window.location.reload(true);
     });
 </script>
+
 </body>
 </html>

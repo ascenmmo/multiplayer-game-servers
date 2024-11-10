@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    <title>Документация API</title>
+    <title>Usage Docks</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -135,49 +135,49 @@
     <a href="/"><h1>ASCENMMO</h1></a>
     <nav id="nav-links">
         <a href="/admin/games">Мои игры</a>
-        <a href="#" id="eng-button">Eng</a>
+        <a href="#" id="eng-button">Ру</a>
     </nav>
 </header>
 <body>
-<h1>Документация API</h1>
-{{ range . }} <!-- Обработка каждой категории -->
+<h1>API Documentation</h1>
+{{ range . }} <!-- Processing each category -->
 <div class="accordion">
     <div class="accordion-title">{{ .CategoryTitle }}</div>
     <div class="accordion-content">
-        {{ range .DocStruct }} <!-- Обработка каждого документа в категории -->
+        {{ range .DocStruct }} <!-- Processing each document in the category -->
         <div class="accordion">
             <div class="accordion-title">{{ .Title }}</div>
             <div class="accordion-content">
                 <p>{{ .Info }}</p>
                 {{ if .DockLists }}
-                <h5>Списки структур документа:</h5>
+                <h5>Document Structure Lists:</h5>
                 {{ range .DockLists }}
                 <h3>{{ .Title }}</h3>
                 <p>{{ .Description }}</p>
-                <h5>Путь запроса:</h5>
+                <h5>Request Path:</h5>
                 <pre>{{ .RequestPath }}</pre>
-                <h5>Метод:</h5>
+                <h5>Method:</h5>
                 <pre>{{ .Method }}</pre>
-                <h5>Заголовки запроса:</h5>
+                <h5>Request Headers:</h5>
                 <pre>{{ .RequestHeader }}</pre>
-                <h5>Тело запроса:</h5>
+                <h5>Request Body:</h5>
                 <pre>{{ .RequestBody }}</pre>
-                <h5>Информация о теле запроса:</h5>
+                <h5>Request Body Information:</h5>
                 <p>{{ .RequestBodyInfo }}</p>
-                <h5>Ответ:</h5>
+                <h5>Response:</h5>
                 <pre>{{ .ResponseBody }}</pre>
-                <h5>Информация о ответе:</h5>
+                <h5>Response Information:</h5>
                 <p>{{ .ResponseBodyInfo }}</p>
                 {{ end }}
                 {{ else }}
-                <p>Нет структур документа.</p>
+                <p>No document structures.</p>
                 {{ end }}
             </div>
         </div>
         {{ end }}
 
         {{ if .DocErrorList }}
-        <h5>Список ошибок:</h5>
+        <h5>Error List:</h5>
         {{ range .DocErrorList }}
         <div class="accordion">
             <div class="accordion-title">{{ .Name }}</div>
@@ -188,14 +188,14 @@
         </div>
         {{ end }}
         {{ else }}
-        <p>Ошибки не найдены.</p>
+        <p>No errors found.</p>
         {{ end }}
     </div>
 </div>
 {{ end }}
 
 <footer>
-    <p>© 2024 Ascenmmo. Все права защищены.</p>
+    <p>© 2024 Ascenmmo. All rights reserved.</p>
 </footer>
 <script>
     const titles = document.querySelectorAll('.accordion-title');
@@ -214,29 +214,30 @@
         return matches ? decodeURIComponent(matches[1]) : undefined;
     }
 
-    // Проверяем наличие токенов в куках
+    // Check for the presence of tokens in cookies
     const token = getCookie('token');
     const refreshToken = getCookie('refresh');
 
-    // Получаем элемент навигации
+    // Get the navigation element
     const navLinks = document.getElementById('nav-links');
 
-    // В зависимости от наличия токенов, показываем соответствующие кнопки
+    // Depending on the presence of tokens, show the corresponding buttons
     if (token && refreshToken) {
         navLinks.innerHTML = `
-            <a href="/admin/games">Мои игры</a>
-            <a href="#" id="eng-button">Eng</a>
+            <a href="/admin/games">My Games</a>
+            <a href="#" id="eng-button">Ру</a>
         `;
     } else {
         navLinks.innerHTML = `
-            <a href="/admin/auth">Авторизоваться</a>
-           <a href="#" id="eng-button">Eng</a>
+            <a href="/admin/auth">Login</a>
+            <a href="#" id="eng-button">Ру</a>
         `;
     }
     document.getElementById('eng-button').addEventListener('click', function() {
-        document.cookie = "AdminLanguageLanguage=eng; path=/; max-age=" + 60*60*24*30;
+        document.cookie = "AdminLanguageLanguage=ru; path=/; max-age=" + 60*60*24*30;
         window.location.reload(true);
     });
 </script>
 </body>
+
 </html>
