@@ -2,7 +2,7 @@ package udp
 
 import "github.com/ascenmmo/multiplayer-game-servers/pkg/admin_client/dev_doc/types"
 
-func GetUPDConnectionsStruct() []types.DocStruct {
+func GetUDPConnectionsStruct() []types.DocStruct {
 	udp := types.DocStruct{
 		Title: "Подключение по UDP",
 		Info: "Этот сервис предназначен для передачи небольших данных в режиме реального времени. " +

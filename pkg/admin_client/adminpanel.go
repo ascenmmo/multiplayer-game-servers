@@ -14,7 +14,7 @@ func DevDocs(lEngudage string) string {
 	case Eng:
 		return pages.EngDocs
 	default:
-		return "not found"
+		return pages.EngDeveloperInfo
 	}
 }
 
@@ -25,7 +25,7 @@ func Auth(lEngudage string) string {
 	case Eng:
 		return pages.EngAuth
 	default:
-		return "not found"
+		return pages.EngDeveloperInfo
 	}
 }
 
@@ -36,7 +36,7 @@ func GameCollection(lEngudage string) string {
 	case Eng:
 		return pages.EngGameCollection
 	default:
-		return "not found"
+		return pages.EngDeveloperInfo
 	}
 }
 
@@ -47,7 +47,7 @@ func MainPage(lEngudage string) string {
 	case Eng:
 		return pages.EngMainPage
 	default:
-		return "not found"
+		return pages.EngDeveloperInfo
 	}
 }
 
@@ -58,7 +58,7 @@ func GameInfo(lEngudage string) string {
 	case Eng:
 		return pages.EngGameInfo
 	default:
-		return "not found"
+		return pages.EngDeveloperInfo
 	}
 }
 
@@ -69,7 +69,7 @@ func GameConfig(lEngudage string) string {
 	case Eng:
 		return pages.EngGameConfig
 	default:
-		return "not found"
+		return pages.EngDeveloperInfo
 	}
 }
 
@@ -80,6 +80,6 @@ func DeveloperInfo(lEngudage string) string {
 	case Eng:
 		return pages.EngDeveloperInfo
 	default:
-		return "not found"
+		return pages.EngDeveloperInfo
 	}
 }

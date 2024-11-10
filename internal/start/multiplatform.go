@@ -111,14 +111,12 @@ func mastNil(err error) {
 
 func adminPanel(app *fiber.App) {
 	app.Get("/", func(c *fiber.Ctx) error {
-		fmt.Println("tut")
-		fmt.Println(detectLanguage(c))
 		tmpl, err := template.New("docs").Parse(string(adminclient.MainPage(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
@@ -131,7 +129,7 @@ func adminPanel(app *fiber.App) {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
@@ -145,7 +143,7 @@ func adminPanel(app *fiber.App) {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
@@ -158,7 +156,7 @@ func adminPanel(app *fiber.App) {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
@@ -171,7 +169,7 @@ func adminPanel(app *fiber.App) {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
@@ -184,7 +182,7 @@ func adminPanel(app *fiber.App) {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
@@ -197,7 +195,7 @@ func adminPanel(app *fiber.App) {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
@@ -207,9 +205,7 @@ func adminPanel(app *fiber.App) {
 
 func detectLanguage(c *fiber.Ctx) (lng string) {
 	//acceptLanguage := c.Get("Accept-Language", "")
-	fmt.Println(c.GetReqHeaders())
-
-	admin := c.Cookies("AdminLanguageLanguage", adminclient.Eng)
+	admin := c.Cookies("AdminLanguageLanguage", adminclient.Ru)
 	if admin != "" {
 		return admin
 	}
