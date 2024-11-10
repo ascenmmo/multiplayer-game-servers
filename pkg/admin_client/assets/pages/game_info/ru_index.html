@@ -185,6 +185,22 @@
             margin-right: 20px;
         }
 
+        .eng-button {
+            background: #00ff7f;
+            color: #1c1c1c;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+       . eng-button:hover {
+            background: rgba(0, 255, 127, 0.8);
+            transform: scale(1.05);
+        }
+
     </style>
 </head>
 <body>
@@ -194,6 +210,7 @@
         <a href="/developer/doc">Документация</a>
         <a href="/admin/info">Информация о разработчике</a>
         <a href="/admin/games">Мои игры</a>
+        <a href="#" id="eng-button">Eng</a>
     </nav>
 </header>
 
@@ -640,7 +657,10 @@
             fetchGameInfo();
         }
     });
-
+    document.getElementById('eng-button').addEventListener('click', function() {
+        document.cookie = "AdminLanguageLanguage=eng; path=/; max-age=" + 60*60*24*30;
+        window.location.reload(true);
+    });
 
 </script>
 </body>

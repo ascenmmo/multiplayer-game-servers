@@ -261,7 +261,7 @@
     <nav id="nav-links">
         <a href="/admin/auth">Авторизоваться</a>
         <a href="/developer/doc">Документация</a>
-        <button id="eng-button" class="button">Eng</button>
+        <a href="#" id="eng-button">Eng</a>
     </nav>
 </header>
 
@@ -336,18 +336,19 @@
         navLinks.innerHTML = `
             <a href="/admin/games">Мои игры</a>
             <a href="/developer/doc">Документация</a>
-             <button id="eng-button" class="button">Eng</button>
+             <a href="#" id="eng-button">Eng</a>
         `;
     } else {
         navLinks.innerHTML = `
             <a href="/admin/auth">Авторизоваться</a>
             <a href="/developer/doc">Документация</a>
-            <button id="eng-button" class="button">Eng</button>
+            <a href="#" id="eng-button">Eng</a>
         `;
     }
 
     document.getElementById('eng-button').addEventListener('click', function() {
         document.cookie = "AdminLanguageLanguage=eng; path=/; max-age=" + 60*60*24*30;
+        window.location.reload(true);
     });
 
 

@@ -121,6 +121,7 @@
     <nav>
         <a href="/developer/doc">Документация</a>
         <a href="/admin/info">Информация о разработчике</a>
+        <a href="#" id="eng-button">Eng</a>
     </nav>
 </header>
 
@@ -318,6 +319,11 @@
 
         // Первоначальный вызов для загрузки игр
 
+    });
+
+    document.getElementById('eng-button').addEventListener('click', function() {
+        document.cookie = "AdminLanguageLanguage=eng; path=/; max-age=" + 60*60*24*30;
+        window.location.reload(true);
     });
 
 </script>

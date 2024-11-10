@@ -101,6 +101,7 @@
             color: #00ff7f; /* Цвет текста активного заголовка */
         }
 
+
         pre {
             background: #1e1e1e; /* Цвет фона для блоков кода */
             padding: 10px;
@@ -118,6 +119,7 @@
             color: #cccccc; /* Цвет обычного текста внутри аккордеона */
         }
 
+
         footer {
             position: fixed; /* Фиксируем футер внизу */
             bottom: 0;
@@ -132,6 +134,8 @@
 <header>
     <a href="/"><h1>ASCENMMO</h1></a>
     <nav id="nav-links">
+        <a href="/admin/games">Мои игры</a>
+        <a href="#" id="eng-button">Eng</a>
     </nav>
 </header>
 <body>
@@ -221,12 +225,18 @@
     if (token && refreshToken) {
         navLinks.innerHTML = `
             <a href="/admin/games">Мои игры</a>
+            <a href="#" id="eng-button">Eng</a>
         `;
     } else {
         navLinks.innerHTML = `
             <a href="/admin/auth">Авторизоваться</a>
+           <a href="#" id="eng-button">Eng</a>
         `;
     }
+    document.getElementById('eng-button').addEventListener('click', function() {
+        document.cookie = "AdminLanguageLanguage=eng; path=/; max-age=" + 60*60*24*30;
+        window.location.reload(true);
+    });
 </script>
 </body>
 </html>

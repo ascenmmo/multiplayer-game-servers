@@ -141,6 +141,7 @@
     <a href="/"> <h1>ASCENMMO</h1></a>
     <nav>
         <a href="/developer/doc">Документация</a>
+        <a href="#" id="eng-button">Eng</a>
     </nav>
 </header>
 
@@ -180,6 +181,8 @@
 
     // Определяем домен и порт динамически
     const backendUrl = `${window.location.origin}/api/v1/developers`;
+
+
 
     // Функция для переключения форм (вход/регистрация)
     function toggleForm() {
@@ -248,6 +251,10 @@
         } else {
             alert('Ошибка регистрации!\nПопробуйте поменять mail');
         }
+    });
+    document.getElementById('eng-button').addEventListener('click', function() {
+        document.cookie = "AdminLanguageLanguage=eng; path=/; max-age=" + 60*60*24*30;
+        window.location.reload(true);
     });
 </script>
 </body>
