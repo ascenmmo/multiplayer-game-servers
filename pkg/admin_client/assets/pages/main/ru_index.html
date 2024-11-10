@@ -259,6 +259,9 @@
 <header>
     <a href="/"><h1>ASCENMMO</h1></a>
     <nav id="nav-links">
+        <a href="/admin/auth">Авторизоваться</a>
+        <a href="/developer/doc">Документация</a>
+        <button id="eng-button" class="button">Eng</button>
     </nav>
 </header>
 
@@ -333,7 +336,7 @@
         navLinks.innerHTML = `
             <a href="/admin/games">Мои игры</a>
             <a href="/developer/doc">Документация</a>
-            <button id="eng-button" class="button">Eng</button>
+             <button id="eng-button" class="button">Eng</button>
         `;
     } else {
         navLinks.innerHTML = `

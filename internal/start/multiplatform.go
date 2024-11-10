@@ -18,7 +18,6 @@ import (
 	"github.com/rs/zerolog"
 	"html/template"
 	"runtime"
-	"strings"
 	"time"
 )
 
@@ -112,6 +111,8 @@ func mastNil(err error) {
 
 func adminPanel(app *fiber.App) {
 	app.Get("/", func(c *fiber.Ctx) error {
+		fmt.Println("tut")
+		fmt.Println(detectLanguage(c))
 		tmpl, err := template.New("docs").Parse(string(adminclient.MainPage(detectLanguage(c))))
 		if err != nil {
 			return err
@@ -204,15 +205,16 @@ func adminPanel(app *fiber.App) {
 	})
 }
 
-func detectLanguage(c *fiber.Ctx) string {
-	acceptLanguage := c.Get("Accept-Language")
+func detectLanguage(c *fiber.Ctx) (lng string) {
+	//acceptLanguage := c.Get("Accept-Language", "")
+	fmt.Println(c.GetReqHeaders())
 
-	admin := c.Cookies("AdminLanguageLanguage")
+	admin := c.Cookies("AdminLanguageLanguage", adminclient.Eng)
 	if admin != "" {
 		return admin
 	}
-	if strings.Contains(acceptLanguage, detectLanguage(c)) {
-		return adminclient.Ru
-	}
+	//if strings.Contains(acceptLanguage, detectLanguage(c)) {
+	//	return adminclient.Ru
+	//}
 	return adminclient.Eng
 }
