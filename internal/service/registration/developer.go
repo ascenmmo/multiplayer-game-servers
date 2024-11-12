@@ -51,12 +51,12 @@ func (c *developerService) SignUp(ctx context.Context, developer types.Developer
 }
 
 func (c *developerService) SignIn(ctx context.Context, developer types.Developer) (token, refresh string, err error) {
-	pswHash, err := c.token.GenerateSecretHash(developer.Password)
+	developer.Password, err = c.token.GenerateSecretHash(developer.Password)
 	if err != nil {
-		return token, refresh, errors.ErrNotFound
+		return token, refresh, errors.ErrBadNewPassword
 	}
 
-	developer, err = c.developerStorage.FindByPassword(developer.Email, developer.Nickname, pswHash)
+	developer, err = c.developerStorage.FindByPassword(developer.Email, developer.Nickname, developer.Password)
 	if err != nil {
 		return token, refresh, errors.ErrWrongUserOrPassword
 	}
