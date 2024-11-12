@@ -10,6 +10,7 @@ import (
 	tokentype "github.com/ascenmmo/token-generator/token_type"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
+	"strings"
 	"time"
 )
 
@@ -22,6 +23,7 @@ type developerService struct {
 
 func (c *developerService) SignUp(ctx context.Context, developer types.Developer) (token string, refresh string, err error) {
 	developer.ID = uuid.NewMD5(uuid.NameSpaceX500, []byte(developer.Email))
+	developer.Email = strings.ToLower(developer.Email)
 
 	developer.Password, err = c.token.GenerateSecretHash(developer.Password)
 	if err != nil {
@@ -55,6 +57,8 @@ func (c *developerService) SignIn(ctx context.Context, developer types.Developer
 	if err != nil {
 		return token, refresh, errors.ErrBadNewPassword
 	}
+
+	developer.Email = strings.ToLower(developer.Email)
 
 	developer, err = c.developerStorage.FindByPassword(developer.Email, developer.Nickname, developer.Password)
 	if err != nil {
@@ -149,7 +153,7 @@ func (c *developerService) UpdateDeveloper(ctx context.Context, token string, de
 	}
 
 	if developer.Email != "" {
-		oldDev.Nickname = developer.Nickname
+		oldDev.Email = strings.ToLower(developer.Email)
 	}
 
 	err = c.developerStorage.Update(oldDev)

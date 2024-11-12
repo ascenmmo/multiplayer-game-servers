@@ -9,6 +9,7 @@ import (
 	tokentype "github.com/ascenmmo/token-generator/token_type"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
+	"strings"
 	"time"
 )
 
@@ -75,6 +76,8 @@ func (c *clientService) SignIn(ctx context.Context, client types.Client) (token,
 	if err != nil {
 		return token, refresh, errors.ErrBadNewPassword
 	}
+
+	client.Email = strings.ToLower(client.Email)
 
 	client, err = c.clientStorage.FindByPassword(client.GameID, client.Email, client.Nickname, client.Password)
 	if err != nil {
