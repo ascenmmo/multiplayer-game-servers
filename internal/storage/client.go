@@ -11,13 +11,59 @@ import (
 type ClientStorage interface {
 	CreateClient(client types.Client) (err error)
 	FindByID(clientID uuid.UUID, gameID uuid.UUID) (client types.Client, err error)
-	FindByEmailAndPassword(gameID uuid.UUID, email, password string) (client types.Client, err error)
-	FindByNicknameAndPassword(gameID uuid.UUID, nickname, password string) (client types.Client, err error)
+	FindByPassword(gameID uuid.UUID, email, nickname, password string) (client types.Client, err error)
 	Update(client types.Client) (err error)
 }
 
 type clientStorage struct {
 	collection *mongo.Collection
+}
+
+func (c *clientStorage) CreateClient(client types.Client) (err error) {
+	_, err = c.collection.InsertOne(context.TODO(), client)
+	return err
+}
+
+func (c *clientStorage) FindByID(clientID uuid.UUID, gameID uuid.UUID) (client types.Client, err error) {
+	filter := bson.M{
+		"_id":    clientID,
+		"gameID": gameID,
+	}
+	err = c.collection.FindOne(context.TODO(), filter).Decode(&client)
+	if err != nil {
+		return client, err
+	}
+	return client, nil
+}
+
+func (c *clientStorage) FindByPassword(gameID uuid.UUID, email, nickname, password string) (client types.Client, err error) {
+	filter := bson.M{
+		"gameID":   gameID,
+		"password": password,
+	}
+	if email != "" {
+		filter["email"] = email
+	}
+	if nickname != "" {
+		filter["nickname"] = nickname
+	}
+	err = c.collection.FindOne(context.TODO(), filter).Decode(&client)
+	if err != nil {
+		return client, err
+	}
+	return client, nil
+}
+
+func (c *clientStorage) Update(client types.Client) (err error) {
+	filter := bson.M{
+		"_id": client.ID,
+	}
+	update := bson.M{"$set": client}
+	_, err = c.collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewClientStorage(client *mongo.Client) (ClientStorage, error) {
@@ -43,58 +89,4 @@ func NewClientStorage(client *mongo.Client) (ClientStorage, error) {
 		collection: coll,
 	}, nil
 
-}
-
-func (c *clientStorage) CreateClient(client types.Client) (err error) {
-	_, err = c.collection.InsertOne(context.TODO(), client)
-	return err
-}
-
-func (c *clientStorage) FindByID(clientID uuid.UUID, gameID uuid.UUID) (client types.Client, err error) {
-	filter := bson.M{
-		"_id": clientID,
-	}
-	err = c.collection.FindOne(context.TODO(), filter).Decode(&client)
-	if err != nil {
-		return client, err
-	}
-	return client, nil
-}
-
-func (c *clientStorage) FindByEmailAndPassword(gameID uuid.UUID, email, password string) (client types.Client, err error) {
-	filter := bson.M{
-		"gameID":   gameID,
-		"email":    email,
-		"password": password,
-	}
-	err = c.collection.FindOne(context.TODO(), filter).Decode(&client)
-	if err != nil {
-		return client, err
-	}
-	return client, nil
-}
-
-func (c *clientStorage) FindByNicknameAndPassword(gameID uuid.UUID, nickname, password string) (client types.Client, err error) {
-	filter := bson.M{
-		"gameID":   gameID,
-		"nickname": nickname,
-		"password": password,
-	}
-	err = c.collection.FindOne(context.TODO(), filter).Decode(&client)
-	if err != nil {
-		return client, err
-	}
-	return client, nil
-}
-
-func (c *clientStorage) Update(client types.Client) (err error) {
-	filter := bson.M{
-		"_id": client.ID,
-	}
-	update := bson.M{"$set": client}
-	_, err = c.collection.UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		return err
-	}
-	return nil
 }

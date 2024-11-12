@@ -11,7 +11,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 )
 
 func main() {
@@ -21,7 +20,7 @@ func main() {
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT)
-	go exiter()
+	//go exiter()
 
 	if env.DebugLogs {
 		logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
@@ -54,8 +53,8 @@ func prof() {
 	}()
 }
 
-func exiter() {
-	for range time.NewTicker(time.Minute * 5).C {
-		os.Exit(0)
-	}
-}
+//func exiter() {
+//	for range time.NewTicker(time.Minute * 5).C {
+//		os.Exit(0)
+//	}
+//}

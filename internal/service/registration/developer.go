@@ -2,7 +2,7 @@ package registration
 
 import (
 	"context"
-	"fmt"
+	"github.com/ascenmmo/multiplayer-game-servers/internal/errors"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/storage"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
@@ -23,11 +23,14 @@ type developerService struct {
 func (c *developerService) SignUp(ctx context.Context, developer types.Developer) (token string, refresh string, err error) {
 	developer.ID = uuid.NewMD5(uuid.NameSpaceX500, []byte(developer.Email))
 
-	developer.Password = c.token.PasswordHash(developer.Password)
+	developer.Password, err = c.token.GenerateSecretHash(developer.Password)
+	if err != nil {
+		return token, refresh, errors.ErrBadNewPassword
+	}
 
 	err = c.developerStorage.CreateDeveloper(developer)
 	if err != nil {
-		return
+		return token, refresh, errors.ErrRecordAlredyExists
 	}
 
 	token, err = c.token.GenerateToken(tokentype.Info{
@@ -48,11 +51,14 @@ func (c *developerService) SignUp(ctx context.Context, developer types.Developer
 }
 
 func (c *developerService) SignIn(ctx context.Context, developer types.Developer) (token, refresh string, err error) {
-	developer.Password = c.token.PasswordHash(developer.Password)
-
-	developer, err = c.developerStorage.FindByPassword(developer.Email, developer.Nickname, developer.Password)
+	pswHash, err := c.token.GenerateSecretHash(developer.Password)
 	if err != nil {
-		return
+		return token, refresh, errors.ErrNotFound
+	}
+
+	developer, err = c.developerStorage.FindByPassword(developer.Email, developer.Nickname, pswHash)
+	if err != nil {
+		return token, refresh, errors.ErrWrongUserOrPassword
 	}
 
 	token, err = c.token.GenerateToken(tokentype.Info{
@@ -117,9 +123,6 @@ func (c *developerService) UpdateDeveloper(ctx context.Context, token string, de
 	if err != nil {
 		return err
 	}
-
-	developer.Password = c.token.PasswordHash(developer.Password)
-
 	developer.ID = info.UserID
 
 	oldDev, err := c.developerStorage.FindByID(developer.ID)
@@ -128,9 +131,16 @@ func (c *developerService) UpdateDeveloper(ctx context.Context, token string, de
 	}
 
 	if developer.Password != "" && developer.NewPassword != "" {
-		fmt.Println("tut")
-		if developer.Password == oldDev.Password {
-			oldDev.Password = c.token.PasswordHash(developer.NewPassword)
+		pswHash, err := c.token.GenerateSecretHash(developer.Password)
+		if err != nil {
+			return errors.ErrNotFound
+		}
+
+		if developer.Password == pswHash {
+			oldDev.Password, err = c.token.GenerateSecretHash(developer.NewPassword)
+			if err != nil {
+				return errors.ErrBadNewPassword
+			}
 		}
 	}
 

@@ -13,20 +13,29 @@ import (
 )
 
 type clientService struct {
-	clientStorage storage.ClientStorage
-	gameStorage   storage.GameStorage
-	roomStorage   storage.RoomsStorage
-	token         tokengenerator.TokenGenerator
+	clientStorage    storage.ClientStorage
+	gameStorage      storage.GameStorage
+	roomStorage      storage.RoomsStorage
+	gameSavesStorage storage.GameSavesStorage
+	token            tokengenerator.TokenGenerator
 
 	logger *zerolog.Logger
 }
 
 func (c *clientService) SignUp(ctx context.Context, client types.Client) (token string, refresh string, err error) {
-	client.ID = uuid.NewMD5(uuid.NameSpaceX500, []byte(client.GameID.String()+client.Email))
+	newClient := types.Client{}
+	newClient.Update(client)
 
-	client.Password = c.token.PasswordHash(client.Password)
+	newClient.GameID = client.GameID
+	newClient.Password = client.Password
+	newClient.NewPassword = client.NewPassword
 
-	game, err := c.gameStorage.FindByID(client.GameID)
+	newClient.Password, err = c.token.GenerateSecretHash(newClient.Password)
+	if err != nil {
+		return token, refresh, errors.ErrBadNewPassword
+	}
+
+	game, err := c.gameStorage.FindByID(newClient.GameID)
 	if err != nil {
 		return token, refresh, errors.ErrGameNotFound
 	}
@@ -37,20 +46,20 @@ func (c *clientService) SignUp(ctx context.Context, client types.Client) (token 
 		return token, refresh, errors.ErrGameNotFound
 	}
 
-	err = c.clientStorage.CreateClient(client)
+	err = c.clientStorage.CreateClient(newClient)
 	if err != nil {
 		return token, refresh, errors.ErrClientCreationError
 	}
 
 	token, err = c.token.GenerateToken(tokentype.Info{
-		UserID: client.ID,
-		GameID: client.GameID,
+		UserID: newClient.ID,
+		GameID: newClient.GameID,
 		TTL:    time.Minute * 15,
 	}, tokengenerator.JWT)
 
 	refresh, err = c.token.GenerateToken(tokentype.Info{
-		UserID: client.ID,
-		GameID: client.GameID,
+		UserID: newClient.ID,
+		GameID: newClient.GameID,
 		TTL:    time.Hour * 24,
 	}, tokengenerator.JWT)
 
@@ -62,18 +71,14 @@ func (c *clientService) SignUp(ctx context.Context, client types.Client) (token 
 }
 
 func (c *clientService) SignIn(ctx context.Context, client types.Client) (token, refresh string, err error) {
-	client.Password = c.token.PasswordHash(client.Password)
+	client.Password, err = c.token.GenerateSecretHash(client.Password)
+	if err != nil {
+		return token, refresh, errors.ErrBadNewPassword
+	}
 
-	if client.Nickname != "" {
-		client, err = c.clientStorage.FindByNicknameAndPassword(client.GameID, client.Nickname, client.Password)
-		if err != nil {
-			return token, refresh, errors.ErrClientNotFound
-		}
-	} else {
-		client, err = c.clientStorage.FindByEmailAndPassword(client.GameID, client.Email, client.Password)
-		if err != nil {
-			return token, refresh, errors.ErrClientNotFound
-		}
+	client, err = c.clientStorage.FindByPassword(client.GameID, client.Email, client.Nickname, client.Password)
+	if err != nil {
+		return token, refresh, errors.ErrWrongUserOrPassword
 	}
 
 	token, err = c.token.GenerateToken(tokentype.Info{
@@ -149,39 +154,80 @@ func (c *clientService) GetClient(ctx context.Context, token string, gameID uuid
 }
 
 func (c *clientService) UpdateClient(ctx context.Context, token string, client types.Client) (err error) {
-	//info, err := c.token.ParseToken(token)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//if client.Password != "" && client.Nickname != "" {
-	//	oldClient, err := c.clientStorage.FindByID(client.ID, client.GameID)
-	//	if err != nil {
-	//		return err
-	//	}
-	//	oldClient.Email = client.Email
-	//	if oldClient.Nickname != client.Nickname {
-	//		newID := uuid.NewMD5(uuid.NameSpaceX500, []byte(client.GameID.String()+client.Email))
-	//		_, err = c.clientStorage.FindByID(newID, client.GameID)
-	//		if err == nil {
-	//			return errors.ErrClientNickNameNotExists
-	//		}
-	//		oldClient.ID = newID
-	//	}
-	//
-	//	err = c.clientStorage.Update(oldClient)
-	//}
-	//
-	//client.ID = info.UserID
-	//
-	//err = c.clientStorage.Update(client)
-	//if err != nil {
-	//	return err
-	//}
+	info, err := c.token.ParseToken(token)
+	if err != nil {
+		return err
+	}
+
+	oldClient, err := c.clientStorage.FindByID(info.UserID, info.GameID)
+	if err != nil {
+		return errors.ErrNotFound
+	}
+
+	if client.Password != "" && client.NewPassword != "" {
+		hash, _ := c.token.GenerateSecretHash(client.Password)
+		newPswHash, err := c.token.GenerateSecretHash(client.NewPassword)
+		if err != nil {
+			return errors.ErrBadNewPassword
+		}
+		if oldClient.Password != hash {
+			return errors.ErrNotFound
+		}
+		oldClient.Password = newPswHash
+	}
+
+	oldClient.Update(client)
+
+	client.ID = info.UserID
+
+	err = c.clientStorage.Update(client)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func NewClientService(clientStorage storage.ClientStorage, gameStorage storage.GameStorage, roomStorage storage.RoomsStorage, token tokengenerator.TokenGenerator, logger *zerolog.Logger) *clientService {
-	return &clientService{clientStorage: clientStorage, gameStorage: gameStorage, roomStorage: roomStorage, token: token, logger: logger}
+func (c *clientService) GetGameSaves(ctx context.Context, token string) (saves types.GameSaves, err error) {
+	info, err := c.token.ParseToken(token)
+	if err != nil {
+		return saves, err
+	}
+	saves, err = c.gameSavesStorage.FindByID(info.GameID, info.UserID)
+	if err != nil {
+		return saves, errors.ErrGameSaves
+	}
+
+	return saves, nil
+}
+
+func (c *clientService) SetGameSaves(ctx context.Context, token string, saves types.GameSaves) (err error) {
+	info, err := c.token.ParseToken(token)
+	if err != nil {
+		return err
+	}
+
+	saves.ID = uuid.NewMD5(uuid.NameSpaceX500, []byte(info.GameID.String()+info.UserID.String()))
+	saves.GameID = info.GameID
+	saves.UserID = info.UserID
+
+	_, err = c.gameSavesStorage.FindByID(info.GameID, info.UserID)
+	if err != nil {
+		return c.gameSavesStorage.Create(saves)
+	}
+
+	return c.gameSavesStorage.Update(saves)
+}
+
+func (c *clientService) DeleteGameSaves(ctx context.Context, token string) (err error) {
+	info, err := c.token.ParseToken(token)
+	if err != nil {
+		return err
+	}
+
+	return c.gameSavesStorage.Delete(info.GameID, info.UserID)
+}
+
+func NewClientService(clientStorage storage.ClientStorage, gameStorage storage.GameStorage, gameSavesStorage storage.GameSavesStorage, roomStorage storage.RoomsStorage, token tokengenerator.TokenGenerator, logger *zerolog.Logger) *clientService {
+	return &clientService{clientStorage: clientStorage, gameStorage: gameStorage, gameSavesStorage: gameSavesStorage, roomStorage: roomStorage, token: token, logger: logger}
 }

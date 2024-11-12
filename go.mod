@@ -4,7 +4,7 @@ go 1.23.2
 
 require (
 	github.com/ascenmmo/tcp-server v1.0.1
-	github.com/ascenmmo/token-generator v1.0.0
+	github.com/ascenmmo/token-generator v1.0.2
 	github.com/ascenmmo/udp-server v1.0.1
 	github.com/ascenmmo/websocket-server v0.0.0-20241109224646-bb98a1bf038f
 	github.com/go-kit/kit v0.13.0

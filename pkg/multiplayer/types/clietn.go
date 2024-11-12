@@ -14,3 +14,16 @@ type Client struct {
 
 	Additional interface{} `json:"additional" bson:"additional"`
 }
+
+func (c *Client) Update(newClient Client) {
+	if newClient.Email != "" && c.Email != newClient.Email {
+		c.Email = newClient.Email
+		c.ID = uuid.NewMD5(uuid.NameSpaceX500, []byte(newClient.GameID.String()+newClient.Email+newClient.Nickname))
+	}
+	if newClient.Nickname != "" && c.Nickname != newClient.Nickname {
+		c.Nickname = newClient.Nickname
+	}
+	if newClient.Additional != "" && c.Additional != newClient.Additional {
+		c.Additional = newClient.Additional
+	}
+}

@@ -14,7 +14,7 @@ github.com/ascenmmo/tcp-server/pkg/errors
 github.com/ascenmmo/tcp-server/pkg/start
 github.com/ascenmmo/tcp-server/pkg/transport
 github.com/ascenmmo/tcp-server/pkg/transport/viewer
-# github.com/ascenmmo/token-generator v1.0.0
+# github.com/ascenmmo/token-generator v1.0.2
 ## explicit; go 1.23.2
 github.com/ascenmmo/token-generator/token_generator
 github.com/ascenmmo/token-generator/token_type

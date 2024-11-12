@@ -43,11 +43,13 @@ func Multiplayer(logger zerolog.Logger) {
 	mastNil(err)
 	gameConfigStorage, err := storage.NewGameConfigsStorage(client)
 	mastNil(err)
+	gameSavesStorage, err := storage.NewGameSavesStorage(client)
+	mastNil(err)
 
 	accessGameService := access.NewAccessGame(accessGameStorage)
 
 	developerService := registration.NewDeveloperService(developerStorage, token, &logger)
-	clientService := registration.NewClientService(clientStorage, gameStorage, roomStorage, token, &logger)
+	clientService := registration.NewClientService(clientStorage, gameStorage, gameSavesStorage, roomStorage, token, &logger)
 
 	devToolsConnectionServicc := devtools.NewConnections(gameStorage, serverStorage, roomStorage, token, &logger)
 	devToolsService := devtools.NewDevTools(accessGameService, gameStorage, serverStorage, token, &logger)
@@ -64,7 +66,7 @@ func Multiplayer(logger zerolog.Logger) {
 		transport.DevToolsGameConfigs(transport.NewDevToolsGameConfigs(devToolsGameConfigs)),
 	}
 
-	logMemoryUsage(logger)
+	logMemoryUsage(&logger)
 
 	srv := transport.New(logger, services...).WithLog()
 
@@ -87,7 +89,7 @@ func Multiplayer(logger zerolog.Logger) {
 	}
 }
 
-func logMemoryUsage(logger zerolog.Logger) {
+func logMemoryUsage(logger *zerolog.Logger) {
 	ticker := time.NewTicker(time.Second * 10)
 	go func() {
 		for range ticker.C {
@@ -95,10 +97,12 @@ func logMemoryUsage(logger zerolog.Logger) {
 			runtime.ReadMemStats(&stats)
 			logger.Info().
 				Interface("num cpu", runtime.NumCPU()).
+				Interface("num gorutins", runtime.NumGoroutine()).
 				Interface("Memory Usage", stats.Alloc/1024/1024).
 				Interface("TotalAlloc", stats.TotalAlloc/1024/1024).
 				Interface("Sys", stats.Sys/1024/1024).
-				Interface("NumGC", stats.NumGC)
+				Interface("NumGC", stats.NumGC).
+				Msg("system")
 		}
 	}()
 }
