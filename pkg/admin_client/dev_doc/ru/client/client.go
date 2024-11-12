@@ -106,5 +106,76 @@ func GetClientStruct() []types.DocStruct {
 			},
 		},
 	}
-	return []types.DocStruct{auth, refreshTokenDoc, clientDoc, updateClientDoc}
+	getGameSavesDoc := types.DocStruct{
+		Title: "Получение сохранений игры",
+		Info: "Данный метод используется для получения сохранений игры. " +
+			"Необходимо передать токен в заголовке запроса и пустое тело запроса в формате JSON-RPC.",
+		DockLists: []types.DocStructList{
+			{
+				Title:         "Получить сохранения игры",
+				Description:   "Запрос на получение сохранений игры. Требуется токен в заголовке и пустое тело запроса.",
+				RequestPath:   "/api/v1/devToolsClient/getGameSaves",
+				Method:        "POST",
+				RequestHeader: "Token: ваш токен",
+				RequestBody:   "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"params\": {}\n}",
+				RequestBodyInfo: "В теле запроса передается пустой объект `params` в формате JSON-RPC:\n" +
+					"- `id`: идентификатор запроса\n" +
+					"- `jsonrpc`: версия JSON-RPC\n" +
+					"- `params`: пустой объект",
+				ResponseBody: "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"result\": {\n    \"gameSaves\": {\n      \"saves\": {}\n    }\n  }\n}",
+				ResponseBodyInfo: "В случае успешного выполнения возвращается объект с полями:\n" +
+					"- `id`: идентификатор запроса, совпадающий с отправленным\n" +
+					"- `jsonrpc`: версия JSON-RPC\n" +
+					"- `result`: объект, содержащий сохранения игры\n" +
+					"  - `gameSaves`: объект с данными сохранений",
+			},
+		},
+	}
+
+	setGameSavesDoc := types.DocStruct{
+		Title: "Сохранение данных игры",
+		Info: "Данный метод используется для сохранения данных игры. " +
+			"Необходимо передать токен в заголовке запроса и объект с сохранениями в теле запроса.",
+		DockLists: []types.DocStructList{
+			{
+				Title:         "Сохранить данные игры",
+				Description:   "Запрос на сохранение данных игры. Требуется токен в заголовке и объект с сохранениями в теле запроса.",
+				RequestPath:   "/api/v1/devToolsClient/setGameSaves",
+				Method:        "POST",
+				RequestHeader: "Token: ваш токен",
+				RequestBody:   "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"params\": {\n    \"gameSaves\": {\n      \"saves\": {\n        \"FirstSave\": {\"location\": \"loc1\", \"health\": 100}\n      }\n    }\n  }\n}",
+				RequestBodyInfo: "В теле запроса передается объект `gameSaves`, который включает:\n" +
+					"- `saves`: объект с данными сохранений игры. Пример:\n" +
+					"  - `FirstSave`: содержит сохранение с полями:\n" +
+					"    - `location`: местоположение сохранения\n" +
+					"    - `health`: состояние здоровья",
+				ResponseBody:     "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"result\": {}\n}",
+				ResponseBodyInfo: "При успешном выполнении запроса возвращается пустой объект `result`, указывающий на успешное сохранение данных.",
+			},
+		},
+	}
+
+	deleteGameSavesDoc := types.DocStruct{
+		Title: "Удаление данных игры",
+		Info: "Данный метод используется для удаления данных сохранений игры. " +
+			"Необходимо передать токен в заголовке запроса и пустое тело запроса в формате JSON-RPC.",
+		DockLists: []types.DocStructList{
+			{
+				Title:         "Удалить данные сохранений игры",
+				Description:   "Запрос на удаление сохранений игры. Требуется токен в заголовке и пустое тело запроса.",
+				RequestPath:   "/api/v1/devToolsClient/deleteGameSaves",
+				Method:        "POST",
+				RequestHeader: "Token: ваш токен",
+				RequestBody:   "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"params\": {}\n}",
+				RequestBodyInfo: "В теле запроса передается пустой объект `params` в формате JSON-RPC:\n" +
+					"- `id`: идентификатор запроса\n" +
+					"- `jsonrpc`: версия JSON-RPC\n" +
+					"- `params`: пустой объект",
+				ResponseBody:     "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"result\": {}\n}",
+				ResponseBodyInfo: "При успешном выполнении запроса возвращается пустой объект `result`, который подтверждает, что сохранения были удалены.",
+			},
+		},
+	}
+
+	return []types.DocStruct{auth, refreshTokenDoc, clientDoc, updateClientDoc, getGameSavesDoc, setGameSavesDoc, deleteGameSavesDoc}
 }

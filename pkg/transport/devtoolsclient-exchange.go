@@ -50,3 +50,26 @@ type requestDevToolsClientUpdateClient struct {
 
 // Formal exchange type, please do not delete.
 type responseDevToolsClientUpdateClient struct{}
+
+type requestDevToolsClientGetGameSaves struct {
+	Token string `json:"token"`
+}
+
+type responseDevToolsClientGetGameSaves struct {
+	GameSaves types.GameSaves `json:"gameSaves"`
+}
+
+type requestDevToolsClientSetGameSaves struct {
+	Token     string          `json:"token"`
+	GameSaves types.GameSaves `json:"gameSaves"`
+}
+
+// Formal exchange type, please do not delete.
+type responseDevToolsClientSetGameSaves struct{}
+
+type requestDevToolsClientDeleteGameSaves struct {
+	Token string `json:"token"`
+}
+
+// Formal exchange type, please do not delete.
+type responseDevToolsClientDeleteGameSaves struct{}

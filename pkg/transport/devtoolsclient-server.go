@@ -9,12 +9,15 @@ import (
 )
 
 type serverDevToolsClient struct {
-	svc          multiplayer.DevToolsClient
-	signUp       DevToolsClientSignUp
-	signIn       DevToolsClientSignIn
-	refreshToken DevToolsClientRefreshToken
-	getClient    DevToolsClientGetClient
-	updateClient DevToolsClientUpdateClient
+	svc             multiplayer.DevToolsClient
+	signUp          DevToolsClientSignUp
+	signIn          DevToolsClientSignIn
+	refreshToken    DevToolsClientRefreshToken
+	getClient       DevToolsClientGetClient
+	updateClient    DevToolsClientUpdateClient
+	getGameSaves    DevToolsClientGetGameSaves
+	setGameSaves    DevToolsClientSetGameSaves
+	deleteGameSaves DevToolsClientDeleteGameSaves
 }
 
 type MiddlewareSetDevToolsClient interface {
@@ -24,6 +27,9 @@ type MiddlewareSetDevToolsClient interface {
 	WrapRefreshToken(m MiddlewareDevToolsClientRefreshToken)
 	WrapGetClient(m MiddlewareDevToolsClientGetClient)
 	WrapUpdateClient(m MiddlewareDevToolsClientUpdateClient)
+	WrapGetGameSaves(m MiddlewareDevToolsClientGetGameSaves)
+	WrapSetGameSaves(m MiddlewareDevToolsClientSetGameSaves)
+	WrapDeleteGameSaves(m MiddlewareDevToolsClientDeleteGameSaves)
 
 	WithTrace()
 	WithMetrics()
@@ -32,12 +38,15 @@ type MiddlewareSetDevToolsClient interface {
 
 func newServerDevToolsClient(svc multiplayer.DevToolsClient) *serverDevToolsClient {
 	return &serverDevToolsClient{
-		getClient:    svc.GetClient,
-		refreshToken: svc.RefreshToken,
-		signIn:       svc.SignIn,
-		signUp:       svc.SignUp,
-		svc:          svc,
-		updateClient: svc.UpdateClient,
+		deleteGameSaves: svc.DeleteGameSaves,
+		getClient:       svc.GetClient,
+		getGameSaves:    svc.GetGameSaves,
+		refreshToken:    svc.RefreshToken,
+		setGameSaves:    svc.SetGameSaves,
+		signIn:          svc.SignIn,
+		signUp:          svc.SignUp,
+		svc:             svc,
+		updateClient:    svc.UpdateClient,
 	}
 }
 
@@ -48,6 +57,9 @@ func (srv *serverDevToolsClient) Wrap(m MiddlewareDevToolsClient) {
 	srv.refreshToken = srv.svc.RefreshToken
 	srv.getClient = srv.svc.GetClient
 	srv.updateClient = srv.svc.UpdateClient
+	srv.getGameSaves = srv.svc.GetGameSaves
+	srv.setGameSaves = srv.svc.SetGameSaves
+	srv.deleteGameSaves = srv.svc.DeleteGameSaves
 }
 
 func (srv *serverDevToolsClient) SignUp(ctx context.Context, client types.Client) (token string, refresh string, err error) {
@@ -70,6 +82,18 @@ func (srv *serverDevToolsClient) UpdateClient(ctx context.Context, token string,
 	return srv.updateClient(ctx, token, client)
 }
 
+func (srv *serverDevToolsClient) GetGameSaves(ctx context.Context, token string) (gameSaves types.GameSaves, err error) {
+	return srv.getGameSaves(ctx, token)
+}
+
+func (srv *serverDevToolsClient) SetGameSaves(ctx context.Context, token string, gameSaves types.GameSaves) (err error) {
+	return srv.setGameSaves(ctx, token, gameSaves)
+}
+
+func (srv *serverDevToolsClient) DeleteGameSaves(ctx context.Context, token string) (err error) {
+	return srv.deleteGameSaves(ctx, token)
+}
+
 func (srv *serverDevToolsClient) WrapSignUp(m MiddlewareDevToolsClientSignUp) {
 	srv.signUp = m(srv.signUp)
 }
@@ -88,6 +112,18 @@ func (srv *serverDevToolsClient) WrapGetClient(m MiddlewareDevToolsClientGetClie
 
 func (srv *serverDevToolsClient) WrapUpdateClient(m MiddlewareDevToolsClientUpdateClient) {
 	srv.updateClient = m(srv.updateClient)
+}
+
+func (srv *serverDevToolsClient) WrapGetGameSaves(m MiddlewareDevToolsClientGetGameSaves) {
+	srv.getGameSaves = m(srv.getGameSaves)
+}
+
+func (srv *serverDevToolsClient) WrapSetGameSaves(m MiddlewareDevToolsClientSetGameSaves) {
+	srv.setGameSaves = m(srv.setGameSaves)
+}
+
+func (srv *serverDevToolsClient) WrapDeleteGameSaves(m MiddlewareDevToolsClientDeleteGameSaves) {
+	srv.deleteGameSaves = m(srv.deleteGameSaves)
 }
 
 func (srv *serverDevToolsClient) WithTrace() {

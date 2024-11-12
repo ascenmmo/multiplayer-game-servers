@@ -54,4 +54,7 @@ func (http *httpDevToolsClient) SetRoutes(route *fiber.App) {
 	route.Post("/api/v1/devToolsClient/refreshToken", http.serveRefreshToken)
 	route.Post("/api/v1/devToolsClient/getClient", http.serveGetClient)
 	route.Post("/api/v1/devToolsClient/updateClient", http.serveUpdateClient)
+	route.Post("/api/v1/devToolsClient/getGameSaves", http.serveGetGameSaves)
+	route.Post("/api/v1/devToolsClient/setGameSaves", http.serveSetGameSaves)
+	route.Post("/api/v1/devToolsClient/deleteGameSaves", http.serveDeleteGameSaves)
 }

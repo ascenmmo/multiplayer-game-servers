@@ -7,4 +7,7 @@ type fallbackDevToolsClient interface {
 	RefreshToken(err error) bool
 	GetClient(err error) bool
 	UpdateClient(err error) bool
+	GetGameSaves(err error) bool
+	SetGameSaves(err error) bool
+	DeleteGameSaves(err error) bool
 }

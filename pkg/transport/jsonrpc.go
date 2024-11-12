@@ -170,6 +170,12 @@ func (srv *Server) doSingleBatch(ctx *fiber.Ctx, request baseJsonRPC) (response 
 		return srv.httpDevToolsClient.getClient(ctx, request)
 	case "devtoolsclient.updateclient":
 		return srv.httpDevToolsClient.updateClient(ctx, request)
+	case "devtoolsclient.getgamesaves":
+		return srv.httpDevToolsClient.getGameSaves(ctx, request)
+	case "devtoolsclient.setgamesaves":
+		return srv.httpDevToolsClient.setGameSaves(ctx, request)
+	case "devtoolsclient.deletegamesaves":
+		return srv.httpDevToolsClient.deleteGameSaves(ctx, request)
 	case "devtoolsconnections.createroom":
 		return srv.httpDevToolsConnections.createRoom(ctx, request)
 	case "devtoolsconnections.getroomsall":

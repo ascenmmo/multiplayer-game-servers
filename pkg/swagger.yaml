@@ -659,6 +659,79 @@ paths:
                                         jsonrpc:
                                             type: string
                                             example: "2.0"
+    /api/v1/devToolsClient/deleteGameSaves:
+        post:
+            tags:
+                - DevToolsClient
+            summary: server deleteGameSaves
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsClientDeleteGameSaves'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsClientDeleteGameSaves'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
     /api/v1/devToolsClient/getClient:
         post:
             tags:
@@ -707,6 +780,79 @@ paths:
                                             example: "2.0"
                                         result:
                                             $ref: '#/components/schemas/responseDevToolsClientGetClient'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsClient/getGameSaves:
+        post:
+            tags:
+                - DevToolsClient
+            summary: server getGameSaves
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsClientGetGameSaves'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsClientGetGameSaves'
                                     - type: object
                                       properties:
                                         error:
@@ -785,6 +931,79 @@ paths:
                                             example: "2.0"
                                         result:
                                             $ref: '#/components/schemas/responseDevToolsClientRefreshToken'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsClient/setGameSaves:
+        post:
+            tags:
+                - DevToolsClient
+            summary: server setGameSaves
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsClientSetGameSaves'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsClientSetGameSaves'
                                     - type: object
                                       properties:
                                         error:
@@ -2180,14 +2399,23 @@ paths:
                                             example: "2.0"
 components:
     schemas:
+        requestDevToolsClientDeleteGameSaves:
+            type: object
         requestDevToolsClientGetClient:
             type: object
             properties:
                 gameID:
                     type: string
                     format: uuid
+        requestDevToolsClientGetGameSaves:
+            type: object
         requestDevToolsClientRefreshToken:
             type: object
+        requestDevToolsClientSetGameSaves:
+            type: object
+            properties:
+                gameSaves:
+                    $ref: '#/components/schemas/types.GameSaves'
         requestDevToolsClientSignIn:
             type: object
             properties:
@@ -2349,11 +2577,18 @@ components:
             properties:
                 developer:
                     $ref: '#/components/schemas/types.Developer'
+        responseDevToolsClientDeleteGameSaves:
+            type: object
         responseDevToolsClientGetClient:
             type: object
             properties:
                 client:
                     $ref: '#/components/schemas/types.Client'
+        responseDevToolsClientGetGameSaves:
+            type: object
+            properties:
+                gameSaves:
+                    $ref: '#/components/schemas/types.GameSaves'
         responseDevToolsClientRefreshToken:
             type: object
             properties:
@@ -2361,6 +2596,8 @@ components:
                     type: string
                 newToken:
                     type: string
+        responseDevToolsClientSetGameSaves:
+            type: object
         responseDevToolsClientSignIn:
             type: object
             properties:
@@ -2585,6 +2822,12 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/types.SortingConfig'
+                    nullable: true
+        types.GameSaves:
+            type: object
+            properties:
+                saves:
+                    type: object
                     nullable: true
         types.ParamMetadata:
             type: object

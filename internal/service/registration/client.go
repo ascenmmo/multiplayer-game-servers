@@ -191,35 +191,35 @@ func (c *clientService) UpdateClient(ctx context.Context, token string, client t
 	return nil
 }
 
-func (c *clientService) GetGameSaves(ctx context.Context, token string) (saves types.GameSaves, err error) {
+func (c *clientService) GetGameSaves(ctx context.Context, token string) (gameSaves types.GameSaves, err error) {
 	info, err := c.token.ParseToken(token)
 	if err != nil {
-		return saves, err
+		return gameSaves, err
 	}
-	saves, err = c.gameSavesStorage.FindByID(info.GameID, info.UserID)
+	gameSaves, err = c.gameSavesStorage.FindByID(info.GameID, info.UserID)
 	if err != nil {
-		return saves, errors.ErrGameSaves
+		return gameSaves, errors.ErrGameSaves
 	}
 
-	return saves, nil
+	return gameSaves, nil
 }
 
-func (c *clientService) SetGameSaves(ctx context.Context, token string, saves types.GameSaves) (err error) {
+func (c *clientService) SetGameSaves(ctx context.Context, token string, gameSaves types.GameSaves) (err error) {
 	info, err := c.token.ParseToken(token)
 	if err != nil {
 		return err
 	}
 
-	saves.ID = uuid.NewMD5(uuid.NameSpaceX500, []byte(info.GameID.String()+info.UserID.String()))
-	saves.GameID = info.GameID
-	saves.UserID = info.UserID
+	gameSaves.ID = uuid.NewMD5(uuid.NameSpaceX500, []byte(info.GameID.String()+info.UserID.String()))
+	gameSaves.GameID = info.GameID
+	gameSaves.UserID = info.UserID
 
 	_, err = c.gameSavesStorage.FindByID(info.GameID, info.UserID)
 	if err != nil {
-		return c.gameSavesStorage.Create(saves)
+		return c.gameSavesStorage.Create(gameSaves)
 	}
 
-	return c.gameSavesStorage.Update(saves)
+	return c.gameSavesStorage.Update(gameSaves)
 }
 
 func (c *clientService) DeleteGameSaves(ctx context.Context, token string) (err error) {

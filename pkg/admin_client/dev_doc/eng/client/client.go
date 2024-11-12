@@ -106,5 +106,78 @@ func GetClientStruct() []types.DocStruct {
 			},
 		},
 	}
-	return []types.DocStruct{auth, refreshTokenDoc, clientDoc, updateClientDoc}
+
+	getGameSavesDoc := types.DocStruct{
+		Title: "Get Game Saves",
+		Info: "This method is used to retrieve the game saves. " +
+			"You need to pass a token in the request header and an empty request body in JSON-RPC format.",
+		DockLists: []types.DocStructList{
+			{
+				Title:         "Get Game Saves",
+				Description:   "Request to get game saves. Token in the header and an empty body in the request are required.",
+				RequestPath:   "/api/v1/devToolsClient/getGameSaves",
+				Method:        "POST",
+				RequestHeader: "Token: your token",
+				RequestBody:   "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"params\": {}\n}",
+				RequestBodyInfo: "The request body contains an empty `params` object in JSON-RPC format:\n" +
+					"- `id`: request identifier\n" +
+					"- `jsonrpc`: version of JSON-RPC\n" +
+					"- `params`: empty object",
+				ResponseBody: "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"result\": {\n    \"gameSaves\": {\n      \"saves\": {}\n    }\n  }\n}",
+				ResponseBodyInfo: "If the request is successful, it returns an object with the following fields:\n" +
+					"- `id`: request identifier, matching the sent one\n" +
+					"- `jsonrpc`: version of JSON-RPC\n" +
+					"- `result`: object containing the game saves\n" +
+					"  - `gameSaves`: object with game save data",
+			},
+		},
+	}
+
+	setGameSavesDoc := types.DocStruct{
+		Title: "Save Game Data",
+		Info: "This method is used to save game data. " +
+			"You need to pass a token in the request header and an object with game saves in the request body.",
+		DockLists: []types.DocStructList{
+			{
+				Title:         "Save Game Data",
+				Description:   "Request to save game data. Token in the header and an object with game saves in the request body are required.",
+				RequestPath:   "/api/v1/devToolsClient/setGameSaves",
+				Method:        "POST",
+				RequestHeader: "Token: your token",
+				RequestBody:   "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"params\": {\n    \"gameSaves\": {\n      \"saves\": {\n        \"FirstSave\": {\"location\": \"loc1\", \"health\": 100}\n      }\n    }\n  }\n}",
+				RequestBodyInfo: "The request body contains the `gameSaves` object, which includes:\n" +
+					"- `saves`: an object with game save data. Example:\n" +
+					"  - `FirstSave`: contains a save with fields:\n" +
+					"    - `location`: the location of the save\n" +
+					"    - `health`: the health state",
+				ResponseBody:     "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"result\": {}\n}",
+				ResponseBodyInfo: "If the request is successful, it returns an empty `result` object indicating successful save.",
+			},
+		},
+	}
+
+	deleteGameSavesDoc := types.DocStruct{
+		Title: "Delete Game Data",
+		Info: "This method is used to delete game save data. " +
+			"You need to pass a token in the request header and an empty request body in JSON-RPC format.",
+		DockLists: []types.DocStructList{
+			{
+				Title:         "Delete Game Saves",
+				Description:   "Request to delete game saves. Token in the header and an empty request body are required.",
+				RequestPath:   "/api/v1/devToolsClient/deleteGameSaves",
+				Method:        "POST",
+				RequestHeader: "Token: your token",
+				RequestBody:   "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"params\": {}\n}",
+				RequestBodyInfo: "The request body contains an empty `params` object in JSON-RPC format:\n" +
+					"- `id`: request identifier\n" +
+					"- `jsonrpc`: version of JSON-RPC\n" +
+					"- `params`: empty object",
+				ResponseBody:     "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"result\": {}\n}",
+				ResponseBodyInfo: "If the request is successful, it returns an empty `result` object confirming that the saves have been deleted.",
+			},
+		},
+	}
+
+	return []types.DocStruct{auth, refreshTokenDoc, clientDoc, updateClientDoc, getGameSavesDoc, setGameSavesDoc, deleteGameSavesDoc}
+
 }

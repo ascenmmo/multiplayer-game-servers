@@ -91,3 +91,42 @@ func (m metricsDevToolsClient) UpdateClient(ctx context.Context, token string, c
 
 	return m.next.UpdateClient(ctx, token, client)
 }
+
+func (m metricsDevToolsClient) GetGameSaves(ctx context.Context, token string) (gameSaves types.GameSaves, err error) {
+
+	defer func(begin time.Time) {
+		m.requestLatency.With("method", "getGameSaves", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	defer m.requestCount.With("method", "getGameSaves", "success", fmt.Sprint(err == nil)).Add(1)
+
+	m.requestCountAll.With("method", "getGameSaves").Add(1)
+
+	return m.next.GetGameSaves(ctx, token)
+}
+
+func (m metricsDevToolsClient) SetGameSaves(ctx context.Context, token string, gameSaves types.GameSaves) (err error) {
+
+	defer func(begin time.Time) {
+		m.requestLatency.With("method", "setGameSaves", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	defer m.requestCount.With("method", "setGameSaves", "success", fmt.Sprint(err == nil)).Add(1)
+
+	m.requestCountAll.With("method", "setGameSaves").Add(1)
+
+	return m.next.SetGameSaves(ctx, token, gameSaves)
+}
+
+func (m metricsDevToolsClient) DeleteGameSaves(ctx context.Context, token string) (err error) {
+
+	defer func(begin time.Time) {
+		m.requestLatency.With("method", "deleteGameSaves", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	defer m.requestCount.With("method", "deleteGameSaves", "success", fmt.Sprint(err == nil)).Add(1)
+
+	m.requestCountAll.With("method", "deleteGameSaves").Add(1)
+
+	return m.next.DeleteGameSaves(ctx, token)
+}
