@@ -1,21 +1,24 @@
 package start
 
 import (
-	"context"
 	"fmt"
 	"github.com/ascenmmo/multiplayer-game-servers/env"
+	"github.com/ascenmmo/multiplayer-game-servers/internal/errors"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/service/access"
 	devtools "github.com/ascenmmo/multiplayer-game-servers/internal/service/dev_tools"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/service/registration"
-	"github.com/ascenmmo/multiplayer-game-servers/internal/service/scheduler"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/storage"
 	adminclient "github.com/ascenmmo/multiplayer-game-servers/pkg/admin_client"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/admin_client/dev_doc"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/transport"
 	tokengenerator "github.com/ascenmmo/token-generator/token_generator"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
+	_ "github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/rs/zerolog"
 	"html/template"
+	"runtime"
+	"time"
 )
 
 func Multiplayer(logger zerolog.Logger) {
@@ -40,17 +43,15 @@ func Multiplayer(logger zerolog.Logger) {
 	mastNil(err)
 	gameConfigStorage, err := storage.NewGameConfigsStorage(client)
 	mastNil(err)
-	gameConfigResultsStorage, err := storage.NewGameConfigsResultsStorage(client)
+	gameSavesStorage, err := storage.NewGameSavesStorage(client)
 	mastNil(err)
 
 	accessGameService := access.NewAccessGame(accessGameStorage)
 
-	newScheduler := scheduler.NewScheduler(gameStorage, roomStorage, serverStorage, gameConfigResultsStorage, token)
-
 	developerService := registration.NewDeveloperService(developerStorage, token, &logger)
-	clientService := registration.NewClientService(clientStorage, gameStorage, roomStorage, token, &logger)
+	clientService := registration.NewClientService(clientStorage, gameStorage, gameSavesStorage, roomStorage, token, &logger)
 
-	devToolsConnectionServicc := devtools.NewConnections(gameStorage, serverStorage, roomStorage, gameConfigStorage, token, &logger)
+	devToolsConnectionServicc := devtools.NewConnections(gameStorage, serverStorage, roomStorage, token, &logger)
 	devToolsService := devtools.NewDevTools(accessGameService, gameStorage, serverStorage, token, &logger)
 	devToolsServerService := devtools.NewServerService(accessGameService, gameStorage, serverStorage, token, &logger)
 	devToolsGameConfigs := devtools.NewGameConfigs(accessGameService, gameConfigStorage, token, &logger)
@@ -65,19 +66,45 @@ func Multiplayer(logger zerolog.Logger) {
 		transport.DevToolsGameConfigs(transport.NewDevToolsGameConfigs(devToolsGameConfigs)),
 	}
 
+	logMemoryUsage(&logger)
+
 	srv := transport.New(logger, services...).WithLog()
 
+	app := srv.Fiber()
 	if env.RunAdminPanel {
-		app := srv.Fiber()
 		adminPanel(app)
 	}
 
-	go newScheduler.Run(context.Background())
+	app.Use(limiter.New(limiter.Config{
+		Max:        env.MultiplayerMaxRequestPerSecond,
+		Expiration: 1 * time.Second,
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).SendString(errors.ErrTooManyRequests.Error())
+		},
+	}))
 
 	logger.Info().Str("bind", fmt.Sprintf("http://%s:%s", env.ServerAddress, env.MultiplayerPort)).Msg("listen on")
 	if err := srv.Fiber().Listen(":" + env.MultiplayerPort); err != nil {
 		logger.Panic().Err(err).Stack().Msg("server error")
 	}
+}
+
+func logMemoryUsage(logger *zerolog.Logger) {
+	ticker := time.NewTicker(time.Second * 10)
+	go func() {
+		for range ticker.C {
+			var stats runtime.MemStats
+			runtime.ReadMemStats(&stats)
+			logger.Info().
+				Interface("num cpu", runtime.NumCPU()).
+				Interface("num gorutins", runtime.NumGoroutine()).
+				Interface("Memory Usage", stats.Alloc/1024/1024).
+				Interface("TotalAlloc", stats.TotalAlloc/1024/1024).
+				Interface("Sys", stats.Sys/1024/1024).
+				Interface("NumGC", stats.NumGC).
+				Msg("system")
+		}
+	}()
 }
 
 func mastNil(err error) {
@@ -88,12 +115,12 @@ func mastNil(err error) {
 
 func adminPanel(app *fiber.App) {
 	app.Get("/", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.MainPage("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.MainPage(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
@@ -101,12 +128,12 @@ func adminPanel(app *fiber.App) {
 	})
 
 	app.Get("/developer/doc", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.DevDocs("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.DevDocs(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
@@ -115,12 +142,12 @@ func adminPanel(app *fiber.App) {
 	})
 
 	app.Get("/admin/auth", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.Auth("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.Auth(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
@@ -128,12 +155,12 @@ func adminPanel(app *fiber.App) {
 	})
 
 	app.Get("/admin/games", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.GameCollection("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.GameCollection(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
@@ -141,12 +168,12 @@ func adminPanel(app *fiber.App) {
 	})
 
 	app.Get("/admin/game_info", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.GameInfo("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.GameInfo(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
@@ -154,12 +181,12 @@ func adminPanel(app *fiber.App) {
 	})
 
 	app.Get("/admin/game_info/config", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.GameConfig("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.GameConfig(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
@@ -167,15 +194,27 @@ func adminPanel(app *fiber.App) {
 	})
 
 	app.Get("/admin/info", func(c *fiber.Ctx) error {
-		tmpl, err := template.New("docs").Parse(string(adminclient.DeveloperInfo("ru")))
+		tmpl, err := template.New("docs").Parse(string(adminclient.DeveloperInfo(detectLanguage(c))))
 		if err != nil {
 			return err
 		}
 		c.Set("Content-Type", "text/html")
-		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory())
+		err = tmpl.Execute(c.Response().BodyWriter(), dev_doc.GetCategory(detectLanguage(c)))
 		if err != nil {
 			return err
 		}
 		return nil
 	})
+}
+
+func detectLanguage(c *fiber.Ctx) (lng string) {
+	//acceptLanguage := c.Get("Accept-Language", "")
+	admin := c.Cookies("AdminLanguageLanguage", adminclient.Ru)
+	if admin != "" {
+		return admin
+	}
+	//if strings.Contains(acceptLanguage, detectLanguage(c)) {
+	//	return adminclient.Ru
+	//}
+	return adminclient.Eng
 }

@@ -3,14 +3,15 @@ package env
 var (
 	ServerAddress = "ascenmmo.com"
 	TokenKey      = "_remember_token_mast_be_32_bytes"
+	DebugLogs     = true
 )
 
 var (
 	RunMultiplayer                 = true
 	RunAdminPanel                  = true
 	MultiplayerPort                = "8080"
-	MongoURL                       = "mongodb://username:userpassword@ascenmmo.com:27017/?maxPoolSize=20&w=majority"
-	MultiplayerMaxRequestPerSecond = 5
+	MongoURL                       = "mongodb://username:userpassword@ascenmmo.com:27017"
+	MultiplayerMaxRequestPerSecond = 100
 )
 
 var (

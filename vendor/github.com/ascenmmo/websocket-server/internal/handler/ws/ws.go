@@ -2,13 +2,11 @@ package wsconnection
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	tokentype "github.com/ascenmmo/token-generator/token_type"
 	"github.com/ascenmmo/websocket-server/internal/connection"
 	"github.com/ascenmmo/websocket-server/internal/service"
 	"github.com/ascenmmo/websocket-server/internal/utils"
-	"github.com/ascenmmo/websocket-server/pkg/restconnection/types"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog"
@@ -20,8 +18,7 @@ import (
 const (
 	bufferSize   = 32 * 1024
 	readTimeout  = 60 * time.Second
-	writeTimeout = 10 * time.Second
-	pingInterval = 30 * time.Second
+	pingInterval = 10 * time.Second
 )
 
 var upgrader = websocket.Upgrader{
@@ -33,12 +30,11 @@ var upgrader = websocket.Upgrader{
 }
 
 type WebSocket struct {
-	server          *http.Server
-	mtx             sync.RWMutex
-	service         service.Service
-	rateLimit       utils.RateLimit
-	rateLimitBadMsg utils.RateLimit
-	logger          zerolog.Logger
+	server    *http.Server
+	mtx       sync.RWMutex
+	service   service.Service
+	rateLimit utils.RateLimit
+	logger    zerolog.Logger
 }
 
 func (ws *WebSocket) connect(w http.ResponseWriter, req *http.Request) {
@@ -56,7 +52,7 @@ func (ws *WebSocket) connect(w http.ResponseWriter, req *http.Request) {
 
 	conn, err := upgrader.Upgrade(w, req, nil)
 	if err != nil {
-		ws.logger.Error().Err(err).Msg("Failed to upgrade connection")
+		ws.logger.Error().Err(err).Msg("failed to upgrade connection")
 		return
 	}
 
@@ -66,23 +62,25 @@ func (ws *WebSocket) connect(w http.ResponseWriter, req *http.Request) {
 func (ws *WebSocket) handleConnection(ctx context.Context, token string, clientInfo tokentype.Info, conn *websocket.Conn) {
 	defer func() {
 		conn.Close()
-		err := ws.service.RemoveUser(token, clientInfo.UserID)
+		err := ws.service.RemoveUser(clientInfo, clientInfo.UserID)
 		if err != nil {
-			ws.logger.Error().Err(err).Msg("Failed to remove user")
+			ws.logger.Error().Err(err).Msg("failed to remove user")
 		}
 	}()
 
 	conn.SetReadLimit(bufferSize)
 	err := conn.SetReadDeadline(time.Now().Add(readTimeout))
 	if err != nil {
-		ws.logger.Error().Err(err).Msg("Failed to set read deadline")
+		ws.logger.Error().Err(err).Msg("failed to set read deadline")
 		fmt.Println(err)
 	}
 
-	err = ws.service.SetNewConnection(clientInfo, connection.DataSender(&connection.WebSocketConnection{Conn: conn}))
+	ctx, cancel := context.WithCancel(ctx)
+	ds := connection.DataSender(&connection.WebSocketConnection{Conn: conn, CtxClose: cancel})
+
+	err = ws.service.SetNewConnection(clientInfo, ds)
 	if err != nil {
-		ws.logger.Error().Err(err).Msg("Failed to set new connection")
-		fmt.Println(err)
+		ws.logger.Error().Err(err).Msg("failed to set new connection")
 	}
 
 	pingTicker := time.NewTicker(pingInterval)
@@ -93,18 +91,18 @@ func (ws *WebSocket) handleConnection(ctx context.Context, token string, clientI
 		case <-ctx.Done():
 			return
 		case <-pingTicker.C:
-			if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				ws.logger.Error().Err(err).Msg("Ping failed")
+			if err := ds.Write(websocket.PingMessage, []byte("ping")); err != nil {
+				ws.logger.Error().Err(err).Msg("ping failed")
 				return
 			}
 		default:
 			messageType, message, err := conn.ReadMessage()
 			if err != nil {
 				if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
-					ws.logger.Info().Msg("Client disconnected normally")
-				} else {
-					ws.logger.Error().Err(err).Msg("ReadMessage failed")
+					ws.logger.Error().Msg("client disconnected normally")
+					return
 				}
+				ws.logger.Error().Err(err).Msg("readMessage failed")
 				return
 			}
 
@@ -117,45 +115,23 @@ func (ws *WebSocket) handleConnection(ctx context.Context, token string, clientI
 			}
 
 			if ws.rateLimit.IsLimited(token) {
-				ws.logger.Warn().Msg("Rate limit exceeded")
+				ws.logger.Warn().Msg("rate limit exceeded")
 				continue
 			}
 
-			var request types.Request
-			if err := json.Unmarshal(message, &request); err != nil {
-				if ws.rateLimitBadMsg.IsLimited(token) {
-					ws.logger.Warn().Msg("Rate limit exceeded for bad message formats")
-					return
-				}
-				continue
-			}
-			ds := connection.DataSender(&connection.WebSocketConnection{Conn: conn})
-
-			if request.Server != nil {
-				clientInfo, err = ws.service.ParseToken(request.Token)
-				if err != nil {
-					ws.logger.Error().Err(err).Msg("Failed to parse token")
-					return
-				}
-			}
-
-			if request.Token != "" {
-				request.Token = token
-			}
-
-			users, msg, err := ws.service.GetUsersAndMessage(ds, clientInfo, request)
+			users, newMessage, err := ws.service.GetUsersAndMessage(ds, clientInfo, message)
 			if err != nil {
 				if err := conn.WriteMessage(websocket.TextMessage, []byte(err.Error())); err != nil {
-					ws.logger.Error().Err(err).Msg("Failed to send error message to client")
+					ws.logger.Error().Err(err).Msg("failed to send error message to client")
 				}
 				continue
 			}
 
 			for _, user := range users {
-				if err := user.Connection.Write(msg); err != nil {
-					ws.logger.Error().Err(err).Msg("Failed to send message to user")
-					if err := ws.service.RemoveUser(token, user.ID); err != nil {
-						ws.logger.Error().Err(err).Msg("Failed to remove user")
+				if err := user.Connection.Write(messageType, newMessage); err != nil {
+					ws.logger.Error().Err(err).Msg("failed to send message to user")
+					if err := ws.service.RemoveUser(clientInfo, user.ID); err != nil {
+						ws.logger.Error().Err(err).Msg("failed to remove user")
 					}
 				}
 			}
@@ -175,12 +151,11 @@ func (ws *WebSocket) Run(addr string) error {
 	return ws.server.ListenAndServe()
 }
 
-func NewWebSocket(service service.Service, rateLimit, rateLimitBadMsg utils.RateLimit, logger zerolog.Logger) *WebSocket {
+func NewWebSocket(service service.Service, rateLimit utils.RateLimit, logger zerolog.Logger) *WebSocket {
 	return &WebSocket{
-		service:         service,
-		rateLimit:       rateLimit,
-		rateLimitBadMsg: rateLimitBadMsg,
-		mtx:             sync.RWMutex{},
-		logger:          logger,
+		service:   service,
+		rateLimit: rateLimit,
+		mtx:       sync.RWMutex{},
+		logger:    logger,
 	}
 }

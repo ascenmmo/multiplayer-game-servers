@@ -3,10 +3,10 @@ module github.com/ascenmmo/multiplayer-game-servers
 go 1.23.2
 
 require (
-	github.com/ascenmmo/tcp-server v0.0.0-20241024213218-104f0955af07
-	github.com/ascenmmo/token-generator v1.0.0
-	github.com/ascenmmo/udp-server v0.0.0-20241024213152-f807e90ce36c
-	github.com/ascenmmo/websocket-server v0.0.0-20241024213056-3c1271cc0529
+	github.com/ascenmmo/tcp-server v1.0.2
+	github.com/ascenmmo/token-generator v1.0.2
+	github.com/ascenmmo/udp-server v1.0.2
+	github.com/ascenmmo/websocket-server v1.0.3
 	github.com/go-kit/kit v0.13.0
 	github.com/gofiber/adaptor/v2 v2.2.1
 	github.com/gofiber/fiber/v2 v2.52.5
@@ -37,10 +37,12 @@ require (
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/opentracing-contrib/go-observer v0.0.0-20170622124052-a52f23424492 // indirect
+	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/tinylib/msgp v1.1.8 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect

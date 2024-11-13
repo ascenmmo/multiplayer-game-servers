@@ -1,6 +1,7 @@
 package connection
 
 type DataSender interface {
-	Write([]byte) error
+	Write(msgType int, msg []byte) error
 	GetID() string
+	Close()
 }

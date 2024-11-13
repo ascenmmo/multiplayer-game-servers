@@ -3,21 +3,20 @@ package transport
 
 import (
 	"context"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection/types"
+	"github.com/ascenmmo/tcp-server/pkg/api"
+	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/ascenmmo/tcp-server/pkg/transport/viewer"
-	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"time"
 )
 
 type loggerServerSettings struct {
-	next restconnection.ServerSettings
+	next api.ServerSettings
 }
 
 func loggerMiddlewareServerSettings() MiddlewareServerSettings {
-	return func(next restconnection.ServerSettings) restconnection.ServerSettings {
+	return func(next api.ServerSettings) api.ServerSettings {
 		return &loggerServerSettings{next: next}
 	}
 }
@@ -102,46 +101,4 @@ func (m loggerServerSettings) CreateRoom(ctx context.Context, token string, crea
 		logger.Info().Func(logHandle).Msg("call createRoom")
 	}(time.Now())
 	return m.next.CreateRoom(ctx, token, createRoom)
-}
-
-func (m loggerServerSettings) SetNotifyServer(ctx context.Context, token string, id uuid.UUID, url string) (err error) {
-	logger := log.Ctx(ctx).With().Str("service", "ServerSettings").Str("method", "setNotifyServer").Logger()
-	defer func(begin time.Time) {
-		logHandle := func(ev *zerolog.Event) {
-			fields := map[string]interface{}{
-				"request": viewer.Sprintf("%+v", requestServerSettingsSetNotifyServer{
-					Id:    id,
-					Token: token,
-					Url:   url,
-				}),
-				"response": viewer.Sprintf("%+v", responseServerSettingsSetNotifyServer{}),
-			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
-		}
-		if err != nil {
-			logger.Error().Err(err).Func(logHandle).Msg("call setNotifyServer")
-			return
-		}
-		logger.Info().Func(logHandle).Msg("call setNotifyServer")
-	}(time.Now())
-	return m.next.SetNotifyServer(ctx, token, id, url)
-}
-
-func (m loggerServerSettings) GetGameResults(ctx context.Context, token string) (gameConfigResults []types.GameConfigResults, err error) {
-	logger := log.Ctx(ctx).With().Str("service", "ServerSettings").Str("method", "getGameResults").Logger()
-	defer func(begin time.Time) {
-		logHandle := func(ev *zerolog.Event) {
-			fields := map[string]interface{}{
-				"request":  viewer.Sprintf("%+v", requestServerSettingsGetGameResults{Token: token}),
-				"response": viewer.Sprintf("%+v", responseServerSettingsGetGameResults{GameConfigResults: gameConfigResults}),
-			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
-		}
-		if err != nil {
-			logger.Error().Err(err).Func(logHandle).Msg("call getGameResults")
-			return
-		}
-		logger.Info().Func(logHandle).Msg("call getGameResults")
-	}(time.Now())
-	return m.next.GetGameResults(ctx, token)
 }

@@ -1,37 +1,28 @@
 package service
 
 import (
-	"encoding/json"
-	"fmt"
 	tokengenerator "github.com/ascenmmo/token-generator/token_generator"
 	tokentype "github.com/ascenmmo/token-generator/token_type"
 	"github.com/ascenmmo/udp-server/internal/connection"
-	"github.com/ascenmmo/udp-server/internal/entities"
-	configsService "github.com/ascenmmo/udp-server/internal/service/configs_service"
 	memoryDB "github.com/ascenmmo/udp-server/internal/storage"
 	"github.com/ascenmmo/udp-server/internal/utils"
+	"github.com/ascenmmo/udp-server/pkg/api/types"
 	"github.com/ascenmmo/udp-server/pkg/errors"
-	"github.com/ascenmmo/udp-server/pkg/restconnection/types"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
-	"time"
 )
 
 type Service interface {
 	GetConnectionsNum() (countConn int, exists bool)
-	CreateRoom(token string, configs types.GameConfigs) error
-	GetUsersAndMessage(ds connection.DataSender, req types.Request) (users []entities.User, msg []byte, err error)
-	NotifyAllServers(clientInfo tokentype.Info, req types.Request) (err error)
-	RemoveUser(token string, userID uuid.UUID) (err error)
-	SetRoomNotifyServer(token string, id uuid.UUID, url string) (err error)
-	GetGameResults(token string) (results []types.GameConfigResults, err error)
+	CreateRoom(token string) error
+	GetUsersAndMessage(ds connection.DataSender, req []byte) (users []types.User, msg []byte, err error)
+	RemoveUser(ds connection.DataSender, userID uuid.UUID) (err error)
 }
 
 type service struct {
 	maxConnections uint64
 
-	storage           memoryDB.IMemoryDB
-	gameConfigService configsService.GameConfigsService
+	storage memoryDB.IMemoryDB
 
 	token  tokengenerator.TokenGenerator
 	logger zerolog.Logger
@@ -46,7 +37,7 @@ func (s *service) GetConnectionsNum() (countConn int, exists bool) {
 
 	return count, true
 }
-func (s *service) CreateRoom(token string, configs types.GameConfigs) error {
+func (s *service) CreateRoom(token string) error {
 	clientInfo, err := s.token.ParseToken(token)
 	if err != nil {
 		return err
@@ -59,195 +50,142 @@ func (s *service) CreateRoom(token string, configs types.GameConfigs) error {
 		return errors.ErrRoomIsExists
 	}
 
-	configs = s.gameConfigService.SetServerExecuteToGameConfig(clientInfo, configs)
-
-	s.setRoom(clientInfo, &entities.Room{
-		GameID:      clientInfo.GameID,
-		RoomID:      clientInfo.RoomID,
-		GameConfigs: configs,
+	s.setRoom(clientInfo, &types.Room{
+		GameID: clientInfo.GameID,
+		RoomID: clientInfo.RoomID,
 	})
 
 	return nil
 }
 
-func (s *service) SetRoomNotifyServer(token string, id uuid.UUID, url string) (err error) {
-	clientInfo, err := s.token.ParseToken(token)
+func (s *service) GetUsersAndMessage(ds connection.DataSender, req []byte) (users []types.User, msg []byte, err error) {
+	clientInfo, room, err := s.getRoom(ds)
 	if err != nil {
-		return err
+		clientInfo, err = s.setNewUser(ds, req)
+		if err != nil {
+			return nil, nil, err
+		}
+		return append(users, types.User{Connection: ds}), []byte(clientInfo.UserID.String()), nil
 	}
 
-	room, err := s.getRoom(clientInfo)
-	if err != nil {
-		return err
+	if len(req) == 454 || len(req) == 343 {
+		return append(users, types.User{Connection: ds}), []byte(clientInfo.UserID.String()), nil
 	}
 
-	room.SetServerID(id)
-
-	data, _ := s.storage.GetData(utils.GenerateNotifyServerKey())
-
-	server, ok := data.(connection.NotifyServers)
-	if !ok {
-		s.logger.Warn().Msg("NotifyServers cant get interfase")
-		server = connection.NewNotifierServers()
-	}
-
-	err = server.AddServer(id, url)
-	if err != nil {
-		return err
-	}
-
-	s.storage.SetData(utils.GenerateNotifyServerKey(), server)
-
-	return nil
-
-}
-
-func (s *service) NotifyAllServers(clientInfo tokentype.Info, request types.Request) (err error) {
-	room, err := s.getRoom(clientInfo)
-	if err != nil {
-		return err
-	}
-	if len(room.ServerID) == 0 {
-		return nil
-	}
-
-	data, ok := s.storage.GetData(utils.GenerateNotifyServerKey())
-	if !ok {
-		return errors.ErrNotifyServerNotFound
-	}
-
-	servers, ok := data.(connection.NotifyServers)
-	if !ok {
-		return errors.ErrNotifyServerNotValid
-	}
-
-	err = servers.NotifyServers(room.ServerID, request)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *service) GetUsersAndMessage(ds connection.DataSender, req types.Request) (users []entities.User, msg []byte, err error) {
-	clientInfo, err := s.token.ParseToken(req.Token)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	room, err := s.getRoom(clientInfo)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	isNew := true
 	usersData := room.GetUser()
 	for _, v := range usersData {
 		if v.ID == clientInfo.UserID &&
 			ds.GetID() == v.Connection.GetID() {
-			isNew = false
 			continue
 		}
-
 		users = append(users, *v)
 	}
 
-	if isNew {
-		room.SetUser(&entities.User{
-			ID:         clientInfo.UserID,
-			Connection: ds,
-		})
+	msg = req
 
-		s.storage.AddConnection(req.Token)
-	}
-
-	response := types.Response{
-		Data: req.Data,
-	}
-
-	marshal, err := json.Marshal(response)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if req.Server == nil {
-		s.gameConfigService.Do(req.Token, clientInfo, room.GameConfigs, req.Data)
-		id := uuid.New()
-		req.Server = &id
-		err = s.NotifyAllServers(clientInfo, req)
-		if err != nil {
-			s.logger.Warn().Err(err).Msg("NotifyAllServers err")
-		}
-	}
-
-	return users, marshal, err
+	return users, msg, err
 }
 
-func (s *service) RemoveUser(token string, userID uuid.UUID) (err error) {
-	clientInfo, err := s.token.ParseToken(token)
+func (s *service) RemoveUser(ds connection.DataSender, userID uuid.UUID) (err error) {
+	_, room, err := s.getRoom(ds)
 	if err != nil {
 		return err
 	}
 
-	game, err := s.getRoom(clientInfo)
-	if err != nil {
-		return err
-	}
-
-	game.RemoveUser(userID)
+	room.RemoveUser(userID)
 
 	return nil
 }
 
-func (s *service) GetGameResults(token string) (results []types.GameConfigResults, err error) {
-	clientInfo, err := s.token.ParseToken(token)
+func (s *service) setNewUser(ds connection.DataSender, req []byte) (clientInfo *tokentype.Info, err error) {
+	token := string(req)
+
+	info, err := s.token.ParseToken(token)
 	if err != nil {
-		return results, err
+		return clientInfo, errors.ErrNewConnectionMastGetToken
 	}
+	clientInfo = &info
+	s.storage.SetData(ds.GetID(), info)
+	roomKey := utils.GenerateRoomKey(info)
 
-	playersOnline := s.storage.GetAllConnection()
-	roomsResults, ok := s.gameConfigService.GetDeletedRoomsResults(clientInfo, playersOnline)
+	var room *types.Room
+	roomData, ok := s.storage.GetData(roomKey)
 	if !ok {
-		return results, errors.ErrGameResultsNotFound
+		room = &types.Room{
+			GameID: clientInfo.GameID,
+			RoomID: clientInfo.RoomID,
+		}
+		s.setRoom(*clientInfo, room)
+	} else {
+		room, ok = roomData.(*types.Room)
+		if !ok {
+			return clientInfo, errors.ErrRoomBadValue
+		}
 	}
 
-	return roomsResults, nil
+	room.SetUser(&types.User{
+		ID:         info.UserID,
+		Connection: ds,
+	})
+
+	s.storage.AddConnection(token)
+
+	return clientInfo, nil
 }
 
-func (s *service) getRoom(clientInfo tokentype.Info) (room *entities.Room, err error) {
+func (s *service) getRoom(ds connection.DataSender) (clientInfo *tokentype.Info, room *types.Room, err error) {
+	client, ok := s.storage.GetData(ds.GetID())
+	if !ok {
+		return nil, nil, errors.ErrUserNotFound
+	}
+
+	info, ok := client.(tokentype.Info)
+	if !ok {
+		return nil, nil, errors.ErrUserBadValue
+	}
+
+	roomKey := utils.GenerateRoomKey(info)
+
+	roomData, ok := s.storage.GetData(roomKey)
+	if !ok {
+		return nil, nil, errors.ErrRoomNotFound
+	}
+
+	room, ok = roomData.(*types.Room)
+	if !ok {
+		return nil, nil, errors.ErrRoomBadValue
+	}
+
+	return &info, room, nil
+}
+
+func (s *service) getRoomByClientInfo(clientInfo tokentype.Info) (room *types.Room, err error) {
 	roomKey := utils.GenerateRoomKey(clientInfo)
 
 	roomData, ok := s.storage.GetData(roomKey)
 	if !ok {
-		return room, errors.ErrRoomNotFound
+		return nil, errors.ErrRoomNotFound
 	}
 
-	room, ok = roomData.(*entities.Room)
+	room, ok = roomData.(*types.Room)
 	if !ok {
-		return room, errors.ErrRoomBadValue
+		return nil, errors.ErrRoomBadValue
 	}
 
 	return room, nil
 }
 
-func (s *service) setRoom(clientInfo tokentype.Info, room *entities.Room) {
+func (s *service) setRoom(clientInfo tokentype.Info, room *types.Room) {
 	roomKey := utils.GenerateRoomKey(clientInfo)
 	s.storage.SetData(roomKey, room)
 }
 
-func NewService(token tokengenerator.TokenGenerator, storage memoryDB.IMemoryDB, gameConfigService configsService.GameConfigsService, logger zerolog.Logger) Service {
+func NewService(token tokengenerator.TokenGenerator, storage memoryDB.IMemoryDB, logger zerolog.Logger) Service {
 	srv := &service{
-		maxConnections:    uint64(types.CountConnectionsMAX()),
-		storage:           storage,
-		token:             token,
-		gameConfigService: gameConfigService,
-		logger:            logger,
+		maxConnections: uint64(types.CountConnectionsMAX()),
+		storage:        storage,
+		token:          token,
+		logger:         logger,
 	}
-	go func() {
-		ticker := time.NewTicker(time.Second * 3)
-		for range ticker.C {
-			logger.Info().Msg(fmt.Sprintf("count connections: %d \t max conections: %d", srv.storage.CountConnection(), srv.maxConnections))
-		}
-	}()
 	return srv
 }

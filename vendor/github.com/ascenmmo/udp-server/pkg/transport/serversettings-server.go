@@ -3,18 +3,17 @@ package transport
 
 import (
 	"context"
-	"github.com/ascenmmo/udp-server/pkg/restconnection"
-	"github.com/ascenmmo/udp-server/pkg/restconnection/types"
+	"github.com/ascenmmo/udp-server/pkg/api"
+	"github.com/ascenmmo/udp-server/pkg/api/types"
 	"github.com/google/uuid"
 )
 
 type serverServerSettings struct {
-	svc               restconnection.ServerSettings
+	svc               api.ServerSettings
 	getConnectionsNum ServerSettingsGetConnectionsNum
 	healthCheck       ServerSettingsHealthCheck
 	getServerSettings ServerSettingsGetServerSettings
 	createRoom        ServerSettingsCreateRoom
-	getGameResults    ServerSettingsGetGameResults
 	setNotifyServer   ServerSettingsSetNotifyServer
 }
 
@@ -24,18 +23,16 @@ type MiddlewareSetServerSettings interface {
 	WrapHealthCheck(m MiddlewareServerSettingsHealthCheck)
 	WrapGetServerSettings(m MiddlewareServerSettingsGetServerSettings)
 	WrapCreateRoom(m MiddlewareServerSettingsCreateRoom)
-	WrapGetGameResults(m MiddlewareServerSettingsGetGameResults)
 	WrapSetNotifyServer(m MiddlewareServerSettingsSetNotifyServer)
 
 	WithTrace()
 	WithLog()
 }
 
-func newServerServerSettings(svc restconnection.ServerSettings) *serverServerSettings {
+func newServerServerSettings(svc api.ServerSettings) *serverServerSettings {
 	return &serverServerSettings{
 		createRoom:        svc.CreateRoom,
 		getConnectionsNum: svc.GetConnectionsNum,
-		getGameResults:    svc.GetGameResults,
 		getServerSettings: svc.GetServerSettings,
 		healthCheck:       svc.HealthCheck,
 		setNotifyServer:   svc.SetNotifyServer,
@@ -49,7 +46,6 @@ func (srv *serverServerSettings) Wrap(m MiddlewareServerSettings) {
 	srv.healthCheck = srv.svc.HealthCheck
 	srv.getServerSettings = srv.svc.GetServerSettings
 	srv.createRoom = srv.svc.CreateRoom
-	srv.getGameResults = srv.svc.GetGameResults
 	srv.setNotifyServer = srv.svc.SetNotifyServer
 }
 
@@ -67,10 +63,6 @@ func (srv *serverServerSettings) GetServerSettings(ctx context.Context, token st
 
 func (srv *serverServerSettings) CreateRoom(ctx context.Context, token string, createRoom types.CreateRoomRequest) (err error) {
 	return srv.createRoom(ctx, token, createRoom)
-}
-
-func (srv *serverServerSettings) GetGameResults(ctx context.Context, token string) (gameConfigResults []types.GameConfigResults, err error) {
-	return srv.getGameResults(ctx, token)
 }
 
 func (srv *serverServerSettings) SetNotifyServer(ctx context.Context, token string, id uuid.UUID, url string) (err error) {
@@ -91,10 +83,6 @@ func (srv *serverServerSettings) WrapGetServerSettings(m MiddlewareServerSetting
 
 func (srv *serverServerSettings) WrapCreateRoom(m MiddlewareServerSettingsCreateRoom) {
 	srv.createRoom = m(srv.createRoom)
-}
-
-func (srv *serverServerSettings) WrapGetGameResults(m MiddlewareServerSettingsGetGameResults) {
-	srv.getGameResults = m(srv.getGameResults)
 }
 
 func (srv *serverServerSettings) WrapSetNotifyServer(m MiddlewareServerSettingsSetNotifyServer) {

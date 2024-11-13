@@ -32,4 +32,13 @@ type DevToolsClient interface {
 	// @tg http-headers=token|Token
 	// @tg summary=`server updateClient`
 	UpdateClient(ctx context.Context, token string, client types.Client) (err error)
+	// @tg http-headers=token|Token
+	// @tg summary=`server getGameSaves`
+	GetGameSaves(ctx context.Context, token string) (gameSaves types.GameSaves, err error)
+	// @tg http-headers=token|Token
+	// @tg summary=`server setGameSaves`
+	SetGameSaves(ctx context.Context, token string, gameSaves types.GameSaves) (err error)
+	// @tg http-headers=token|Token
+	// @tg summary=`server deleteGameSaves`
+	DeleteGameSaves(ctx context.Context, token string) (err error)
 }

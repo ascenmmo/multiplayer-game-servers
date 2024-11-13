@@ -2,7 +2,7 @@
 package transport
 
 import (
-	"github.com/ascenmmo/tcp-server/pkg/restconnection"
+	"github.com/ascenmmo/tcp-server/pkg/api"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -11,10 +11,10 @@ type httpServerSettings struct {
 	maxBatchSize     int
 	maxParallelBatch int
 	svc              *serverServerSettings
-	base             restconnection.ServerSettings
+	base             api.ServerSettings
 }
 
-func NewServerSettings(svcServerSettings restconnection.ServerSettings) (srv *httpServerSettings) {
+func NewServerSettings(svcServerSettings api.ServerSettings) (srv *httpServerSettings) {
 
 	srv = &httpServerSettings{
 		base: svcServerSettings,
@@ -48,6 +48,4 @@ func (http *httpServerSettings) SetRoutes(route *fiber.App) {
 	route.Post("/api/v1/rest/serverSettings/healthCheck", http.serveHealthCheck)
 	route.Post("/api/v1/rest/serverSettings/getServerSettings", http.serveGetServerSettings)
 	route.Post("/api/v1/rest/serverSettings/createRoom", http.serveCreateRoom)
-	route.Post("/api/v1/rest/serverSettings/setNotifyServer", http.serveSetNotifyServer)
-	route.Post("/api/v1/rest/serverSettings/getGameResults", http.serveGetGameResults)
 }

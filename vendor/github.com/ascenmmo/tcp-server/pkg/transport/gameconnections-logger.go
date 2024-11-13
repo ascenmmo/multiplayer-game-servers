@@ -3,8 +3,8 @@ package transport
 
 import (
 	"context"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection/types"
+	"github.com/ascenmmo/tcp-server/pkg/api"
+	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/ascenmmo/tcp-server/pkg/transport/viewer"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
@@ -13,11 +13,11 @@ import (
 )
 
 type loggerGameConnections struct {
-	next restconnection.GameConnections
+	next api.GameConnections
 }
 
 func loggerMiddlewareGameConnections() MiddlewareGameConnections {
-	return func(next restconnection.GameConnections) restconnection.GameConnections {
+	return func(next api.GameConnections) api.GameConnections {
 		return &loggerGameConnections{next: next}
 	}
 }

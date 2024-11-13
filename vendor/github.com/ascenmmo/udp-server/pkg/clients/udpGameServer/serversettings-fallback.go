@@ -6,6 +6,5 @@ type fallbackServerSettings interface {
 	HealthCheck(err error) bool
 	GetServerSettings(err error) bool
 	CreateRoom(err error) bool
-	GetGameResults(err error) bool
 	SetNotifyServer(err error) bool
 }

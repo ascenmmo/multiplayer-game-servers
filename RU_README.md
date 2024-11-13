@@ -39,7 +39,7 @@ var (
 	RunMultiplayer                 = true // Запуск многопользовательского режима
 	RunAdminPanel                  = true // Запуск админки
 	MultiplayerPort                = "8080" // Порт для многопользовательского режима
-	MongoURL                       = "mongodb://username:userpassword@ascenmmo.com:27017/?maxPoolSize=20&w=majority" // URL подключения к MongoDB
+	MongoURL                       = "mongodb://username:userpassword@ascenmmo.com:27017" // URL подключения к MongoDB
 	MultiplayerMaxRequestPerSecond = 5 // Максимальное количество запросов в секунду для многопользовательского режима
 )
 

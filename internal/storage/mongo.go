@@ -26,6 +26,7 @@ const (
 	roomsCollectionKey         = "rooms"
 	configsCollectionKey       = "configs"
 	configsResultCollectionKey = "configs_results"
+	gameSavesCollectionKey     = "games_saves"
 
 	dataBaseAccess            = "access"
 	accessGameCollectionKey   = "accessGame"

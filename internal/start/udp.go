@@ -16,8 +16,8 @@ func UdpServer(ctx context.Context, logger zerolog.Logger) {
 		env.TokenKey,
 		env.UdpServerMaxRequestPerSecond,
 		10,
-		60,
 		logger.With().Str("server:", "udp").Logger(),
+		false,
 	)
 	mastNil(err)
 }

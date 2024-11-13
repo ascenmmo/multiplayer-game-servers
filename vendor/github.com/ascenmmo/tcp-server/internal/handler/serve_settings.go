@@ -4,9 +4,8 @@ import (
 	"context"
 	"github.com/ascenmmo/tcp-server/internal/service"
 	"github.com/ascenmmo/tcp-server/internal/utils"
+	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/ascenmmo/tcp-server/pkg/errors"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection/types"
-	"github.com/google/uuid"
 )
 
 type ServerSettings struct {
@@ -45,25 +44,7 @@ func (r *ServerSettings) CreateRoom(ctx context.Context, token string, createRoo
 	if limited {
 		return errors.ErrTooManyRequests
 	}
-	err = r.server.CreateRoom(token, createRoom.GameConfigs)
-	return
-}
-
-func (r *ServerSettings) GetGameResults(ctx context.Context, token string) (gameConfigResults []types.GameConfigResults, err error) {
-	limited := r.rateLimit.IsLimited(token)
-	if limited {
-		return gameConfigResults, errors.ErrTooManyRequests
-	}
-	gameConfigResults, err = r.server.GetGameResults(token)
-	return
-}
-
-func (r *ServerSettings) SetNotifyServer(ctx context.Context, token string, id uuid.UUID, url string) (err error) {
-	limited := r.rateLimit.IsLimited(token)
-	if limited {
-		return errors.ErrTooManyRequests
-	}
-	err = r.server.SetRoomNotifyServer(token, id, url)
+	err = r.server.CreateRoom(token)
 	return
 }
 

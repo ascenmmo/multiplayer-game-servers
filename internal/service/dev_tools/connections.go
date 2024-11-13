@@ -14,12 +14,11 @@ import (
 )
 
 type connections struct {
-	gameStorage        storage.GameStorage
-	serverStorage      storage.ServersStorage
-	roomsStorage       storage.RoomsStorage
-	gameConfigsStorage storage.GameConfigsStorage
-	token              tokengenerator.TokenGenerator
-	logger             *zerolog.Logger
+	gameStorage   storage.GameStorage
+	serverStorage storage.ServersStorage
+	roomsStorage  storage.RoomsStorage
+	token         tokengenerator.TokenGenerator
+	logger        *zerolog.Logger
 }
 
 func (c *connections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error) {
@@ -52,7 +51,7 @@ func (c *connections) CreateRoom(ctx context.Context, token string, gameID uuid.
 	for i := range servers {
 		exists, err := servers[i].IsExists(ctx, token)
 		if err != nil {
-			c.logger.Error().Err(err)
+			c.logger.Error().Err(err).Msg("IsExists error")
 			continue
 		}
 		if exists {
@@ -144,14 +143,12 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 		return []types.ConnectionServer{}, errors.ErrServerCreatingRoomAllServesOffError
 	}
 
-	config, err := c.gameConfigsStorage.GetConfig(info.GameID)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("game configs not found")
 	}
 
 	for _, server := range servers {
-		configForServer := config.ConfigForServer(server.ServerType)
-		err = server.CreateRoom(ctx, token, configForServer)
+		err = server.CreateRoom(ctx, token)
 		if err != nil {
 			if err.Error() != errors.ErrRoomIsExists.Error() {
 				c.logger.Error().Err(err).Msg("server error create room")
@@ -187,6 +184,6 @@ func (c *connections) RemoveRoomByID(ctx context.Context, token string, gameID u
 	return nil
 }
 
-func NewConnections(gameStorage storage.GameStorage, serverStorage storage.ServersStorage, roomsStorage storage.RoomsStorage, gameConfigsStorage storage.GameConfigsStorage, token tokengenerator.TokenGenerator, logger *zerolog.Logger) multiplayer.DevToolsConnections {
-	return &connections{gameStorage: gameStorage, serverStorage: serverStorage, roomsStorage: roomsStorage, gameConfigsStorage: gameConfigsStorage, token: token, logger: logger}
+func NewConnections(gameStorage storage.GameStorage, serverStorage storage.ServersStorage, roomsStorage storage.RoomsStorage, token tokengenerator.TokenGenerator, logger *zerolog.Logger) multiplayer.DevToolsConnections {
+	return &connections{gameStorage: gameStorage, serverStorage: serverStorage, roomsStorage: roomsStorage, token: token, logger: logger}
 }

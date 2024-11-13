@@ -46,3 +46,21 @@ func (svc traceDevToolsClient) UpdateClient(ctx context.Context, token string, c
 	span.SetTag("method", "UpdateClient")
 	return svc.next.UpdateClient(ctx, token, client)
 }
+
+func (svc traceDevToolsClient) GetGameSaves(ctx context.Context, token string) (gameSaves types.GameSaves, err error) {
+	span := opentracing.SpanFromContext(ctx)
+	span.SetTag("method", "GetGameSaves")
+	return svc.next.GetGameSaves(ctx, token)
+}
+
+func (svc traceDevToolsClient) SetGameSaves(ctx context.Context, token string, gameSaves types.GameSaves) (err error) {
+	span := opentracing.SpanFromContext(ctx)
+	span.SetTag("method", "SetGameSaves")
+	return svc.next.SetGameSaves(ctx, token, gameSaves)
+}
+
+func (svc traceDevToolsClient) DeleteGameSaves(ctx context.Context, token string) (err error) {
+	span := opentracing.SpanFromContext(ctx)
+	span.SetTag("method", "DeleteGameSaves")
+	return svc.next.DeleteGameSaves(ctx, token)
+}

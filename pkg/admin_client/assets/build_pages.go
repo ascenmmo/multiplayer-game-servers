@@ -11,13 +11,21 @@ const dir = "pkg/admin_client/assets/pages/"
 
 var (
 	indexFiles = map[string]string{
-		"Auth":           dir + "auth/index.html",
-		"Docs":           dir + "docs/ru_index.html",
-		"GameCollection": dir + "game_collection/index.html",
-		"MainPage":       dir + "main/index.html",
-		"GameInfo":       dir + "game_info/index.html",
-		"GameConfig":     dir + "game_config/index.html",
-		"DeveloperInfo":  dir + "developer_info/index.html",
+		"RuAuth":           dir + "auth/ru_index.html",
+		"RuDocs":           dir + "docs/ru_index.html",
+		"RuGameCollection": dir + "game_collection/ru_index.html",
+		"RuMainPage":       dir + "main/ru_index.html",
+		"RuGameInfo":       dir + "game_info/ru_index.html",
+		"RuGameConfig":     dir + "game_config/ru_index.html",
+		"RuDeveloperInfo":  dir + "developer_info/ru_index.html",
+
+		"EngAuth":           dir + "auth/eng_index.html",
+		"EngDocs":           dir + "docs/eng_index.html",
+		"EngGameCollection": dir + "game_collection/eng_index.html",
+		"EngMainPage":       dir + "main/eng_index.html",
+		"EngGameInfo":       dir + "game_info/eng_index.html",
+		"EngGameConfig":     dir + "game_config/eng_index.html",
+		"EngDeveloperInfo":  dir + "developer_info/eng_index.html",
 	}
 )
 

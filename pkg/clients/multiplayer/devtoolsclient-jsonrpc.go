@@ -19,6 +19,9 @@ type retDevToolsClientSignIn = func(token string, refresh string, err error)
 type retDevToolsClientRefreshToken = func(newToken string, newRefresh string, err error)
 type retDevToolsClientGetClient = func(client types.Client, err error)
 type retDevToolsClientUpdateClient = func(err error)
+type retDevToolsClientGetGameSaves = func(gameSaves types.GameSaves, err error)
+type retDevToolsClientSetGameSaves = func(err error)
+type retDevToolsClientDeleteGameSaves = func(err error)
 
 func (cli *ClientDevToolsClient) SignUp(ctx context.Context, client types.Client) (token string, refresh string, err error) {
 
@@ -289,6 +292,171 @@ func (cli *ClientDevToolsClient) ReqUpdateClient(ctx context.Context, callback r
 			var fallbackCheck func(error) bool
 			if cli.fallbackDevToolsClient != nil {
 				fallbackCheck = cli.fallbackDevToolsClient.UpdateClient
+			}
+			if rpcResponse != nil && rpcResponse.Error != nil {
+				if cli.errorDecoder != nil {
+					err = cli.errorDecoder(rpcResponse.Error.Raw())
+				} else {
+					err = fmt.Errorf(rpcResponse.Error.Message)
+				}
+			}
+			callback(cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response))
+		}
+	}
+	return
+}
+
+func (cli *ClientDevToolsClient) GetGameSaves(ctx context.Context, token string) (gameSaves types.GameSaves, err error) {
+
+	request := requestDevToolsClientGetGameSaves{Token: token}
+	var response responseDevToolsClientGetGameSaves
+	var rpcResponse *jsonrpc.ResponseRPC
+	cacheKey, _ := hasher.Hash(request)
+	rpcResponse, err = cli.rpc.Call(ctx, "devtoolsclient.getgamesaves", request)
+	var fallbackCheck func(error) bool
+	if cli.fallbackDevToolsClient != nil {
+		fallbackCheck = cli.fallbackDevToolsClient.GetGameSaves
+	}
+	if rpcResponse != nil && rpcResponse.Error != nil {
+		if cli.errorDecoder != nil {
+			err = cli.errorDecoder(rpcResponse.Error.Raw())
+		} else {
+			err = fmt.Errorf(rpcResponse.Error.Message)
+		}
+	}
+	if err = cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response); err != nil {
+		return
+	}
+	return response.GameSaves, err
+}
+
+func (cli *ClientDevToolsClient) ReqGetGameSaves(ctx context.Context, callback retDevToolsClientGetGameSaves, token string) (request RequestRPC) {
+
+	request = RequestRPC{rpcRequest: &jsonrpc.RequestRPC{
+		ID:      jsonrpc.NewID(),
+		JSONRPC: jsonrpc.Version,
+		Method:  "devtoolsclient.getgamesaves",
+		Params:  requestDevToolsClientGetGameSaves{Token: token},
+	}}
+	if callback != nil {
+		var response responseDevToolsClientGetGameSaves
+		request.retHandler = func(err error, rpcResponse *jsonrpc.ResponseRPC) {
+			cacheKey, _ := hasher.Hash(request.rpcRequest.Params)
+			var fallbackCheck func(error) bool
+			if cli.fallbackDevToolsClient != nil {
+				fallbackCheck = cli.fallbackDevToolsClient.GetGameSaves
+			}
+			if rpcResponse != nil && rpcResponse.Error != nil {
+				if cli.errorDecoder != nil {
+					err = cli.errorDecoder(rpcResponse.Error.Raw())
+				} else {
+					err = fmt.Errorf(rpcResponse.Error.Message)
+				}
+			}
+			callback(response.GameSaves, cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response))
+		}
+	}
+	return
+}
+
+func (cli *ClientDevToolsClient) SetGameSaves(ctx context.Context, token string, gameSaves types.GameSaves) (err error) {
+
+	request := requestDevToolsClientSetGameSaves{
+		GameSaves: gameSaves,
+		Token:     token,
+	}
+	var response responseDevToolsClientSetGameSaves
+	var rpcResponse *jsonrpc.ResponseRPC
+	cacheKey, _ := hasher.Hash(request)
+	rpcResponse, err = cli.rpc.Call(ctx, "devtoolsclient.setgamesaves", request)
+	var fallbackCheck func(error) bool
+	if cli.fallbackDevToolsClient != nil {
+		fallbackCheck = cli.fallbackDevToolsClient.SetGameSaves
+	}
+	if rpcResponse != nil && rpcResponse.Error != nil {
+		if cli.errorDecoder != nil {
+			err = cli.errorDecoder(rpcResponse.Error.Raw())
+		} else {
+			err = fmt.Errorf(rpcResponse.Error.Message)
+		}
+	}
+	if err = cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response); err != nil {
+		return
+	}
+	return err
+}
+
+func (cli *ClientDevToolsClient) ReqSetGameSaves(ctx context.Context, callback retDevToolsClientSetGameSaves, token string, gameSaves types.GameSaves) (request RequestRPC) {
+
+	request = RequestRPC{rpcRequest: &jsonrpc.RequestRPC{
+		ID:      jsonrpc.NewID(),
+		JSONRPC: jsonrpc.Version,
+		Method:  "devtoolsclient.setgamesaves",
+		Params: requestDevToolsClientSetGameSaves{
+			GameSaves: gameSaves,
+			Token:     token,
+		},
+	}}
+	if callback != nil {
+		var response responseDevToolsClientSetGameSaves
+		request.retHandler = func(err error, rpcResponse *jsonrpc.ResponseRPC) {
+			cacheKey, _ := hasher.Hash(request.rpcRequest.Params)
+			var fallbackCheck func(error) bool
+			if cli.fallbackDevToolsClient != nil {
+				fallbackCheck = cli.fallbackDevToolsClient.SetGameSaves
+			}
+			if rpcResponse != nil && rpcResponse.Error != nil {
+				if cli.errorDecoder != nil {
+					err = cli.errorDecoder(rpcResponse.Error.Raw())
+				} else {
+					err = fmt.Errorf(rpcResponse.Error.Message)
+				}
+			}
+			callback(cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response))
+		}
+	}
+	return
+}
+
+func (cli *ClientDevToolsClient) DeleteGameSaves(ctx context.Context, token string) (err error) {
+
+	request := requestDevToolsClientDeleteGameSaves{Token: token}
+	var response responseDevToolsClientDeleteGameSaves
+	var rpcResponse *jsonrpc.ResponseRPC
+	cacheKey, _ := hasher.Hash(request)
+	rpcResponse, err = cli.rpc.Call(ctx, "devtoolsclient.deletegamesaves", request)
+	var fallbackCheck func(error) bool
+	if cli.fallbackDevToolsClient != nil {
+		fallbackCheck = cli.fallbackDevToolsClient.DeleteGameSaves
+	}
+	if rpcResponse != nil && rpcResponse.Error != nil {
+		if cli.errorDecoder != nil {
+			err = cli.errorDecoder(rpcResponse.Error.Raw())
+		} else {
+			err = fmt.Errorf(rpcResponse.Error.Message)
+		}
+	}
+	if err = cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response); err != nil {
+		return
+	}
+	return err
+}
+
+func (cli *ClientDevToolsClient) ReqDeleteGameSaves(ctx context.Context, callback retDevToolsClientDeleteGameSaves, token string) (request RequestRPC) {
+
+	request = RequestRPC{rpcRequest: &jsonrpc.RequestRPC{
+		ID:      jsonrpc.NewID(),
+		JSONRPC: jsonrpc.Version,
+		Method:  "devtoolsclient.deletegamesaves",
+		Params:  requestDevToolsClientDeleteGameSaves{Token: token},
+	}}
+	if callback != nil {
+		var response responseDevToolsClientDeleteGameSaves
+		request.retHandler = func(err error, rpcResponse *jsonrpc.ResponseRPC) {
+			cacheKey, _ := hasher.Hash(request.rpcRequest.Params)
+			var fallbackCheck func(error) bool
+			if cli.fallbackDevToolsClient != nil {
+				fallbackCheck = cli.fallbackDevToolsClient.DeleteGameSaves
 			}
 			if rpcResponse != nil && rpcResponse.Error != nil {
 				if cli.errorDecoder != nil {

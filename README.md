@@ -39,7 +39,7 @@ var (
 	RunMultiplayer                 = true // Enable multiplayer mode
 	RunAdminPanel                  = true // Enable admin panel
 	MultiplayerPort                = "8080" // Port for multiplayer mode
-	MongoURL                       = "mongodb://username:userpassword@ascenmmo.com:27017/?maxPoolSize=20&w=majority" // MongoDB connection URL
+	MongoURL                       = "mongodb://username:userpassword@ascenmmo.com:27017" // MongoDB connection URL
 	MultiplayerMaxRequestPerSecond = 5 // Maximum requests per second for multiplayer mode
 )
 

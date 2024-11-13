@@ -3,13 +3,13 @@ package transport
 
 import (
 	"context"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection/types"
+	"github.com/ascenmmo/tcp-server/pkg/api"
+	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/google/uuid"
 )
 
 type serverGameConnections struct {
-	svc            restconnection.GameConnections
+	svc            api.GameConnections
 	setSendMessage GameConnectionsSetSendMessage
 	getMessage     GameConnectionsGetMessage
 	removeUser     GameConnectionsRemoveUser
@@ -25,7 +25,7 @@ type MiddlewareSetGameConnections interface {
 	WithLog()
 }
 
-func newServerGameConnections(svc restconnection.GameConnections) *serverGameConnections {
+func newServerGameConnections(svc api.GameConnections) *serverGameConnections {
 	return &serverGameConnections{
 		getMessage:     svc.GetMessage,
 		removeUser:     svc.RemoveUser,

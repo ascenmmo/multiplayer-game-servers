@@ -3,17 +3,17 @@ package transport
 
 import (
 	"context"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection"
-	"github.com/ascenmmo/tcp-server/pkg/restconnection/types"
+	"github.com/ascenmmo/tcp-server/pkg/api"
+	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
 )
 
 type traceGameConnections struct {
-	next restconnection.GameConnections
+	next api.GameConnections
 }
 
-func traceMiddlewareGameConnections(next restconnection.GameConnections) restconnection.GameConnections {
+func traceMiddlewareGameConnections(next api.GameConnections) api.GameConnections {
 	return &traceGameConnections{next: next}
 }
 

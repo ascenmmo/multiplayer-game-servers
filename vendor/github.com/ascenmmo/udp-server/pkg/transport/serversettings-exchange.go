@@ -2,7 +2,7 @@
 package transport
 
 import (
-	"github.com/ascenmmo/udp-server/pkg/restconnection/types"
+	"github.com/ascenmmo/udp-server/pkg/api/types"
 	"github.com/google/uuid"
 )
 
@@ -38,14 +38,6 @@ type requestServerSettingsCreateRoom struct {
 
 // Formal exchange type, please do not delete.
 type responseServerSettingsCreateRoom struct{}
-
-type requestServerSettingsGetGameResults struct {
-	Token string `json:"token"`
-}
-
-type responseServerSettingsGetGameResults struct {
-	GameConfigResults []types.GameConfigResults `json:"gameConfigResults"`
-}
 
 type requestServerSettingsSetNotifyServer struct {
 	Token string    `json:"token"`

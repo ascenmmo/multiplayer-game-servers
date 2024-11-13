@@ -2,8 +2,6 @@ package memoryDB
 
 import (
 	"context"
-	"fmt"
-	"runtime"
 	"sync"
 	"time"
 )
@@ -38,16 +36,6 @@ type userData struct {
 type connections struct {
 	storage sync.Map
 	count   int
-}
-
-func NewMemoryDb(ctx context.Context, dataTTL time.Duration) *MemoryDb {
-	db := &MemoryDb{
-		userData:    &userData{storage: sync.Map{}},
-		connections: &connections{storage: sync.Map{}},
-		dataTTL:     dataTTL,
-	}
-	go db.Run(ctx)
-	return db
 }
 
 func (db *MemoryDb) GetData(key string) (any, bool) {
@@ -128,12 +116,14 @@ func (db *MemoryDb) removeOldData() {
 		return true
 	})
 
-	db.logMemoryUsage()
 }
 
-func (db *MemoryDb) logMemoryUsage() {
-	var stats runtime.MemStats
-	runtime.ReadMemStats(&stats)
-	fmt.Printf("Memory Usage: Alloc = %v MiB, TotalAlloc = %v MiB, Sys = %v MiB, NumGC = %v\n",
-		stats.Alloc/1024/1024, stats.TotalAlloc/1024/1024, stats.Sys/1024/1024, stats.NumGC)
+func NewMemoryDb(ctx context.Context, dataTTL time.Duration) *MemoryDb {
+	db := &MemoryDb{
+		userData:    &userData{storage: sync.Map{}},
+		connections: &connections{storage: sync.Map{}},
+		dataTTL:     dataTTL,
+	}
+	go db.Run(ctx)
+	return db
 }

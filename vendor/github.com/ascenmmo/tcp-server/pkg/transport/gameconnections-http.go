@@ -2,7 +2,7 @@
 package transport
 
 import (
-	"github.com/ascenmmo/tcp-server/pkg/restconnection"
+	"github.com/ascenmmo/tcp-server/pkg/api"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -11,10 +11,10 @@ type httpGameConnections struct {
 	maxBatchSize     int
 	maxParallelBatch int
 	svc              *serverGameConnections
-	base             restconnection.GameConnections
+	base             api.GameConnections
 }
 
-func NewGameConnections(svcGameConnections restconnection.GameConnections) (srv *httpGameConnections) {
+func NewGameConnections(svcGameConnections api.GameConnections) (srv *httpGameConnections) {
 
 	srv = &httpGameConnections{
 		base: svcGameConnections,

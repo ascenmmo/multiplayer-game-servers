@@ -31,7 +31,7 @@ func (c *accessGame) CreateNew(gameID, userID uuid.UUID) (err error) {
 
 	err = c.storage.CreateAccessGame(gameAccess)
 	if err != nil {
-		return err
+		return errors.ErrRecordAlredyExists
 	}
 
 	return nil
@@ -54,7 +54,7 @@ func (c *accessGame) AddOwner(ownerID uuid.UUID, gameID, newOwnerID uuid.UUID) (
 	}
 
 	gameAccess.Owners = append(gameAccess.Owners, newOwnerID)
-	err = c.storage.CreateAccessGame(gameAccess)
+	err = c.storage.Update(gameAccess)
 	if err != nil {
 		return err
 	}

@@ -2,7 +2,7 @@ package udp
 
 import "github.com/ascenmmo/multiplayer-game-servers/pkg/admin_client/dev_doc/types"
 
-func GetUPDConnectionsStruct() []types.DocStruct {
+func GetUDPConnectionsStruct() []types.DocStruct {
 	udp := types.DocStruct{
 		Title: "Подключение по UDP",
 		Info: "Этот сервис предназначен для передачи небольших данных в режиме реального времени. " +
@@ -10,21 +10,45 @@ func GetUPDConnectionsStruct() []types.DocStruct {
 			"UDP — это очень быстрое решение, однако, есть недостатки: некоторые пакеты могут быть потеряны или доставлены не по порядку.",
 		DockLists: []types.DocStructList{
 			{
-				Title: "Отправка и приём сообщений",
-				Description: "Для подключения к сервису необходимо знать IP-адрес и порт. " +
+				Title: "Этап подключения",
+				Description: "Для подключения к сервису необходимо знать IP-адрес и порт." +
 					"Максимальное количество сообщений в секунду — 200. " +
-					"Пример команды подключения и отправки сообщения через UDP:",
-				RequestPath: "udp://127.0.0.1:4500",
-				Method:      "udp",
-				RequestBody: `{
-	"token": "ваш токен", 
-	"data": "данные для отправки"
-}`,
-				RequestBodyInfo: "Тело запроса содержит токен для аутентификации и данные, которые необходимо передать другим клиентам.",
-				ResponseBody: `{
-	"data": "данные от других клиентов"
-}`,
-				ResponseBodyInfo: "Ответ содержит данные, полученные от других клиентов, подключённых к той же комнате.",
+					"Так же нужно дождаться от сервреа ответа в виде id вашего клиента, UserID в ответе является подтверждением что подключение аутентифицированное." +
+					"Пример команды подключения",
+				RequestPath:      "udp://ascenmmo.com:4500",
+				Method:           "udp write",
+				RequestBody:      `eyJhbGciOiJIUz11NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzA3NjA4ODYsIkluZm8iOnsiZ2FtZV9pZCI61jJhZDIyNDNhLThhN2UtMzkzMC1iNjEzLTg5YzY2NDk2YWFjZCIsInJvb21faWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDAiLCJ1c2VyX2lkIjoiN2RkZmNiNzEtOWQ3OC0zMTczLWExNGQtNDVjZTc1ODIyNmM3IiwidHRsIjo5MDAwMDAwMDAwMDB9fQ.wmq1VH88zlws_tSAdvJjfXcdcoaxL8vT8W9gsRZrw_o$_$j`,
+				RequestBodyInfo:  "Нужно отправить string без всякой обвертки несколько раз пока от сервера не вернется userID. Сервер должен понять что ваше подключение является валидным, иначе вы не являетесь подключенным пользователем.",
+				ResponseBody:     `3fa85f64-5717-4562-b3fc-2c963f66afa6`,
+				ResponseBodyInfo: "Запустите Этап чтения. Прежде чем переходить к этапу отправки вам должен вернуться userID это является подтверждением что ваше соединение аутентифицированное",
+			},
+			{
+				Title: "Этап чтения",
+				Description: "Используйте тот же канал подключения, не нужно создавать новый. " +
+					"Канал подключения на этапе чтения и отправки должен быть один." +
+					"Команда чтения ",
+				RequestPath:     "udp://ascenmmo.com:4500",
+				Method:          "udp read",
+				RequestBody:     `Пренадлежит этапу отправки, при поралельном чтении не требует отправки данных'`,
+				RequestBodyInfo: "Тут мы должны слушать ответ",
+				ResponseBody:    `data1 data2 data2   или   dat data2 d$#3 dt9   или  data`,
+				ResponseBodyInfo: "ответ может содержать как одно сообщение так и несколько, udp не гарантирует целосность сообщений и их порядок. " +
+					"Сервер работает по схеме рассылки при получении одного сообщения от ПервогоКлиента от дублирует Второму и Третьему сообщение. ",
+			},
+			{
+				Title: "Этап отправки",
+				Description: "Используйте тот же канал подключения, не нужно создавать новый. " +
+					"Канал подключения на этапе чтения и отправки должен быть один." +
+					"Так как в первом этапе вы аутентифицировались на сервере вы можете отослать пакет" +
+					"Пример команды отправки",
+				RequestPath:     "udp://ascenmmo.com:4500",
+				Method:          "udp write",
+				RequestBody:     `клиент 1 отправил сообщение 101, или он отправил json {"name": "MyUser1"}`,
+				RequestBodyInfo: "сервер работате только с даными []byte. Массив байт распределяется по всем клиентам",
+				ResponseBody:    `клиент 2 отправил сообщение 15, или он отправил json {"name": "MyUser2"} клиент 3 отправил сообщение 53, или он отправил json {"name": "MyUser3"}`,
+				ResponseBodyInfo: "ответ может содержать как одно сообщение так и несколько, udp не гарантирует целосность сообщений и их порядок. " +
+					"Если сообщения идут нечитаемые, поиграйтесь с времеными рамками отправителя сообщений. " +
+					"Сервер не валидирует сообщения и не дробит их, а рассылает всем как есть.",
 			},
 		},
 	}

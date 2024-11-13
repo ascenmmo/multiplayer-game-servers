@@ -2,7 +2,7 @@
 package transport
 
 import (
-	"github.com/ascenmmo/tcp-server/pkg/restconnection/types"
+	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/google/uuid"
 )
 
