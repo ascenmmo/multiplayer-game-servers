@@ -9,7 +9,6 @@ import (
 	tokentype "github.com/ascenmmo/token-generator/token_type"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
-	"sync"
 	"time"
 )
 
@@ -31,7 +30,6 @@ type service struct {
 	token tokengenerator.TokenGenerator
 
 	logger zerolog.Logger
-	mtx    sync.Mutex
 }
 
 func (s *service) GetConnectionsNum() (countConn int, exists bool) {
@@ -66,8 +64,6 @@ func (s *service) CreateRoom(token string) error {
 }
 
 func (s *service) SetMessage(token string, msg types.RequestSetMessage) (err error) {
-	s.mtx.Lock()
-	defer s.mtx.Unlock()
 	clientInfo, err := s.token.ParseToken(token)
 	if err != nil {
 		return err
@@ -96,14 +92,12 @@ func (s *service) SetMessage(token string, msg types.RequestSetMessage) (err err
 		})
 	}
 
-	s.setRoom(clientInfo, room)
+	//s.setRoom(clientInfo, room)
 
 	return nil
 }
 
 func (s *service) GetMessages(token string) (msg types.ResponseGetMessage, err error) {
-	s.mtx.Lock()
-	defer s.mtx.Unlock()
 	clientInfo, err := s.token.ParseToken(token)
 	if err != nil {
 		return msg, err
@@ -135,8 +129,6 @@ func (s *service) GetMessages(token string) (msg types.ResponseGetMessage, err e
 }
 
 func (s *service) RemoveUser(userID uuid.UUID, reqToken string) (err error) {
-	s.mtx.Lock()
-	defer s.mtx.Unlock()
 	clientInfo, err := s.token.ParseToken(reqToken)
 	if err != nil {
 		return err
@@ -158,7 +150,14 @@ func (s *service) getRoom(clientInfo tokentype.Info) (room *types.Room, err erro
 
 	roomData, ok := s.storage.GetData(roomKey)
 	if !ok {
-		return room, errors.ErrRoomNotFound
+		newRoom := &types.Room{
+			GameID: clientInfo.GameID,
+			RoomID: clientInfo.RoomID,
+		}
+		roomData = newRoom
+		s.setRoom(clientInfo, newRoom)
+
+		return newRoom, nil
 	}
 
 	room, ok = roomData.(*types.Room)
