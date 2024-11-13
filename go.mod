@@ -3,10 +3,10 @@ module github.com/ascenmmo/multiplayer-game-servers
 go 1.23.2
 
 require (
-	github.com/ascenmmo/tcp-server v0.0.0-20241113204530-8e14605dfaaa
+	github.com/ascenmmo/tcp-server v1.0.2
 	github.com/ascenmmo/token-generator v1.0.2
-	github.com/ascenmmo/udp-server v0.0.0-20241113204541-8dec05ea44c8
-	github.com/ascenmmo/websocket-server v0.0.0-20241113204728-d72503fdff9d
+	github.com/ascenmmo/udp-server v1.0.2
+	github.com/ascenmmo/websocket-server v1.0.3
 	github.com/go-kit/kit v0.13.0
 	github.com/gofiber/adaptor/v2 v2.2.1
 	github.com/gofiber/fiber/v2 v2.52.5
