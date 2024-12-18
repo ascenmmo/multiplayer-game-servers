@@ -33,14 +33,19 @@ func (c *connections) CreateRoom(ctx context.Context, token string, gameID uuid.
 	}
 
 	room, err := c.roomsStorage.FindByCreatorID(info.UserID)
-	if err != nil {
-		room = types.Room{
-			ID:          uuid.New(),
-			GameID:      gameID,
-			CreatorID:   info.UserID,
-			Connections: []uuid.UUID{info.UserID},
-			CreatedAt:   time.Now().Unix(),
+	if err == nil {
+		err = c.roomsStorage.Delete(room.ID)
+		if err != nil {
+			return "", err
 		}
+	}
+
+	room = types.Room{
+		ID:          uuid.New(),
+		GameID:      gameID,
+		CreatorID:   info.UserID,
+		Connections: []uuid.UUID{info.UserID},
+		CreatedAt:   time.Now().Unix(),
 	}
 
 	servers, err := c.serverStorage.FindByIDs(game.Servers)
@@ -143,11 +148,38 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 		return []types.ConnectionServer{}, errors.ErrServerCreatingRoomAllServesOffError
 	}
 
-	if err != nil {
-		c.logger.Error().Err(err).Msg("game configs not found")
-	}
+	defer func() {
+		if err != nil {
+			return
+		}
+		if len(room.ExistsServers) != 0 {
+			for _, server := range servers {
+				for _, existServer := range room.ExistsServers {
+					if server.ID == existServer {
+						connectionsServer = append(connectionsServer, server.GetConnectionServer())
+					}
+				}
+			}
+		}
+	}()
 
+	uniqueServerType := make(map[string]types.ConnectionServer)
+	uniqueAllTypes := make(map[string]struct{})
 	for _, server := range servers {
+		connNum, exists, err := server.GetConnectionsNum(ctx, token)
+		if err != nil {
+			c.logger.Error().Err(err).Msg("server error create room")
+			continue
+		}
+
+		if server.MaxConnections < connNum+len(room.Connections) && exists {
+			continue
+		}
+
+		if _, ok := uniqueServerType[server.ServerType]; ok {
+			continue
+		}
+
 		err = server.CreateRoom(ctx, token)
 		if err != nil {
 			if err.Error() != errors.ErrRoomIsExists.Error() {
@@ -155,7 +187,24 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 				continue
 			}
 		}
-		connectionsServer = append(connectionsServer, server.GetConnectionServer())
+
+		uniqueServerType[server.ServerType] = server.GetConnectionServer()
+		uniqueAllTypes[server.ServerType] = struct{}{}
+	}
+
+	for key, _ := range uniqueAllTypes {
+		if _, ok := uniqueServerType[key]; !ok {
+			return connectionsServer, errors.ErrServerFullOfConnections
+		}
+	}
+
+	for _, server := range uniqueServerType {
+		room.ExistsServers = append(room.ExistsServers, server.ID)
+	}
+
+	err = c.roomsStorage.Update(room)
+	if err != nil {
+		return connectionsServer, err
 	}
 
 	return connectionsServer, nil

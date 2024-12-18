@@ -11,8 +11,9 @@ type Room struct {
 
 	CreatorID uuid.UUID `json:"creator_id" bson:"creator_id"`
 
-	Connections []uuid.UUID `json:"connections" bson:"connections"`
-	Servers     []uuid.UUID `json:"servers" bson:"servers"`
+	Connections   []uuid.UUID `json:"connections" bson:"connections"`
+	Servers       []uuid.UUID `json:"servers" bson:"servers"`
+	ExistsServers []uuid.UUID `json:"existsServers" bson:"existsServers"`
 
 	IsExists  bool  `json:"is_exists" bson:"is_exists"`
 	CreatedAt int64 `json:"created_at" bson:"created_at"`

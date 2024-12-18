@@ -2749,15 +2749,20 @@ components:
         types.ConnectionServer:
             type: object
             properties:
-                Address:
+                address:
                     type: string
-                ConnectionPort:
+                connectionPort:
                     type: string
-                FullURL:
+                fullURL:
                     type: string
-                Path:
+                id:
                     type: string
-                ServerType:
+                    format: uuid
+                isExists:
+                    type: boolean
+                path:
+                    type: string
+                serverType:
                     type: string
         types.Developer:
             type: object
@@ -2851,6 +2856,12 @@ components:
                 creator_id:
                     type: string
                     format: uuid
+                existsServers:
+                    type: array
+                    items:
+                        type: string
+                        format: uuid
+                    nullable: true
                 gameID:
                     type: string
                     format: uuid
@@ -2881,6 +2892,9 @@ components:
                     format: uuid
                 is_active:
                     type: boolean
+                maxConnections:
+                    type: number
+                    format: int
                 region:
                     type: string
                 server_name:

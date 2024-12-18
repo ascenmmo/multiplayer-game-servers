@@ -24,17 +24,26 @@ type Server struct {
 	ServerType     string      `json:"server_type" bson:"server_type"`
 	Region         string      `json:"region" bson:"region"`
 	ConnectionPort string      `json:"connection_port" bson:"connection_port"`
+	MaxConnections int         `json:"maxConnections" bson:"max_connections"`
 
 	AscenmmoServer bool `json:"ascenmmo_server" bson:"ascenmmo_server"`
 	IsActive       bool `json:"is_active" bson:"is_active"`
 }
 
 type ConnectionServer struct {
-	Address        string
-	ConnectionPort string
-	Path           string
-	FullURL        string
-	ServerType     string
+	ID             uuid.UUID `json:"id"`
+	Address        string    `json:"address"`
+	ConnectionPort string    `json:"connectionPort"`
+	Path           string    `json:"path"`
+	FullURL        string    `json:"fullURL"`
+	ServerType     string    `json:"serverType"`
+	IsExists       bool      `json:"isExists"`
+}
+
+func (s *Server) GetConnectionsNum(ctx context.Context, token string) (countConn int, exists bool, err error) {
+	cli := udpGameServer.New(s.getRestUrl())
+	countConn, exists, err = cli.ServerSettings().GetConnectionsNum(ctx, token)
+	return countConn, exists, err
 }
 
 func (s *Server) IsExists(ctx context.Context, token string) (bool, error) {
@@ -99,6 +108,7 @@ func (s *Server) IsOwner(ownerID uuid.UUID) bool {
 }
 
 func (s *Server) GetConnectionServer() (c ConnectionServer) {
+	c.ID = s.ID
 	c.Address = s.gatSingleAddress()
 	c.ConnectionPort = s.ConnectionPort
 
@@ -113,6 +123,7 @@ func (s *Server) GetConnectionServer() (c ConnectionServer) {
 
 	c.ServerType = s.ServerType
 	c.FullURL = c.Address + ":" + c.ConnectionPort + c.Path
+	c.IsExists = true
 
 	return c
 }
