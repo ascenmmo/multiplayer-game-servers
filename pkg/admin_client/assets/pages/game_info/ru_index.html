@@ -104,6 +104,47 @@
             box-sizing: border-box;
         }
 
+        @media (max-width: 375px) {
+            header {
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 20px;
+                margin-left: 0;
+                text-align: center;
+            }
+
+            header nav a {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            header nav {
+                gap: 15px;
+            }
+
+            .container {
+                margin-top: 20%;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                padding-top: 80px;
+            }
+
+            #game-info,
+            #servers-box {
+                flex: 1;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+                position: relative;
+                overflow-y: auto;
+                border: 1px solid #ccc;
+                margin: 10px;
+                box-sizing: border-box;
+            }
+        }
+
         h4 {
             margin: 20px; /* Отступы для заголовков */
         }
@@ -224,7 +265,7 @@
             transition: background 0.3s, transform 0.3s;
         }
 
-       . eng-button:hover {
+       .eng-button:hover {
             background: rgba(0, 255, 127, 0.8);
             transform: scale(1.05);
         }
@@ -253,11 +294,11 @@
         </div>
     </section>
 
-    <div id="servers-box">
+    <section id="servers-box">
         <h4>Серверы</h4>
         <button class="add-server-button" id="add-server-button">Добавить сервер</button>
         <div id="servers-list"></div>
-    </div>
+    </section>
 
 </div>
 
