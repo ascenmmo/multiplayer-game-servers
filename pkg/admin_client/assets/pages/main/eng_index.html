@@ -86,7 +86,7 @@
         }
 
         .hero {
-            height: 100vh; /* Высота экрана */
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -94,8 +94,8 @@
             text-align: center;
             color: #fff;
             animation: fadeIn 1s ease-in;
-            width: 100%; /* Ширина на всю страницу */
-            position: relative; /* Для абсолютного позиционирования дочерних элементов */
+            width: 97%;
+            position: relative;
         }
 
         @keyframes fadeIn {
@@ -132,6 +132,34 @@
             margin-bottom: 30px;
         }
 
+
+        @media (max-width: 375px) {
+            .hero {
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                color: #fff;
+                animation: fadeIn 1s ease-in;
+                width: 90%;
+                position: relative;
+            }
+
+            .future-container h2 {
+                font-size: 42px;
+                margin-bottom: 20px;
+            }
+
+            .future-container p {
+                font-size: 24px;
+                margin-bottom: 30px;
+            }
+
+
+        }
+
         .button {
             background: #00ff7f;
             color: #1c1c1c;
@@ -141,13 +169,13 @@
             font-size: 18px;
             cursor: pointer;
             transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
-            width: 100%; /* Ширина кнопки на весь экран */
-            max-width: 300px; /* Максимальная ширина кнопки */
+            width: 100%;
+            max-width: 300px;
             text-decoration: none;
         }
 
         .button:hover {
-            background: rgba(0, 255, 127, 0.8); /* Легкое затемнение */
+            background: rgba(0, 255, 127, 0.8);
             transform: scale(1.05);
             box-shadow: 0 0 20px rgba(0, 255, 127, 0.7);
         }

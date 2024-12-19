@@ -94,7 +94,7 @@
             text-align: center;
             color: #fff;
             animation: fadeIn 1s ease-in;
-            width: 100%; /* Ширина на всю страницу */
+            width: 97%; /* Ширина на всю страницу */
             position: relative; /* Для абсолютного позиционирования дочерних элементов */
         }
 
@@ -130,6 +130,33 @@
         .future-container p {
             font-size: 24px;
             margin-bottom: 30px;
+        }
+
+        @media (max-width: 375px) {
+            .hero {
+                height: 100vh; /* Высота экрана */
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                color: #fff;
+                animation: fadeIn 1s ease-in;
+                width: 90%; /* Ширина на всю страницу */
+                position: relative; /* Для абсолютного позиционирования дочерних элементов */
+            }
+
+            .future-container h2 {
+                font-size: 42px;
+                margin-bottom: 20px;
+            }
+
+            .future-container p {
+                font-size: 24px;
+                margin-bottom: 30px;
+            }
+
+
         }
 
         .button {
