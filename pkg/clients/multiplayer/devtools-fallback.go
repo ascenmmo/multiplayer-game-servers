@@ -4,7 +4,7 @@ package multiplayer
 type fallbackDevTools interface {
 	CreateGame(err error) bool
 	GameAddOwner(err error) bool
-	GameRemoveUser(err error) bool
+	GameRemoveOwner(err error) bool
 	UpdateGame(err error) bool
 	DeleteGame(err error) bool
 	GetMyGames(err error) bool

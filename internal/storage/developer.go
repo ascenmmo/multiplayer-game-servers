@@ -11,6 +11,7 @@ import (
 type DeveloperStorage interface {
 	CreateDeveloper(developer types.Developer) (err error)
 	FindByID(developerID uuid.UUID) (developer types.Developer, err error)
+	FindByIDS(developersID []uuid.UUID) (developers []types.Developer, err error)
 	FindByPassword(email, nickname, password string) (developer types.Developer, err error)
 	Update(developer types.Developer) (err error)
 }
@@ -46,6 +47,21 @@ func NewDeveloperStorage(client *mongo.Client) (DeveloperStorage, error) {
 func (d *developerStorage) CreateDeveloper(developer types.Developer) (err error) {
 	_, err = d.collection.InsertOne(context.TODO(), developer)
 	return err
+}
+
+func (d *developerStorage) FindByIDS(developersID []uuid.UUID) (developers []types.Developer, err error) {
+	filter := bson.M{"_id": bson.M{"$in": developersID}}
+	cur, err := d.collection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	err = cur.All(context.TODO(), &developers)
+	if err != nil {
+		return nil, err
+	}
+
+	return developers, nil
 }
 
 func (d *developerStorage) FindByID(developerID uuid.UUID) (developer types.Developer, err error) {

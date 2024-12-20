@@ -10,7 +10,7 @@ import (
 
 type DevToolsCreateGame func(ctx context.Context, token string, game types.Game) (id uuid.UUID, err error)
 type DevToolsGameAddOwner func(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error)
-type DevToolsGameRemoveUser func(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error)
+type DevToolsGameRemoveOwner func(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error)
 type DevToolsUpdateGame func(ctx context.Context, token string, gameID uuid.UUID, newGame types.Game) (id uuid.UUID, err error)
 type DevToolsDeleteGame func(ctx context.Context, token string, gameID uuid.UUID) (err error)
 type DevToolsGetMyGames func(ctx context.Context, token string) (games []types.Game, err error)
@@ -22,7 +22,7 @@ type MiddlewareDevTools func(next multiplayer.DevTools) multiplayer.DevTools
 
 type MiddlewareDevToolsCreateGame func(next DevToolsCreateGame) DevToolsCreateGame
 type MiddlewareDevToolsGameAddOwner func(next DevToolsGameAddOwner) DevToolsGameAddOwner
-type MiddlewareDevToolsGameRemoveUser func(next DevToolsGameRemoveUser) DevToolsGameRemoveUser
+type MiddlewareDevToolsGameRemoveOwner func(next DevToolsGameRemoveOwner) DevToolsGameRemoveOwner
 type MiddlewareDevToolsUpdateGame func(next DevToolsUpdateGame) DevToolsUpdateGame
 type MiddlewareDevToolsDeleteGame func(next DevToolsDeleteGame) DevToolsDeleteGame
 type MiddlewareDevToolsGetMyGames func(next DevToolsGetMyGames) DevToolsGetMyGames

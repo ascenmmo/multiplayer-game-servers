@@ -24,14 +24,14 @@ type requestDevToolsGameAddOwner struct {
 // Formal exchange type, please do not delete.
 type responseDevToolsGameAddOwner struct{}
 
-type requestDevToolsGameRemoveUser struct {
+type requestDevToolsGameRemoveOwner struct {
 	Token  string    `json:"token"`
 	GameID uuid.UUID `json:"gameID"`
 	UserID uuid.UUID `json:"userID"`
 }
 
 // Formal exchange type, please do not delete.
-type responseDevToolsGameRemoveUser struct{}
+type responseDevToolsGameRemoveOwner struct{}
 
 type requestDevToolsUpdateGame struct {
 	Token   string     `json:"token"`

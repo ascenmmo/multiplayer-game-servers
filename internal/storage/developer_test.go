@@ -34,6 +34,6 @@ func TestGetDevelopers(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(v.Email, secret)
+		fmt.Println(v.ID, v.Email, secret)
 	}
 }

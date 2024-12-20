@@ -221,11 +221,11 @@ paths:
                                         jsonrpc:
                                             type: string
                                             example: "2.0"
-    /api/v1/devTools/gameRemoveUser:
+    /api/v1/devTools/gameRemoveOwner:
         post:
             tags:
                 - DevTools
-            summary: server gameRemoveUser
+            summary: server иameRemoveOwner
             parameters:
                 - in: header
                   name: Token
@@ -248,7 +248,7 @@ paths:
                                     type: string
                                     example: "2.0"
                                 params:
-                                    $ref: '#/components/schemas/requestDevToolsGameRemoveUser'
+                                    $ref: '#/components/schemas/requestDevToolsGameRemoveOwner'
             responses:
                 "200":
                     description: Successful operation
@@ -268,7 +268,7 @@ paths:
                                             type: string
                                             example: "2.0"
                                         result:
-                                            $ref: '#/components/schemas/responseDevToolsGameRemoveUser'
+                                            $ref: '#/components/schemas/responseDevToolsGameRemoveOwner'
                                     - type: object
                                       properties:
                                         error:
@@ -2500,7 +2500,7 @@ components:
                 gameID:
                     type: string
                     format: uuid
-        requestDevToolsGameRemoveUser:
+        requestDevToolsGameRemoveOwner:
             type: object
             properties:
                 gameID:
@@ -2664,7 +2664,7 @@ components:
             properties:
                 gameResult:
                     $ref: '#/components/schemas/types.GameConfigResults'
-        responseDevToolsGameRemoveUser:
+        responseDevToolsGameRemoveOwner:
             type: object
         responseDevToolsGetGameByGameID:
             type: object
@@ -2769,6 +2769,9 @@ components:
             properties:
                 email:
                     type: string
+                id:
+                    type: string
+                    format: uuid
                 new_password:
                     type: string
                 nickname:
@@ -2796,6 +2799,11 @@ components:
                     items:
                         type: string
                         format: uuid
+                    nullable: true
+                ownersInfoList:
+                    type: array
+                    items:
+                        type: string
                     nullable: true
                 servers:
                     type: array

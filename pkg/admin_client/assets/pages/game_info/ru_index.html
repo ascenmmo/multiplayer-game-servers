@@ -408,27 +408,37 @@
         };
 
         const renderGameInfo = (game) => {
+            const formattedText = game.ownersInfoList.join('\n');
+
             gameDetails.innerHTML = `
             <h4>${game.name}</h4>
 
             <div class="player-count">Количество игроков: ${game.count_players}</div>
             <div class="online-player-count">Количество игроков онлайн: ${game.count_online}</div>
-<!--            <div class="description-label">Описание: ${game.description}</div>-->
-            <input type="text" class="edit-game-name" id="edit-game-name" value="${game.name}" />
             <pre><code class="gameID show">gameID: "${game.gameID}"</code></pre>
 
-            <button class="save-game" id="save-game">Сохранить изменения</button>
-<!--            <button class="game-config" id="game-config">Удаленные процедуры</button>-->
-<!--            <button class="game-annalists" id="game-annalists">Аналитика</button>-->
+            <h4>Разработчики</h4>
+            <pre><code class="gameID show">${formattedText}</code></pre>
 
+            <button class="save-game" id="save-game">Изменить название</button>
+            <button class="save-game" id="add-developer">Добавить разработчика</button>
+            <button class="save-game" id="delete-developer">Удалить разработчика</button>
         `;
+
+
             document.getElementById('save-game').onclick = () => fetchUpdateGame();
-            // document.getElementById('game-config').onclick = () => fetchGameConfigs();
-            // document.getElementById('game-annalists').onclick = () => fetchGameAnnalists();
+            document.getElementById('add-developer').onclick = () => fetchAddDeveloper();
+            document.getElementById('delete-developer').onclick = () => fetchDeleteDeveloper();
         };
 
+
         const fetchUpdateGame = async () => {
-            const newName = document.getElementById('edit-game-name').value;
+
+            const newName = prompt('Введите новое название игры');
+            if (!newName) {
+                return
+            }
+
             try {
                 const response = await fetch(`${backendUrl}/updateGame`, {
                     method: 'POST',
@@ -456,6 +466,77 @@
                 console.error('Ошибка:', error);
             }
         };
+
+
+        const fetchAddDeveloper = async () => {
+            const devId = prompt('Введите айди игрока');
+            if (!devId) {
+                return
+            }
+            try {
+                const response = await fetch(`${window.location.origin}/api/v1/devTools/gameAddOwner`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Token': getCookie('token')
+                    },
+                    body: JSON.stringify({
+                        id: 1,
+                        jsonrpc: "2.0",
+                        params: {
+                            gameID: gameID,
+                            userID: devId,
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    handleApiError(data.error, fetchUpdateGame);
+                }
+
+                alert('Игра обновлена успешно!');
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+
+        const fetchDeleteDeveloper = async () => {
+            const devId = prompt('Введите айди игрока');
+            if (!devId) {
+                return
+            }
+
+            try {
+                const response = await fetch(`${window.location.origin}/api/v1/devTools/gameRemoveOwner`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Token': getCookie('token')
+                    },
+                    body: JSON.stringify({
+                        id: 1,
+                        jsonrpc: "2.0",
+                        params: {
+                            gameID: gameID,
+                            userID: devId,
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    handleApiError(data.error, fetchUpdateGame);
+                }
+
+                alert('Игра обновлена успешно!');
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+
 
         const fetchCreateGame = async () => {
             const newName = document.getElementById('new-game-name').value;

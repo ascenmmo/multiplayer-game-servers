@@ -12,7 +12,7 @@ type serverDevTools struct {
 	svc                 multiplayer.DevTools
 	createGame          DevToolsCreateGame
 	gameAddOwner        DevToolsGameAddOwner
-	gameRemoveUser      DevToolsGameRemoveUser
+	gameRemoveOwner     DevToolsGameRemoveOwner
 	updateGame          DevToolsUpdateGame
 	deleteGame          DevToolsDeleteGame
 	getMyGames          DevToolsGetMyGames
@@ -25,7 +25,7 @@ type MiddlewareSetDevTools interface {
 	Wrap(m MiddlewareDevTools)
 	WrapCreateGame(m MiddlewareDevToolsCreateGame)
 	WrapGameAddOwner(m MiddlewareDevToolsGameAddOwner)
-	WrapGameRemoveUser(m MiddlewareDevToolsGameRemoveUser)
+	WrapGameRemoveOwner(m MiddlewareDevToolsGameRemoveOwner)
 	WrapUpdateGame(m MiddlewareDevToolsUpdateGame)
 	WrapDeleteGame(m MiddlewareDevToolsDeleteGame)
 	WrapGetMyGames(m MiddlewareDevToolsGetMyGames)
@@ -43,7 +43,7 @@ func newServerDevTools(svc multiplayer.DevTools) *serverDevTools {
 		createGame:          svc.CreateGame,
 		deleteGame:          svc.DeleteGame,
 		gameAddOwner:        svc.GameAddOwner,
-		gameRemoveUser:      svc.GameRemoveUser,
+		gameRemoveOwner:     svc.GameRemoveOwner,
 		getGameByGameID:     svc.GetGameByGameID,
 		getMyGames:          svc.GetMyGames,
 		svc:                 svc,
@@ -57,7 +57,7 @@ func (srv *serverDevTools) Wrap(m MiddlewareDevTools) {
 	srv.svc = m(srv.svc)
 	srv.createGame = srv.svc.CreateGame
 	srv.gameAddOwner = srv.svc.GameAddOwner
-	srv.gameRemoveUser = srv.svc.GameRemoveUser
+	srv.gameRemoveOwner = srv.svc.GameRemoveOwner
 	srv.updateGame = srv.svc.UpdateGame
 	srv.deleteGame = srv.svc.DeleteGame
 	srv.getMyGames = srv.svc.GetMyGames
@@ -74,8 +74,8 @@ func (srv *serverDevTools) GameAddOwner(ctx context.Context, token string, gameI
 	return srv.gameAddOwner(ctx, token, gameID, userID)
 }
 
-func (srv *serverDevTools) GameRemoveUser(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
-	return srv.gameRemoveUser(ctx, token, gameID, userID)
+func (srv *serverDevTools) GameRemoveOwner(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
+	return srv.gameRemoveOwner(ctx, token, gameID, userID)
 }
 
 func (srv *serverDevTools) UpdateGame(ctx context.Context, token string, gameID uuid.UUID, newGame types.Game) (id uuid.UUID, err error) {
@@ -110,8 +110,8 @@ func (srv *serverDevTools) WrapGameAddOwner(m MiddlewareDevToolsGameAddOwner) {
 	srv.gameAddOwner = m(srv.gameAddOwner)
 }
 
-func (srv *serverDevTools) WrapGameRemoveUser(m MiddlewareDevToolsGameRemoveUser) {
-	srv.gameRemoveUser = m(srv.gameRemoveUser)
+func (srv *serverDevTools) WrapGameRemoveOwner(m MiddlewareDevToolsGameRemoveOwner) {
+	srv.gameRemoveOwner = m(srv.gameRemoveOwner)
 }
 
 func (srv *serverDevTools) WrapUpdateGame(m MiddlewareDevToolsUpdateGame) {

@@ -124,17 +124,17 @@ func (http *httpDevTools) gameAddOwner(ctx *fiber.Ctx, requestBase baseJsonRPC) 
 	}
 	return
 }
-func (http *httpDevTools) serveGameRemoveUser(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "gameremoveuser", http.gameRemoveUser)
+func (http *httpDevTools) serveGameRemoveOwner(ctx *fiber.Ctx) (err error) {
+	return http.serveMethod(ctx, "gameremoveowner", http.gameRemoveOwner)
 }
-func (http *httpDevTools) gameRemoveUser(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
+func (http *httpDevTools) gameRemoveOwner(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
-	var request requestDevToolsGameRemoveUser
+	var request requestDevToolsGameRemoveOwner
 
 	methodCtx := ctx.UserContext()
 	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "gameRemoveUser")
+	span.SetTag("method", "gameRemoveOwner")
 
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
@@ -155,8 +155,8 @@ func (http *httpDevTools) gameRemoveUser(ctx *fiber.Ctx, requestBase baseJsonRPC
 		request.Token = token
 	}
 
-	var response responseDevToolsGameRemoveUser
-	err = http.svc.GameRemoveUser(methodCtx, request.Token, request.GameID, request.UserID)
+	var response responseDevToolsGameRemoveOwner
+	err = http.svc.GameRemoveOwner(methodCtx, request.Token, request.GameID, request.UserID)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
@@ -642,8 +642,8 @@ func (http *httpDevTools) doSingleBatch(ctx *fiber.Ctx, request baseJsonRPC) (re
 		return http.createGame(ctx, request)
 	case "gameaddowner":
 		return http.gameAddOwner(ctx, request)
-	case "gameremoveuser":
-		return http.gameRemoveUser(ctx, request)
+	case "gameremoveowner":
+		return http.gameRemoveOwner(ctx, request)
 	case "updategame":
 		return http.updateGame(ctx, request)
 	case "deletegame":

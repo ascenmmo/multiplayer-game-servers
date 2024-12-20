@@ -134,6 +134,20 @@
             display: none; /* Скрыто по умолчанию */
         }
 
+        pre {
+            background: #2e2e2e;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+            margin: 20px;
+        }
+
+
+        code {
+            color: #00ff7f;
+        }
+
+
 
 
         footer {
@@ -161,6 +175,7 @@
     <section>
         <h3>Разработчик</h3>
         <div id="developer-info">
+            <pre><code id="developerID"></code></pre>
             <input type="text" id="email" placeholder="Email">
             <input type="text" id="nickname" placeholder="Никнейм">
             <input type="password" id="old-password" placeholder="Старый пароль">
@@ -186,6 +201,7 @@
         const updateDeveloperButton = document.getElementById('update-developer');
         const logoutButton = document.getElementById('logout');
         const errorMessage = document.getElementById('error-message');
+        const developerID = document.getElementById('developerID');
 
         const backendUrl = `${window.location.origin}/api/v1/developers`;
 
@@ -261,6 +277,7 @@
                 if (data.result && data.result.developer) {
                     emailInput.value = data.result.developer.email;
                     nicknameInput.value = data.result.developer.nickname;
+                    developerID.innerText = 'developerID: "' +data.result.developer.id + '"';
                 } else {
                     if (data.error) {
                         handleApiError(data.error, fetchDeveloperInfo);
