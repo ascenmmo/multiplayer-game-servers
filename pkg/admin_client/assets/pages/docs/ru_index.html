@@ -4,18 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    <title>Документация Как Использовать</title>
+    <title>Документация Ascenmmo</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            padding: 20px;
-            background: linear-gradient(135deg, #2a2a2a, #1c1c1c); /* Градиент фона */
-            color: #ffffff; /* Цвет текста */
+            background: linear-gradient(135deg, #2a2a2a, #1c1c1c);
+            color: #ffffff;
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Минимальная высота на весь экран */
-            margin-bottom: 100px;
-            margin-top: 100px;
+            min-height: 100vh; /* Обеспечивает высоту страницы на весь экран */
+            margin: 0; /* Убираем внешние отступы */
         }
 
 
@@ -63,6 +61,15 @@
             font-size: 16px;
         }
 
+        pre {
+            background: #1e1e1e; /* Цвет фона для блоков кода */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            overflow-x: auto;
+            color: #ffffff; /* Цвет текста в блоке кода */
+        }
+
         header nav a:hover {
             background: #00ff7f;
             color: #1c1c1c;
@@ -89,75 +96,100 @@
             }
         }
 
-        h1 {
-            color: #00ff7f; /* Яркий цвет заголовка */
-            text-align: center;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Тень для заголовка */
+        .category-navigation {
+            display: block;
+            width: 240px;
+            padding: 20px;
+            background: #3a3a3a;
+            border-right: 1px solid #444;
+            position: fixed;
+            top: 80px;
+            left: 0;
+            height: calc(100% - 80px);
+            overflow-y: auto;
+            box-sizing: border-box;
+            z-index: 999;
         }
 
-        .accordion {
-            background: #3a3a3a; /* Цвет фона аккордеона */
+        .category-navigation h3 {
+            font-size: 18px;
+            color: #00ff7f;
+            margin-top: 0;
+        }
+
+        .category-navigation a {
+            display: block;
+            color: #ccc;
+            text-decoration: none;
+            padding: 8px 12px;
+            margin: 5px 0;
             border-radius: 5px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Тень для аккордеона */
+            transition: background-color 0.3s ease;
         }
 
-        .accordion-title {
-            padding: 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #444; /* Углубленный цвет */
-            background: #4a4a4a; /* Цвет заголовка аккордеона */
-            font-weight: bold;
-            transition: background 0.3s, color 0.3s;
+        .category-navigation a:hover {
+            background-color: #4a4a4a;
         }
 
-        .accordion-title:hover {
-            background: #5a5a5a; /* Цвет при наведении на заголовок */
-            color: #00ff7f; /* Цвет текста при наведении */
-        }
-
-        .accordion-content {
+        .container {
             display: none;
-            padding: 10px;
-            background: #2b2b2b; /* Цвет фона содержимого аккордеона */
+            position: fixed;
+            top: 80px;
+            left: 240px;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+            background: #1c1c1c;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
         }
 
-        .active {
-            background: #6a6a6a; /* Цвет активного заголовка */
-            color: #00ff7f; /* Цвет текста активного заголовка */
+        .container.active {
+            display: block;
         }
 
+        @media (max-width: 768px) {
+            .container {
+                top: 50px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                border-radius: 0;
+            }
 
-        pre {
-            background: #1e1e1e; /* Цвет фона для блоков кода */
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            overflow-x: auto;
-            color: #ffffff; /* Цвет текста в блоке кода */
+            .category-navigation {
+                top: 50px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                border-radius: 0;
+                height: calc(100% - 50px);
+                width: 100%;
+            }
         }
-
-        h3, h4, h5 {
-            color: #ffffff; /* Цвет заголовков внутри аккордеона */
-        }
-
-        p {
-            color: #cccccc; /* Цвет обычного текста внутри аккордеона */
-        }
-
 
         footer {
-            position: fixed; /* Фиксируем футер внизу */
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            padding: 10px;
             background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            margin-top: auto; /* Обеспечивает прижатие футера к низу */
         }
+
+        #burger-btn {
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            color: #00ff7f;
+            margin-right: 10px;
+        }
+
     </style>
 </head>
+<body>
 <header>
     <a href="/"><h1>ASCENMMO</h1></a>
     <nav id="nav-links">
@@ -165,92 +197,78 @@
         <a href="#" id="eng-button">Eng</a>
     </nav>
 </header>
-<body>
-<div class="container">
-<h1>Документация API</h1>
-<nav class="category-navigation">
-    {{ range . }}
-    <h3>{{ .CategoryTitle }}</h3>
-        {{ range .DocStruct }}
-        <a href="#{{ .Title }}" class="docStruct-link">{{ .Title }}</a>
-        {{ end }}
-    {{ if .DocErrorList }}
-             <p> Ошибки </p>
-            {{ range .DocErrorList }}
-            <a href="#{{ .Name }}" class="docStruct-link">{{ .Name }}</a>
-            {{ end }}
-        {{ end }}
-    {{ end }}
-</nav>
-{{ range . }} <!-- Обработка каждой категории -->
-<div class="accordion">
-    <div class="accordion-title">{{ .CategoryTitle }}</div>
-    <div class="accordion-content">
-        {{ range .DocStruct }} <!-- Обработка каждого документа в категории -->
-        <div class="accordion">
-            <div class="accordion-title" id="{{ .Title }}" >{{ .Title }}</div>
-            <div class="accordion-content">
-                <p>{{ .Info }}</p>
-                {{ if .DockLists }}
-                <h5>Списки структур документа:</h5>
-                {{ range .DockLists }}
-                <h3>{{ .Title }}</h3>
-                <p>{{ .Description }}</p>
-                <h5>Путь запроса:</h5>
-                <pre>{{ .RequestPath }}</pre>
-                <h5>Метод:</h5>
-                <pre>{{ .Method }}</pre>
-                <h5>Заголовки запроса:</h5>
-                <pre>{{ .RequestHeader }}</pre>
-                <h5>Тело запроса:</h5>
-                <pre>{{ .RequestBody }}</pre>
-                <h5>Информация о теле запроса:</h5>
-                <p>{{ .RequestBodyInfo }}</p>
-                <h5>Ответ:</h5>
-                <pre>{{ .ResponseBody }}</pre>
-                <h5>Информация о ответе:</h5>
-                <p>{{ .ResponseBodyInfo }}</p>
-                {{ end }}
-                {{ else }}
-                <p>Нет структур документа.</p>
-                {{ end }}
-            </div>
-        </div>
-        {{ end }}
 
-        {{ if .DocErrorList }}
-        <h5>Список ошибок:</h5>
-        {{ range .DocErrorList }}
-        <div class="accordion">
-            <div class="accordion-title" id="{{ .Name }}">{{ .Name }}</div>
-            <div class="accordion-content">
-                <p>{{ .Description }}</p>
-                <pre>{{ .Body }}</pre>
-            </div>
-        </div>
-        {{ end }}
-        {{ else }}
-        <p>Ошибки не найдены.</p>
-        {{ end }}
-    </div>
+<div class="category-navigation">
+    <h3>Категории</h3>
+    {{ range . }}
+    <h4>{{ .CategoryTitle }}</h4>
+    {{ range .DocStruct }}
+    <a href="#" onclick="openContainer('{{ .Title }}')">{{ .Title }}</a>
+    {{ end }}
+    <h4>Ошибки</h4>
+    {{ range .DocErrorList }}
+    <a href="#" onclick="openContainer('{{ .Name }}')">{{ .Name }}</a>
+    {{ end }}
+    {{ end }}
+</div>
+
+{{ range . }}
+{{ range .DocStruct }}
+<div id="{{ .Title }}" class="container">
+    <button onclick="closeContainer('{{ .Title }}')">X</button>
+    <h2>{{ .Title }}</h2>
+    <p>{{ .Info }}</p>
+    {{ if .DockLists }}
+    <h5>Document Structure Lists:</h5>
+    {{ range .DockLists }}
+    <h3>{{ .Title }}</h3>
+    <p>{{ .Description }}</p>
+    <h5>Путь запроса:</h5>
+    <pre>{{ .RequestPath }}</pre>
+    <h5>Метод:</h5>
+    <pre>{{ .Method }}</pre>
+    <h5>Headers Запроса:</h5>
+    <pre>{{ .RequestHeader }}</pre>
+    <h5>Тело запроса:</h5>
+    <pre>{{ .RequestBody }}</pre>
+    <h5>Описания тела запроса:</h5>
+    <p>{{ .RequestBodyInfo }}</p>
+    <h5>Тело ответа:</h5>
+    <pre>{{ .ResponseBody }}</pre>
+    <h5>Описание тела ответа:</h5>
+    <p>{{ .ResponseBodyInfo }}</p>
+    {{ end }}
+    {{ else }}
+    <p>Не найдено</p>
+    {{ end }}
 </div>
 {{ end }}
+{{ if .DocErrorList }}
+{{ range .DocErrorList }}
+<div id="{{ .Name }}" class="container">
+    <button onclick="closeContainer('{{ .Name  }}')">X</button>
+    <h2>{{ .Name }}</h2>
+    <p>{{ .Description }}</p>
+    <h5>Тело ответа:</h5>
+    <pre>{{ .Body }}</pre>
 </div>
-
-
+{{ end }}
+{{ end }}
+{{ end }}
 
 <footer>
     <p>© 2024 Ascenmmo. Все права защищены.</p>
 </footer>
+
 <script>
-    const titles = document.querySelectorAll('.accordion-title');
-    titles.forEach(title => {
-        title.addEventListener('click', function() {
-            this.classList.toggle('active');
-            const content = this.nextElementSibling;
-            content.style.display = content.style.display === 'block' ? 'none' : 'block';
-        });
-    });
+    function openContainer(id) {
+        document.querySelectorAll('.container').forEach(container => container.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function closeContainer(id) {
+        document.getElementById(id).classList.remove('active');
+    }
 
     function getCookie(name) {
         let matches = document.cookie.match(new RegExp(
@@ -259,14 +277,14 @@
         return matches ? decodeURIComponent(matches[1]) : undefined;
     }
 
-    // Проверяем наличие токенов в куках
+    // Check for the presence of tokens in cookies
     const token = getCookie('token');
     const refreshToken = getCookie('refresh');
 
-    // Получаем элемент навигации
+    // Get the navigation element
     const navLinks = document.getElementById('nav-links');
 
-    // В зависимости от наличия токенов, показываем соответствующие кнопки
+    // Depending on the presence of tokens, show the corresponding buttons
     if (token && refreshToken) {
         navLinks.innerHTML = `
             <a href="/admin/games">Мои игры</a>
@@ -275,7 +293,7 @@
     } else {
         navLinks.innerHTML = `
             <a href="/admin/auth">Авторизоваться</a>
-           <a href="#" id="eng-button">Eng</a>
+            <a href="#" id="eng-button">Eng</a>
         `;
     }
     document.getElementById('eng-button').addEventListener('click', function() {
@@ -283,5 +301,6 @@
         window.location.reload(true);
     });
 </script>
+
 </body>
 </html>
