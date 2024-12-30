@@ -1,7 +1,7 @@
 # github.com/andybalholm/brotli v1.0.5
 ## explicit; go 1.12
 github.com/andybalholm/brotli
-# github.com/ascenmmo/tcp-server v1.0.2
+# github.com/ascenmmo/tcp-server v1.0.3
 ## explicit; go 1.23.2
 github.com/ascenmmo/tcp-server/env
 github.com/ascenmmo/tcp-server/internal/handler
@@ -18,7 +18,7 @@ github.com/ascenmmo/tcp-server/pkg/transport/viewer
 ## explicit; go 1.23.2
 github.com/ascenmmo/token-generator/token_generator
 github.com/ascenmmo/token-generator/token_type
-# github.com/ascenmmo/udp-server v1.0.2
+# github.com/ascenmmo/udp-server v1.0.3
 ## explicit; go 1.23.2
 github.com/ascenmmo/udp-server/env
 github.com/ascenmmo/udp-server/internal/connection
@@ -37,7 +37,7 @@ github.com/ascenmmo/udp-server/pkg/errors
 github.com/ascenmmo/udp-server/pkg/start
 github.com/ascenmmo/udp-server/pkg/transport
 github.com/ascenmmo/udp-server/pkg/transport/viewer
-# github.com/ascenmmo/websocket-server v1.0.3
+# github.com/ascenmmo/websocket-server v1.0.4
 ## explicit; go 1.23.2
 github.com/ascenmmo/websocket-server/env
 github.com/ascenmmo/websocket-server/internal/connection

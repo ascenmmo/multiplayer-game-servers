@@ -5,7 +5,6 @@ import (
 	"context"
 	"github.com/ascenmmo/udp-server/pkg/api"
 	"github.com/ascenmmo/udp-server/pkg/api/types"
-	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
 )
 
@@ -41,8 +40,8 @@ func (svc traceServerSettings) CreateRoom(ctx context.Context, token string, cre
 	return svc.next.CreateRoom(ctx, token, createRoom)
 }
 
-func (svc traceServerSettings) SetNotifyServer(ctx context.Context, token string, id uuid.UUID, url string) (err error) {
+func (svc traceServerSettings) GetDeletedRooms(ctx context.Context, token string, ids []types.GetDeletedRooms) (deletedIds []types.GetDeletedRooms, err error) {
 	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "SetNotifyServer")
-	return svc.next.SetNotifyServer(ctx, token, id, url)
+	span.SetTag("method", "GetDeletedRooms")
+	return svc.next.GetDeletedRooms(ctx, token, ids)
 }

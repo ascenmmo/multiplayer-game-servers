@@ -7,7 +7,3 @@ type RequestSetMessage struct {
 type ResponseGetMessage struct {
 	DataArray []any `json:"dataArray"`
 }
-
-type CreateRoomRequest struct {
-	TTL string `json:"time_to_live"`
-}

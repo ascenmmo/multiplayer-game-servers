@@ -5,7 +5,6 @@ import (
 	"context"
 	"github.com/ascenmmo/udp-server/pkg/api"
 	"github.com/ascenmmo/udp-server/pkg/api/types"
-	"github.com/google/uuid"
 )
 
 type serverServerSettings struct {
@@ -14,7 +13,7 @@ type serverServerSettings struct {
 	healthCheck       ServerSettingsHealthCheck
 	getServerSettings ServerSettingsGetServerSettings
 	createRoom        ServerSettingsCreateRoom
-	setNotifyServer   ServerSettingsSetNotifyServer
+	getDeletedRooms   ServerSettingsGetDeletedRooms
 }
 
 type MiddlewareSetServerSettings interface {
@@ -23,7 +22,7 @@ type MiddlewareSetServerSettings interface {
 	WrapHealthCheck(m MiddlewareServerSettingsHealthCheck)
 	WrapGetServerSettings(m MiddlewareServerSettingsGetServerSettings)
 	WrapCreateRoom(m MiddlewareServerSettingsCreateRoom)
-	WrapSetNotifyServer(m MiddlewareServerSettingsSetNotifyServer)
+	WrapGetDeletedRooms(m MiddlewareServerSettingsGetDeletedRooms)
 
 	WithTrace()
 	WithLog()
@@ -33,9 +32,9 @@ func newServerServerSettings(svc api.ServerSettings) *serverServerSettings {
 	return &serverServerSettings{
 		createRoom:        svc.CreateRoom,
 		getConnectionsNum: svc.GetConnectionsNum,
+		getDeletedRooms:   svc.GetDeletedRooms,
 		getServerSettings: svc.GetServerSettings,
 		healthCheck:       svc.HealthCheck,
-		setNotifyServer:   svc.SetNotifyServer,
 		svc:               svc,
 	}
 }
@@ -46,7 +45,7 @@ func (srv *serverServerSettings) Wrap(m MiddlewareServerSettings) {
 	srv.healthCheck = srv.svc.HealthCheck
 	srv.getServerSettings = srv.svc.GetServerSettings
 	srv.createRoom = srv.svc.CreateRoom
-	srv.setNotifyServer = srv.svc.SetNotifyServer
+	srv.getDeletedRooms = srv.svc.GetDeletedRooms
 }
 
 func (srv *serverServerSettings) GetConnectionsNum(ctx context.Context, token string) (countConn int, exists bool, err error) {
@@ -65,8 +64,8 @@ func (srv *serverServerSettings) CreateRoom(ctx context.Context, token string, c
 	return srv.createRoom(ctx, token, createRoom)
 }
 
-func (srv *serverServerSettings) SetNotifyServer(ctx context.Context, token string, id uuid.UUID, url string) (err error) {
-	return srv.setNotifyServer(ctx, token, id, url)
+func (srv *serverServerSettings) GetDeletedRooms(ctx context.Context, token string, ids []types.GetDeletedRooms) (deletedIds []types.GetDeletedRooms, err error) {
+	return srv.getDeletedRooms(ctx, token, ids)
 }
 
 func (srv *serverServerSettings) WrapGetConnectionsNum(m MiddlewareServerSettingsGetConnectionsNum) {
@@ -85,8 +84,8 @@ func (srv *serverServerSettings) WrapCreateRoom(m MiddlewareServerSettingsCreate
 	srv.createRoom = m(srv.createRoom)
 }
 
-func (srv *serverServerSettings) WrapSetNotifyServer(m MiddlewareServerSettingsSetNotifyServer) {
-	srv.setNotifyServer = m(srv.setNotifyServer)
+func (srv *serverServerSettings) WrapGetDeletedRooms(m MiddlewareServerSettingsGetDeletedRooms) {
+	srv.getDeletedRooms = m(srv.getDeletedRooms)
 }
 
 func (srv *serverServerSettings) WithTrace() {

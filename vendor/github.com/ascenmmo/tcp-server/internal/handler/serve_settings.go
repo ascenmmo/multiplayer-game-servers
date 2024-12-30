@@ -44,8 +44,12 @@ func (r *ServerSettings) CreateRoom(ctx context.Context, token string, createRoo
 	if limited {
 		return errors.ErrTooManyRequests
 	}
-	err = r.server.CreateRoom(token)
+	err = r.server.CreateRoom(token, createRoom)
 	return
+}
+
+func (r *ServerSettings) GetDeletedRooms(ctx context.Context, token string, ids []types.GetDeletedRooms) (deletedIds []types.GetDeletedRooms, err error) {
+	return r.server.GetDeletedRooms(token, ids)
 }
 
 func NewServerSettings(rateLimit utils.RateLimit, server service.Service) *ServerSettings {

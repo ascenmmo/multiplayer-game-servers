@@ -2,11 +2,13 @@ package types
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/ascenmmo/udp-server/pkg/api/types"
 	"github.com/ascenmmo/udp-server/pkg/clients/udpGameServer"
 	"github.com/google/uuid"
 	"strings"
+	"time"
 )
 
 const (
@@ -62,15 +64,47 @@ func (s *Server) IsExists(ctx context.Context, token string) (bool, error) {
 	return s.IsActive, err
 }
 
-func (s *Server) CreateRoom(ctx context.Context, token string) (err error) {
+func (s *Server) CreateRoom(ctx context.Context, token string, ttl time.Duration) (err error) {
 	cli := udpGameServer.New(s.getRestUrl())
 
-	err = cli.ServerSettings().CreateRoom(ctx, token, types.CreateRoomRequest{})
+	err = cli.ServerSettings().CreateRoom(ctx, token, types.CreateRoomRequest{
+		RoomTTl: ttl,
+	})
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (s *Server) GetDeletedRooms(ctx context.Context, token string, ids []GetDeletedRooms) (resultIDs []GetDeletedRooms, err error) {
+	cli := udpGameServer.New(s.getRestUrl())
+
+	var idsArray []types.GetDeletedRooms
+	marshal, err := json.Marshal(ids)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(marshal, &idsArray)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := cli.ServerSettings().GetDeletedRooms(ctx, token, idsArray)
+	if err != nil {
+		return nil, err
+	}
+
+	m, err := json.Marshal(resp)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(m, &resultIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	return resultIDs, nil
 }
 
 func (s *Server) RemoveOwner(ownerID uuid.UUID) {

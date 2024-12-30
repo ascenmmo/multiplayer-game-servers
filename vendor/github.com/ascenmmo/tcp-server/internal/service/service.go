@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/ascenmmo/tcp-server/internal/storage"
-	utils2 "github.com/ascenmmo/tcp-server/internal/utils"
+	"github.com/ascenmmo/tcp-server/internal/utils"
 	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/ascenmmo/tcp-server/pkg/errors"
 	tokengenerator "github.com/ascenmmo/token-generator/token_generator"
@@ -14,12 +14,13 @@ import (
 
 type Service interface {
 	GetConnectionsNum() (countConn int, exists bool)
-	CreateRoom(token string) (err error)
+	CreateRoom(token string, request types.CreateRoomRequest) error
 
 	SetMessage(token string, req types.RequestSetMessage) (err error)
 	GetMessages(token string) (msg types.ResponseGetMessage, err error)
 
 	RemoveUser(userID uuid.UUID, reqToken string) (err error)
+	GetDeletedRooms(token string, ids []types.GetDeletedRooms) (deletedIds []types.GetDeletedRooms, err error)
 }
 
 type service struct {
@@ -42,13 +43,13 @@ func (s *service) GetConnectionsNum() (countConn int, exists bool) {
 	return count, true
 }
 
-func (s *service) CreateRoom(token string) error {
+func (s *service) CreateRoom(token string, request types.CreateRoomRequest) error {
 	clientInfo, err := s.token.ParseToken(token)
 	if err != nil {
 		return err
 	}
 
-	roomKey := utils2.GenerateRoomKey(clientInfo)
+	roomKey := utils.GenerateRoomKey(clientInfo)
 
 	_, ok := s.storage.GetData(roomKey)
 	if ok {
@@ -58,7 +59,7 @@ func (s *service) CreateRoom(token string) error {
 	s.setRoom(clientInfo, &types.Room{
 		GameID: clientInfo.GameID,
 		RoomID: clientInfo.RoomID,
-	})
+	}, request.RoomTTl)
 
 	return nil
 }
@@ -141,12 +142,39 @@ func (s *service) RemoveUser(userID uuid.UUID, reqToken string) (err error) {
 
 	room.RemoveUser(userID)
 
-	s.setRoom(clientInfo, room)
+	s.setRoom(clientInfo, room, 0)
 	return nil
 }
 
+func (s *service) GetDeletedRooms(token string, ids []types.GetDeletedRooms) (deletedIds []types.GetDeletedRooms, err error) {
+	info, err := s.token.ParseToken(token)
+	if err != nil {
+		return nil, err
+	}
+
+	roomsWithKey := make(map[string]types.GetDeletedRooms)
+	for _, id := range ids {
+		info.GameID = id.GameID
+		info.RoomID = id.RoomID
+		roomsWithKey[utils.GenerateRoomKey(info)] = id
+	}
+
+	for k, _ := range roomsWithKey {
+		_, ok := s.storage.GetData(k)
+		if !ok {
+			delete(roomsWithKey, k)
+		}
+	}
+
+	for _, v := range roomsWithKey {
+		deletedIds = append(deletedIds, v)
+	}
+
+	return deletedIds, nil
+}
+
 func (s *service) getRoom(clientInfo tokentype.Info) (room *types.Room, err error) {
-	roomKey := utils2.GenerateRoomKey(clientInfo)
+	roomKey := utils.GenerateRoomKey(clientInfo)
 
 	roomData, ok := s.storage.GetData(roomKey)
 	if !ok {
@@ -155,7 +183,7 @@ func (s *service) getRoom(clientInfo tokentype.Info) (room *types.Room, err erro
 			RoomID: clientInfo.RoomID,
 		}
 		roomData = newRoom
-		s.setRoom(clientInfo, newRoom)
+		s.setRoom(clientInfo, newRoom, 0)
 
 		return newRoom, nil
 	}
@@ -170,8 +198,12 @@ func (s *service) getRoom(clientInfo tokentype.Info) (room *types.Room, err erro
 	return room, nil
 }
 
-func (s *service) setRoom(clientInfo tokentype.Info, room *types.Room) {
-	roomKey := utils2.GenerateRoomKey(clientInfo)
+func (s *service) setRoom(clientInfo tokentype.Info, room *types.Room, ttl time.Duration) {
+	roomKey := utils.GenerateRoomKey(clientInfo)
+	if ttl != 0 {
+		s.storage.SetDataWithTTL(roomKey, room, ttl)
+		return
+	}
 	s.storage.SetData(roomKey, room)
 }
 

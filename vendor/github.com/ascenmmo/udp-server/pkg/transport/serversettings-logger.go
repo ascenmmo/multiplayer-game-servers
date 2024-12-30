@@ -6,7 +6,6 @@ import (
 	"github.com/ascenmmo/udp-server/pkg/api"
 	"github.com/ascenmmo/udp-server/pkg/api/types"
 	"github.com/ascenmmo/udp-server/pkg/transport/viewer"
-	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"time"
@@ -104,25 +103,24 @@ func (m loggerServerSettings) CreateRoom(ctx context.Context, token string, crea
 	return m.next.CreateRoom(ctx, token, createRoom)
 }
 
-func (m loggerServerSettings) SetNotifyServer(ctx context.Context, token string, id uuid.UUID, url string) (err error) {
-	logger := log.Ctx(ctx).With().Str("service", "ServerSettings").Str("method", "setNotifyServer").Logger()
+func (m loggerServerSettings) GetDeletedRooms(ctx context.Context, token string, ids []types.GetDeletedRooms) (deletedIds []types.GetDeletedRooms, err error) {
+	logger := log.Ctx(ctx).With().Str("service", "ServerSettings").Str("method", "getDeletedRooms").Logger()
 	defer func(begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
-				"request": viewer.Sprintf("%+v", requestServerSettingsSetNotifyServer{
-					Id:    id,
+				"request": viewer.Sprintf("%+v", requestServerSettingsGetDeletedRooms{
+					Ids:   ids,
 					Token: token,
-					Url:   url,
 				}),
-				"response": viewer.Sprintf("%+v", responseServerSettingsSetNotifyServer{}),
+				"response": viewer.Sprintf("%+v", responseServerSettingsGetDeletedRooms{DeletedIds: deletedIds}),
 			}
 			ev.Fields(fields).Str("took", time.Since(begin).String())
 		}
 		if err != nil {
-			logger.Error().Err(err).Func(logHandle).Msg("call setNotifyServer")
+			logger.Error().Err(err).Func(logHandle).Msg("call getDeletedRooms")
 			return
 		}
-		logger.Info().Func(logHandle).Msg("call setNotifyServer")
+		logger.Info().Func(logHandle).Msg("call getDeletedRooms")
 	}(time.Now())
-	return m.next.SetNotifyServer(ctx, token, id, url)
+	return m.next.GetDeletedRooms(ctx, token, ids)
 }

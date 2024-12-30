@@ -9,6 +9,7 @@ import (
 type IMemoryDB interface {
 	GetData(key string) (any, bool)
 	SetData(key string, value any)
+	SetDataWithTTL(key string, value any, ttl time.Duration)
 	Remove(key string)
 
 	AddConnection(id string)
@@ -51,6 +52,11 @@ func (db *MemoryDb) GetData(key string) (any, bool) {
 
 func (db *MemoryDb) SetData(key string, value any) {
 	db.userData.storage.Store(key, &rowType{value: value, usedAt: time.Now()})
+	db.userData.count++
+}
+
+func (db *MemoryDb) SetDataWithTTL(key string, value any, ttl time.Duration) {
+	db.userData.storage.Store(key, &rowType{value: value, usedAt: time.Now().Add(ttl)})
 	db.userData.count++
 }
 

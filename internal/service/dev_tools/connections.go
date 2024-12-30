@@ -180,7 +180,7 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 			continue
 		}
 
-		err = server.CreateRoom(ctx, token)
+		err = server.CreateRoom(ctx, token, time.Duration(time.Minute*10))
 		if err != nil {
 			if err.Error() != errors.ErrRoomIsExists.Error() {
 				c.logger.Error().Err(err).Msg("server error create room")

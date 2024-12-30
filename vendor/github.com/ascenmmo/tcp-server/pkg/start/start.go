@@ -35,7 +35,7 @@ func StartTCP(ctx context.Context, address string, port string, token string, ra
 	}
 
 	services := []transport.Option{
-		transport.MaxBodySize(10 * 1024 * 1024),
+		transport.MaxBodySize(1 * 1024 * 1024),
 		transport.GameConnections(transport.NewGameConnections(connection)),
 		transport.ServerSettings(transport.NewServerSettings(serverSettings)),
 	}

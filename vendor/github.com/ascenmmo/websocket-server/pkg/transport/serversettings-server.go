@@ -13,6 +13,7 @@ type serverServerSettings struct {
 	healthCheck       ServerSettingsHealthCheck
 	getServerSettings ServerSettingsGetServerSettings
 	createRoom        ServerSettingsCreateRoom
+	getDeletedRooms   ServerSettingsGetDeletedRooms
 }
 
 type MiddlewareSetServerSettings interface {
@@ -21,6 +22,7 @@ type MiddlewareSetServerSettings interface {
 	WrapHealthCheck(m MiddlewareServerSettingsHealthCheck)
 	WrapGetServerSettings(m MiddlewareServerSettingsGetServerSettings)
 	WrapCreateRoom(m MiddlewareServerSettingsCreateRoom)
+	WrapGetDeletedRooms(m MiddlewareServerSettingsGetDeletedRooms)
 
 	WithTrace()
 	WithLog()
@@ -30,6 +32,7 @@ func newServerServerSettings(svc api.ServerSettings) *serverServerSettings {
 	return &serverServerSettings{
 		createRoom:        svc.CreateRoom,
 		getConnectionsNum: svc.GetConnectionsNum,
+		getDeletedRooms:   svc.GetDeletedRooms,
 		getServerSettings: svc.GetServerSettings,
 		healthCheck:       svc.HealthCheck,
 		svc:               svc,
@@ -42,6 +45,7 @@ func (srv *serverServerSettings) Wrap(m MiddlewareServerSettings) {
 	srv.healthCheck = srv.svc.HealthCheck
 	srv.getServerSettings = srv.svc.GetServerSettings
 	srv.createRoom = srv.svc.CreateRoom
+	srv.getDeletedRooms = srv.svc.GetDeletedRooms
 }
 
 func (srv *serverServerSettings) GetConnectionsNum(ctx context.Context, token string) (countConn int, exists bool, err error) {
@@ -60,6 +64,10 @@ func (srv *serverServerSettings) CreateRoom(ctx context.Context, token string, c
 	return srv.createRoom(ctx, token, createRoom)
 }
 
+func (srv *serverServerSettings) GetDeletedRooms(ctx context.Context, token string, ids []types.GetDeletedRooms) (deletedIds []types.GetDeletedRooms, err error) {
+	return srv.getDeletedRooms(ctx, token, ids)
+}
+
 func (srv *serverServerSettings) WrapGetConnectionsNum(m MiddlewareServerSettingsGetConnectionsNum) {
 	srv.getConnectionsNum = m(srv.getConnectionsNum)
 }
@@ -74,6 +82,10 @@ func (srv *serverServerSettings) WrapGetServerSettings(m MiddlewareServerSetting
 
 func (srv *serverServerSettings) WrapCreateRoom(m MiddlewareServerSettingsCreateRoom) {
 	srv.createRoom = m(srv.createRoom)
+}
+
+func (srv *serverServerSettings) WrapGetDeletedRooms(m MiddlewareServerSettingsGetDeletedRooms) {
+	srv.getDeletedRooms = m(srv.getDeletedRooms)
 }
 
 func (srv *serverServerSettings) WithTrace() {
