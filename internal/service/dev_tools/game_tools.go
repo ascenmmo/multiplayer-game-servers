@@ -16,6 +16,7 @@ type devTools struct {
 	accessGame       access.AccessGame
 	gameStorage      storage.GameStorage
 	serverStorage    storage.ServersStorage
+	roomStorage      storage.RoomsStorage
 	developerStorage storage.DeveloperStorage
 
 	token tokengenerator.TokenGenerator
@@ -172,6 +173,22 @@ func (g *devTools) GetGameByGameID(ctx context.Context, token string, gameID uui
 	if err != nil {
 		return game, err
 	}
+
+	rooms, err := g.roomStorage.FindAll(game.ID)
+	if err != nil {
+		g.logger.Error().Err(err).Msg("err get rooms GetGameByGameID")
+	}
+
+	var countOnline int
+	for _, v := range rooms {
+		countOnline += len(v.Connections)
+	}
+	game.CountOnline = countOnline
+	err = g.gameStorage.Update(game)
+	if err != nil {
+		g.logger.Error().Err(err).Msg("err update game GetGameByGameID")
+	}
+
 	game.RemoveEmptyArray()
 
 	developers, err := g.developerStorage.FindByIDS(game.Owners)
@@ -233,6 +250,6 @@ func (g *devTools) TurnOffServerInGame(ctx context.Context, token string, server
 	return nil
 }
 
-func NewDevTools(accessGame access.AccessGame, gameStorage storage.GameStorage, serverStorage storage.ServersStorage, developerStorage storage.DeveloperStorage, token tokengenerator.TokenGenerator, logger *zerolog.Logger) multiplayer.DevTools {
-	return &devTools{accessGame: accessGame, gameStorage: gameStorage, serverStorage: serverStorage, developerStorage: developerStorage, token: token, logger: logger}
+func NewDevTools(accessGame access.AccessGame, gameStorage storage.GameStorage, serverStorage storage.ServersStorage, roomStorage storage.RoomsStorage, developerStorage storage.DeveloperStorage, token tokengenerator.TokenGenerator, logger *zerolog.Logger) multiplayer.DevTools {
+	return &devTools{accessGame: accessGame, gameStorage: gameStorage, serverStorage: serverStorage, developerStorage: developerStorage, roomStorage: roomStorage, token: token, logger: logger}
 }
