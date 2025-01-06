@@ -54,7 +54,7 @@ func Multiplayer(logger zerolog.Logger) {
 
 	devToolsConnectionServicc := devtools.NewConnections(gameStorage, serverStorage, roomStorage, token, &logger)
 	connectionsScheduler := devtools.NewConnectionsScheduler(gameStorage, serverStorage, roomStorage, token, &logger)
-	devToolsService := devtools.NewDevTools(accessGameService, gameStorage, serverStorage, developerStorage, token, &logger)
+	devToolsService := devtools.NewDevTools(accessGameService, gameStorage, serverStorage, roomStorage, developerStorage, token, &logger)
 	devToolsServerService := devtools.NewServerService(accessGameService, gameStorage, serverStorage, token, &logger)
 	devToolsGameConfigs := devtools.NewGameConfigs(accessGameService, gameConfigStorage, token, &logger)
 
