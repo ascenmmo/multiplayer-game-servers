@@ -7,15 +7,18 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 )
 
 type RoomsStorage interface {
 	CreateRoom(room types.Room) (err error)
 	FindByID(roomID uuid.UUID) (room types.Room, err error)
+	FindByRoomCode(gameId uuid.UUID, roomCode string) (room types.Room, err error)
 	FindByCreatorID(creatorID uuid.UUID) (room types.Room, err error)
 	FindAll(gameID uuid.UUID) (rooms []types.Room, err error)
 	Update(rooms types.Room) (err error)
 	Delete(roomID uuid.UUID) (err error)
+	GetByTime(searchingTime time.Time, limit int64) (rooms []types.Room, err error)
 }
 
 type roomsStorage struct {
@@ -53,6 +56,16 @@ func (d *roomsStorage) CreateRoom(room types.Room) (err error) {
 	update := bson.M{"$set": room}
 	_, err = d.collection.UpdateOne(context.TODO(), filter, update, opts)
 	return err
+}
+
+func (d *roomsStorage) FindByRoomCode(gameId uuid.UUID, roomCode string) (room types.Room, err error) {
+	filter := bson.M{"gameID": gameId, "roomCode": roomCode}
+	err = d.collection.FindOne(context.TODO(), filter).Decode(&room)
+	if err != nil {
+		return room, err
+	}
+
+	return room, nil
 }
 
 func (d *roomsStorage) FindByID(roomID uuid.UUID) (room types.Room, err error) {
@@ -115,4 +128,21 @@ func (d *roomsStorage) Delete(roomID uuid.UUID) (err error) {
 		return err
 	}
 	return nil
+}
+
+func (d *roomsStorage) GetByTime(searchingTime time.Time, limit int64) (rooms []types.Room, err error) {
+	filter := bson.D{{Key: "createdAt", Value: bson.D{{Key: "$lt", Value: searchingTime}}}}
+	opts := options.Find().SetSort(bson.D{{Key: "createdAt", Value: 1}}).SetLimit(limit)
+
+	cur, err := d.collection.Find(context.Background(), filter, opts)
+	if err != nil {
+		return rooms, err
+	}
+
+	err = cur.All(context.Background(), &rooms)
+	if err != nil {
+		return rooms, err
+	}
+
+	return rooms, nil
 }

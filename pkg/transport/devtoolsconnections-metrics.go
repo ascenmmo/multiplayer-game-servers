@@ -27,7 +27,7 @@ func metricsMiddlewareDevToolsConnections(next multiplayer.DevToolsConnections) 
 	}
 }
 
-func (m metricsDevToolsConnections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error) {
+func (m metricsDevToolsConnections) CreateRoom(ctx context.Context, token string, name string) (newToken string, err error) {
 
 	defer func(begin time.Time) {
 		m.requestLatency.With("method", "createRoom", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
@@ -37,10 +37,10 @@ func (m metricsDevToolsConnections) CreateRoom(ctx context.Context, token string
 
 	m.requestCountAll.With("method", "createRoom").Add(1)
 
-	return m.next.CreateRoom(ctx, token, gameID)
+	return m.next.CreateRoom(ctx, token, name)
 }
 
-func (m metricsDevToolsConnections) GetRoomsAll(ctx context.Context, token string, gameID uuid.UUID) (rooms []types.Room, err error) {
+func (m metricsDevToolsConnections) GetRoomsAll(ctx context.Context, token string) (rooms []types.Room, err error) {
 
 	defer func(begin time.Time) {
 		m.requestLatency.With("method", "getRoomsAll", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
@@ -50,10 +50,10 @@ func (m metricsDevToolsConnections) GetRoomsAll(ctx context.Context, token strin
 
 	m.requestCountAll.With("method", "getRoomsAll").Add(1)
 
-	return m.next.GetRoomsAll(ctx, token, gameID)
+	return m.next.GetRoomsAll(ctx, token)
 }
 
-func (m metricsDevToolsConnections) JoinRoomByID(ctx context.Context, token string, gameID uuid.UUID, roomID uuid.UUID) (newToken string, err error) {
+func (m metricsDevToolsConnections) JoinRoomByID(ctx context.Context, token string, roomID uuid.UUID) (newToken string, err error) {
 
 	defer func(begin time.Time) {
 		m.requestLatency.With("method", "joinRoomByID", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
@@ -63,10 +63,49 @@ func (m metricsDevToolsConnections) JoinRoomByID(ctx context.Context, token stri
 
 	m.requestCountAll.With("method", "joinRoomByID").Add(1)
 
-	return m.next.JoinRoomByID(ctx, token, gameID, roomID)
+	return m.next.JoinRoomByID(ctx, token, roomID)
 }
 
-func (m metricsDevToolsConnections) RemoveRoomByID(ctx context.Context, token string, gameID uuid.UUID, roomID uuid.UUID) (err error) {
+func (m metricsDevToolsConnections) JoinRoomByRoomCode(ctx context.Context, token string, roomCode string) (newToken string, err error) {
+
+	defer func(begin time.Time) {
+		m.requestLatency.With("method", "joinRoomByRoomCode", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	defer m.requestCount.With("method", "joinRoomByRoomCode", "success", fmt.Sprint(err == nil)).Add(1)
+
+	m.requestCountAll.With("method", "joinRoomByRoomCode").Add(1)
+
+	return m.next.JoinRoomByRoomCode(ctx, token, roomCode)
+}
+
+func (m metricsDevToolsConnections) GetMyRoom(ctx context.Context, token string) (room types.Room, err error) {
+
+	defer func(begin time.Time) {
+		m.requestLatency.With("method", "getMyRoom", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	defer m.requestCount.With("method", "getMyRoom", "success", fmt.Sprint(err == nil)).Add(1)
+
+	m.requestCountAll.With("method", "getMyRoom").Add(1)
+
+	return m.next.GetMyRoom(ctx, token)
+}
+
+func (m metricsDevToolsConnections) LeaveRoom(ctx context.Context, token string, roomID uuid.UUID) (err error) {
+
+	defer func(begin time.Time) {
+		m.requestLatency.With("method", "leaveRoom", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	defer m.requestCount.With("method", "leaveRoom", "success", fmt.Sprint(err == nil)).Add(1)
+
+	m.requestCountAll.With("method", "leaveRoom").Add(1)
+
+	return m.next.LeaveRoom(ctx, token, roomID)
+}
+
+func (m metricsDevToolsConnections) RemoveRoomByID(ctx context.Context, token string, roomID uuid.UUID) (err error) {
 
 	defer func(begin time.Time) {
 		m.requestLatency.With("method", "removeRoomByID", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
@@ -76,7 +115,7 @@ func (m metricsDevToolsConnections) RemoveRoomByID(ctx context.Context, token st
 
 	m.requestCountAll.With("method", "removeRoomByID").Add(1)
 
-	return m.next.RemoveRoomByID(ctx, token, gameID, roomID)
+	return m.next.RemoveRoomByID(ctx, token, roomID)
 }
 
 func (m metricsDevToolsConnections) GetRoomsConnectionUrls(ctx context.Context, token string) (connectionsServer []types.ConnectionServer, err error) {

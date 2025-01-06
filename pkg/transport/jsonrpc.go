@@ -182,6 +182,12 @@ func (srv *Server) doSingleBatch(ctx *fiber.Ctx, request baseJsonRPC) (response 
 		return srv.httpDevToolsConnections.getRoomsAll(ctx, request)
 	case "devtoolsconnections.joinroombyid":
 		return srv.httpDevToolsConnections.joinRoomByID(ctx, request)
+	case "devtoolsconnections.joinroombyroomcode":
+		return srv.httpDevToolsConnections.joinRoomByRoomCode(ctx, request)
+	case "devtoolsconnections.getmyroom":
+		return srv.httpDevToolsConnections.getMyRoom(ctx, request)
+	case "devtoolsconnections.leaveroom":
+		return srv.httpDevToolsConnections.leaveRoom(ctx, request)
 	case "devtoolsconnections.removeroombyid":
 		return srv.httpDevToolsConnections.removeRoomByID(ctx, request)
 	case "devtoolsconnections.getroomsconnectionurls":

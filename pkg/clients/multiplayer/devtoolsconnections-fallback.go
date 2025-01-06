@@ -5,6 +5,9 @@ type fallbackDevToolsConnections interface {
 	CreateRoom(err error) bool
 	GetRoomsAll(err error) bool
 	JoinRoomByID(err error) bool
+	JoinRoomByRoomCode(err error) bool
+	GetMyRoom(err error) bool
+	LeaveRoom(err error) bool
 	RemoveRoomByID(err error) bool
 	GetRoomsConnectionUrls(err error) bool
 }

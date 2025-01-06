@@ -13,6 +13,9 @@ type serverDevToolsConnections struct {
 	createRoom             DevToolsConnectionsCreateRoom
 	getRoomsAll            DevToolsConnectionsGetRoomsAll
 	joinRoomByID           DevToolsConnectionsJoinRoomByID
+	joinRoomByRoomCode     DevToolsConnectionsJoinRoomByRoomCode
+	getMyRoom              DevToolsConnectionsGetMyRoom
+	leaveRoom              DevToolsConnectionsLeaveRoom
 	removeRoomByID         DevToolsConnectionsRemoveRoomByID
 	getRoomsConnectionUrls DevToolsConnectionsGetRoomsConnectionUrls
 }
@@ -22,6 +25,9 @@ type MiddlewareSetDevToolsConnections interface {
 	WrapCreateRoom(m MiddlewareDevToolsConnectionsCreateRoom)
 	WrapGetRoomsAll(m MiddlewareDevToolsConnectionsGetRoomsAll)
 	WrapJoinRoomByID(m MiddlewareDevToolsConnectionsJoinRoomByID)
+	WrapJoinRoomByRoomCode(m MiddlewareDevToolsConnectionsJoinRoomByRoomCode)
+	WrapGetMyRoom(m MiddlewareDevToolsConnectionsGetMyRoom)
+	WrapLeaveRoom(m MiddlewareDevToolsConnectionsLeaveRoom)
 	WrapRemoveRoomByID(m MiddlewareDevToolsConnectionsRemoveRoomByID)
 	WrapGetRoomsConnectionUrls(m MiddlewareDevToolsConnectionsGetRoomsConnectionUrls)
 
@@ -33,9 +39,12 @@ type MiddlewareSetDevToolsConnections interface {
 func newServerDevToolsConnections(svc multiplayer.DevToolsConnections) *serverDevToolsConnections {
 	return &serverDevToolsConnections{
 		createRoom:             svc.CreateRoom,
+		getMyRoom:              svc.GetMyRoom,
 		getRoomsAll:            svc.GetRoomsAll,
 		getRoomsConnectionUrls: svc.GetRoomsConnectionUrls,
 		joinRoomByID:           svc.JoinRoomByID,
+		joinRoomByRoomCode:     svc.JoinRoomByRoomCode,
+		leaveRoom:              svc.LeaveRoom,
 		removeRoomByID:         svc.RemoveRoomByID,
 		svc:                    svc,
 	}
@@ -46,24 +55,39 @@ func (srv *serverDevToolsConnections) Wrap(m MiddlewareDevToolsConnections) {
 	srv.createRoom = srv.svc.CreateRoom
 	srv.getRoomsAll = srv.svc.GetRoomsAll
 	srv.joinRoomByID = srv.svc.JoinRoomByID
+	srv.joinRoomByRoomCode = srv.svc.JoinRoomByRoomCode
+	srv.getMyRoom = srv.svc.GetMyRoom
+	srv.leaveRoom = srv.svc.LeaveRoom
 	srv.removeRoomByID = srv.svc.RemoveRoomByID
 	srv.getRoomsConnectionUrls = srv.svc.GetRoomsConnectionUrls
 }
 
-func (srv *serverDevToolsConnections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error) {
-	return srv.createRoom(ctx, token, gameID)
+func (srv *serverDevToolsConnections) CreateRoom(ctx context.Context, token string, name string) (newToken string, err error) {
+	return srv.createRoom(ctx, token, name)
 }
 
-func (srv *serverDevToolsConnections) GetRoomsAll(ctx context.Context, token string, gameID uuid.UUID) (rooms []types.Room, err error) {
-	return srv.getRoomsAll(ctx, token, gameID)
+func (srv *serverDevToolsConnections) GetRoomsAll(ctx context.Context, token string) (rooms []types.Room, err error) {
+	return srv.getRoomsAll(ctx, token)
 }
 
-func (srv *serverDevToolsConnections) JoinRoomByID(ctx context.Context, token string, gameID uuid.UUID, roomID uuid.UUID) (newToken string, err error) {
-	return srv.joinRoomByID(ctx, token, gameID, roomID)
+func (srv *serverDevToolsConnections) JoinRoomByID(ctx context.Context, token string, roomID uuid.UUID) (newToken string, err error) {
+	return srv.joinRoomByID(ctx, token, roomID)
 }
 
-func (srv *serverDevToolsConnections) RemoveRoomByID(ctx context.Context, token string, gameID uuid.UUID, roomID uuid.UUID) (err error) {
-	return srv.removeRoomByID(ctx, token, gameID, roomID)
+func (srv *serverDevToolsConnections) JoinRoomByRoomCode(ctx context.Context, token string, roomCode string) (newToken string, err error) {
+	return srv.joinRoomByRoomCode(ctx, token, roomCode)
+}
+
+func (srv *serverDevToolsConnections) GetMyRoom(ctx context.Context, token string) (room types.Room, err error) {
+	return srv.getMyRoom(ctx, token)
+}
+
+func (srv *serverDevToolsConnections) LeaveRoom(ctx context.Context, token string, roomID uuid.UUID) (err error) {
+	return srv.leaveRoom(ctx, token, roomID)
+}
+
+func (srv *serverDevToolsConnections) RemoveRoomByID(ctx context.Context, token string, roomID uuid.UUID) (err error) {
+	return srv.removeRoomByID(ctx, token, roomID)
 }
 
 func (srv *serverDevToolsConnections) GetRoomsConnectionUrls(ctx context.Context, token string) (connectionsServer []types.ConnectionServer, err error) {
@@ -80,6 +104,18 @@ func (srv *serverDevToolsConnections) WrapGetRoomsAll(m MiddlewareDevToolsConnec
 
 func (srv *serverDevToolsConnections) WrapJoinRoomByID(m MiddlewareDevToolsConnectionsJoinRoomByID) {
 	srv.joinRoomByID = m(srv.joinRoomByID)
+}
+
+func (srv *serverDevToolsConnections) WrapJoinRoomByRoomCode(m MiddlewareDevToolsConnectionsJoinRoomByRoomCode) {
+	srv.joinRoomByRoomCode = m(srv.joinRoomByRoomCode)
+}
+
+func (srv *serverDevToolsConnections) WrapGetMyRoom(m MiddlewareDevToolsConnectionsGetMyRoom) {
+	srv.getMyRoom = m(srv.getMyRoom)
+}
+
+func (srv *serverDevToolsConnections) WrapLeaveRoom(m MiddlewareDevToolsConnectionsLeaveRoom) {
+	srv.leaveRoom = m(srv.leaveRoom)
 }
 
 func (srv *serverDevToolsConnections) WrapRemoveRoomByID(m MiddlewareDevToolsConnectionsRemoveRoomByID) {

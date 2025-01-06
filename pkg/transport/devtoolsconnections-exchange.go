@@ -7,8 +7,8 @@ import (
 )
 
 type requestDevToolsConnectionsCreateRoom struct {
-	Token  string    `json:"token"`
-	GameID uuid.UUID `json:"gameID"`
+	Token string `json:"token"`
+	Name  string `json:"name"`
 }
 
 type responseDevToolsConnectionsCreateRoom struct {
@@ -16,8 +16,7 @@ type responseDevToolsConnectionsCreateRoom struct {
 }
 
 type requestDevToolsConnectionsGetRoomsAll struct {
-	Token  string    `json:"token"`
-	GameID uuid.UUID `json:"gameID"`
+	Token string `json:"token"`
 }
 
 type responseDevToolsConnectionsGetRoomsAll struct {
@@ -26,7 +25,6 @@ type responseDevToolsConnectionsGetRoomsAll struct {
 
 type requestDevToolsConnectionsJoinRoomByID struct {
 	Token  string    `json:"token"`
-	GameID uuid.UUID `json:"gameID"`
 	RoomID uuid.UUID `json:"roomID"`
 }
 
@@ -34,9 +32,33 @@ type responseDevToolsConnectionsJoinRoomByID struct {
 	NewToken string `json:"newToken"`
 }
 
+type requestDevToolsConnectionsJoinRoomByRoomCode struct {
+	Token    string `json:"token"`
+	RoomCode string `json:"roomCode"`
+}
+
+type responseDevToolsConnectionsJoinRoomByRoomCode struct {
+	NewToken string `json:"newToken"`
+}
+
+type requestDevToolsConnectionsGetMyRoom struct {
+	Token string `json:"token"`
+}
+
+type responseDevToolsConnectionsGetMyRoom struct {
+	Room types.Room `json:"room"`
+}
+
+type requestDevToolsConnectionsLeaveRoom struct {
+	Token  string    `json:"token"`
+	RoomID uuid.UUID `json:"roomID"`
+}
+
+// Formal exchange type, please do not delete.
+type responseDevToolsConnectionsLeaveRoom struct{}
+
 type requestDevToolsConnectionsRemoveRoomByID struct {
 	Token  string    `json:"token"`
-	GameID uuid.UUID `json:"gameID"`
 	RoomID uuid.UUID `json:"roomID"`
 }
 

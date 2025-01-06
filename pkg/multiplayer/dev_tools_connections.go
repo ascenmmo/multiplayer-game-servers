@@ -20,16 +20,25 @@ import (
 type DevToolsConnections interface {
 	// @tg http-headers=token|Token
 	// @tg summary=`server createRoom`
-	CreateRoom(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error)
+	CreateRoom(ctx context.Context, token string, name string) (newToken string, err error)
 	// @tg http-headers=token|Token
 	// @tg summary=`server getRoomsAll`
-	GetRoomsAll(ctx context.Context, token string, gameID uuid.UUID) (rooms []types.Room, err error)
+	GetRoomsAll(ctx context.Context, token string) (rooms []types.Room, err error)
 	// @tg http-headers=token|Token
 	// @tg summary=`server joinRoomByID`
-	JoinRoomByID(ctx context.Context, token string, gameID uuid.UUID, roomID uuid.UUID) (newToken string, err error)
+	JoinRoomByID(ctx context.Context, token string, roomID uuid.UUID) (newToken string, err error)
+	// @tg http-headers=token|Token
+	// @tg summary=`server joinRoomByRoomCode`
+	JoinRoomByRoomCode(ctx context.Context, token string, roomCode string) (newToken string, err error)
+	// @tg http-headers=token|Token
+	// @tg summary=`server getMyRoom`
+	GetMyRoom(ctx context.Context, token string) (room types.Room, err error)
+	// @tg http-headers=token|Token
+	// @tg summary=`server leaveRoom`
+	LeaveRoom(ctx context.Context, token string, roomID uuid.UUID) (err error)
 	// @tg http-headers=token|Token
 	// @tg summary=`server removeRoomByID`
-	RemoveRoomByID(ctx context.Context, token string, gameID uuid.UUID, roomID uuid.UUID) (err error)
+	RemoveRoomByID(ctx context.Context, token string, roomID uuid.UUID) (err error)
 	// @tg http-headers=token|Token
 	// @tg summary=`server getRoomsConnectionUrls`
 	GetRoomsConnectionUrls(ctx context.Context, token string) (connectionsServer []types.ConnectionServer, err error)

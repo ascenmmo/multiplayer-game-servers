@@ -1309,6 +1309,79 @@ paths:
                                         jsonrpc:
                                             type: string
                                             example: "2.0"
+    /api/v1/devToolsConnections/getMyRoom:
+        post:
+            tags:
+                - DevToolsConnections
+            summary: server getMyRoom
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsConnectionsGetMyRoom'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsConnectionsGetMyRoom'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
     /api/v1/devToolsConnections/getRoomsAll:
         post:
             tags:
@@ -1503,6 +1576,152 @@ paths:
                                             example: "2.0"
                                         result:
                                             $ref: '#/components/schemas/responseDevToolsConnectionsJoinRoomByID'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsConnections/joinRoomByRoomCode:
+        post:
+            tags:
+                - DevToolsConnections
+            summary: server joinRoomByRoomCode
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsConnectionsJoinRoomByRoomCode'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsConnectionsJoinRoomByRoomCode'
+                                    - type: object
+                                      properties:
+                                        error:
+                                            type: object
+                                            properties:
+                                                code:
+                                                    type: number
+                                                    format: int32
+                                                    example: -32603
+                                                data:
+                                                    type: object
+                                                    nullable: true
+                                                message:
+                                                    type: string
+                                                    example: not found
+                                            nullable: true
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+    /api/v1/devToolsConnections/leaveRoom:
+        post:
+            tags:
+                - DevToolsConnections
+            summary: server leaveRoom
+            parameters:
+                - in: header
+                  name: Token
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    example: 1
+                                    oneOf:
+                                        - type: number
+                                        - type: string
+                                          format: uuid
+                                jsonrpc:
+                                    type: string
+                                    example: "2.0"
+                                params:
+                                    $ref: '#/components/schemas/requestDevToolsConnectionsLeaveRoom'
+            responses:
+                "200":
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        id:
+                                            example: 1
+                                            oneOf:
+                                                - type: number
+                                                - type: string
+                                                  format: uuid
+                                        jsonrpc:
+                                            type: string
+                                            example: "2.0"
+                                        result:
+                                            $ref: '#/components/schemas/responseDevToolsConnectionsLeaveRoom'
                                     - type: object
                                       properties:
                                         error:
@@ -2119,12 +2338,12 @@ paths:
             summary: server refreshToken
             parameters:
                 - in: header
-                  name: Token
+                  name: RefreshToken
                   required: true
                   schema:
                     type: string
                 - in: header
-                  name: RefreshToken
+                  name: Token
                   required: true
                   schema:
                     type: string
@@ -2434,32 +2653,34 @@ components:
         requestDevToolsConnectionsCreateRoom:
             type: object
             properties:
-                gameID:
+                name:
                     type: string
-                    format: uuid
+        requestDevToolsConnectionsGetMyRoom:
+            type: object
         requestDevToolsConnectionsGetRoomsAll:
             type: object
-            properties:
-                gameID:
-                    type: string
-                    format: uuid
         requestDevToolsConnectionsGetRoomsConnectionUrls:
             type: object
         requestDevToolsConnectionsJoinRoomByID:
             type: object
             properties:
-                gameID:
+                roomID:
                     type: string
                     format: uuid
+        requestDevToolsConnectionsJoinRoomByRoomCode:
+            type: object
+            properties:
+                roomCode:
+                    type: string
+        requestDevToolsConnectionsLeaveRoom:
+            type: object
+            properties:
                 roomID:
                     type: string
                     format: uuid
         requestDevToolsConnectionsRemoveRoomByID:
             type: object
             properties:
-                gameID:
-                    type: string
-                    format: uuid
                 roomID:
                     type: string
                     format: uuid
@@ -2619,6 +2840,11 @@ components:
             properties:
                 newToken:
                     type: string
+        responseDevToolsConnectionsGetMyRoom:
+            type: object
+            properties:
+                room:
+                    $ref: '#/components/schemas/types.Room'
         responseDevToolsConnectionsGetRoomsAll:
             type: object
             properties:
@@ -2640,6 +2866,13 @@ components:
             properties:
                 newToken:
                     type: string
+        responseDevToolsConnectionsJoinRoomByRoomCode:
+            type: object
+            properties:
+                newToken:
+                    type: string
+        responseDevToolsConnectionsLeaveRoom:
+            type: object
         responseDevToolsConnectionsRemoveRoomByID:
             type: object
         responseDevToolsCreateGame:
@@ -2858,10 +3091,10 @@ components:
                         type: string
                         format: uuid
                     nullable: true
-                created_at:
+                createdAt:
                     type: number
                     format: int64
-                creator_id:
+                creatorID:
                     type: string
                     format: uuid
                 existsServers:
@@ -2876,9 +3109,11 @@ components:
                 id:
                     type: string
                     format: uuid
-                is_exists:
+                isExists:
                     type: boolean
                 name:
+                    type: string
+                roomCode:
                     type: string
                 servers:
                     type: array
