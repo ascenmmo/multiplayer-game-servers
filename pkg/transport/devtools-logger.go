@@ -67,27 +67,27 @@ func (m loggerDevTools) GameAddOwner(ctx context.Context, token string, gameID u
 	return m.next.GameAddOwner(ctx, token, gameID, userID)
 }
 
-func (m loggerDevTools) GameRemoveUser(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
-	logger := log.Ctx(ctx).With().Str("service", "DevTools").Str("method", "gameRemoveUser").Logger()
+func (m loggerDevTools) GameRemoveOwner(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
+	logger := log.Ctx(ctx).With().Str("service", "DevTools").Str("method", "gameRemoveOwner").Logger()
 	defer func(begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
-				"request": viewer.Sprintf("%+v", requestDevToolsGameRemoveUser{
+				"request": viewer.Sprintf("%+v", requestDevToolsGameRemoveOwner{
 					GameID: gameID,
 					Token:  token,
 					UserID: userID,
 				}),
-				"response": viewer.Sprintf("%+v", responseDevToolsGameRemoveUser{}),
+				"response": viewer.Sprintf("%+v", responseDevToolsGameRemoveOwner{}),
 			}
 			ev.Fields(fields).Str("took", time.Since(begin).String())
 		}
 		if err != nil {
-			logger.Error().Err(err).Func(logHandle).Msg("call gameRemoveUser")
+			logger.Error().Err(err).Func(logHandle).Msg("call gameRemoveOwner")
 			return
 		}
-		logger.Info().Func(logHandle).Msg("call gameRemoveUser")
+		logger.Info().Func(logHandle).Msg("call gameRemoveOwner")
 	}(time.Now())
-	return m.next.GameRemoveUser(ctx, token, gameID, userID)
+	return m.next.GameRemoveOwner(ctx, token, gameID, userID)
 }
 
 func (m loggerDevTools) UpdateGame(ctx context.Context, token string, gameID uuid.UUID, newGame types.Game) (id uuid.UUID, err error) {

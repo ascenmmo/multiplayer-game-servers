@@ -12,6 +12,8 @@ type Game struct {
 
 	Owners []uuid.UUID `json:"owners" bson:"owners"`
 
+	OwnersInfoLint []string `json:"ownersInfoList" bson:"-"`
+
 	Servers []uuid.UUID `json:"servers" bson:"servers"`
 }
 

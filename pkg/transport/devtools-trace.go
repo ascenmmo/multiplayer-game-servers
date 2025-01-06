@@ -29,10 +29,10 @@ func (svc traceDevTools) GameAddOwner(ctx context.Context, token string, gameID 
 	return svc.next.GameAddOwner(ctx, token, gameID, userID)
 }
 
-func (svc traceDevTools) GameRemoveUser(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
+func (svc traceDevTools) GameRemoveOwner(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
 	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GameRemoveUser")
-	return svc.next.GameRemoveUser(ctx, token, gameID, userID)
+	span.SetTag("method", "GameRemoveOwner")
+	return svc.next.GameRemoveOwner(ctx, token, gameID, userID)
 }
 
 func (svc traceDevTools) UpdateGame(ctx context.Context, token string, gameID uuid.UUID, newGame types.Game) (id uuid.UUID, err error) {

@@ -7,7 +7,6 @@ import (
 	"github.com/ascenmmo/udp-server/pkg/api/types"
 	"github.com/ascenmmo/udp-server/pkg/clients/udpGameServer/hasher"
 	"github.com/ascenmmo/udp-server/pkg/clients/udpGameServer/jsonrpc"
-	"github.com/google/uuid"
 )
 
 type ClientServerSettings struct {
@@ -18,7 +17,7 @@ type retServerSettingsGetConnectionsNum = func(countConn int, exists bool, err e
 type retServerSettingsHealthCheck = func(exists bool, err error)
 type retServerSettingsGetServerSettings = func(settings types.Settings, err error)
 type retServerSettingsCreateRoom = func(err error)
-type retServerSettingsSetNotifyServer = func(err error)
+type retServerSettingsGetDeletedRooms = func(deletedIds []types.GetDeletedRooms, err error)
 
 func (cli *ClientServerSettings) GetConnectionsNum(ctx context.Context, token string) (countConn int, exists bool, err error) {
 
@@ -238,20 +237,19 @@ func (cli *ClientServerSettings) ReqCreateRoom(ctx context.Context, callback ret
 	return
 }
 
-func (cli *ClientServerSettings) SetNotifyServer(ctx context.Context, token string, id uuid.UUID, url string) (err error) {
+func (cli *ClientServerSettings) GetDeletedRooms(ctx context.Context, token string, ids []types.GetDeletedRooms) (deletedIds []types.GetDeletedRooms, err error) {
 
-	request := requestServerSettingsSetNotifyServer{
-		Id:    id,
+	request := requestServerSettingsGetDeletedRooms{
+		Ids:   ids,
 		Token: token,
-		Url:   url,
 	}
-	var response responseServerSettingsSetNotifyServer
+	var response responseServerSettingsGetDeletedRooms
 	var rpcResponse *jsonrpc.ResponseRPC
 	cacheKey, _ := hasher.Hash(request)
-	rpcResponse, err = cli.rpc.Call(ctx, "serversettings.setnotifyserver", request)
+	rpcResponse, err = cli.rpc.Call(ctx, "serversettings.getdeletedrooms", request)
 	var fallbackCheck func(error) bool
 	if cli.fallbackServerSettings != nil {
-		fallbackCheck = cli.fallbackServerSettings.SetNotifyServer
+		fallbackCheck = cli.fallbackServerSettings.GetDeletedRooms
 	}
 	if rpcResponse != nil && rpcResponse.Error != nil {
 		if cli.errorDecoder != nil {
@@ -263,28 +261,27 @@ func (cli *ClientServerSettings) SetNotifyServer(ctx context.Context, token stri
 	if err = cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response); err != nil {
 		return
 	}
-	return err
+	return response.DeletedIds, err
 }
 
-func (cli *ClientServerSettings) ReqSetNotifyServer(ctx context.Context, callback retServerSettingsSetNotifyServer, token string, id uuid.UUID, url string) (request RequestRPC) {
+func (cli *ClientServerSettings) ReqGetDeletedRooms(ctx context.Context, callback retServerSettingsGetDeletedRooms, token string, ids []types.GetDeletedRooms) (request RequestRPC) {
 
 	request = RequestRPC{rpcRequest: &jsonrpc.RequestRPC{
 		ID:      jsonrpc.NewID(),
 		JSONRPC: jsonrpc.Version,
-		Method:  "serversettings.setnotifyserver",
-		Params: requestServerSettingsSetNotifyServer{
-			Id:    id,
+		Method:  "serversettings.getdeletedrooms",
+		Params: requestServerSettingsGetDeletedRooms{
+			Ids:   ids,
 			Token: token,
-			Url:   url,
 		},
 	}}
 	if callback != nil {
-		var response responseServerSettingsSetNotifyServer
+		var response responseServerSettingsGetDeletedRooms
 		request.retHandler = func(err error, rpcResponse *jsonrpc.ResponseRPC) {
 			cacheKey, _ := hasher.Hash(request.rpcRequest.Params)
 			var fallbackCheck func(error) bool
 			if cli.fallbackServerSettings != nil {
-				fallbackCheck = cli.fallbackServerSettings.SetNotifyServer
+				fallbackCheck = cli.fallbackServerSettings.GetDeletedRooms
 			}
 			if rpcResponse != nil && rpcResponse.Error != nil {
 				if cli.errorDecoder != nil {
@@ -293,7 +290,7 @@ func (cli *ClientServerSettings) ReqSetNotifyServer(ctx context.Context, callbac
 					err = fmt.Errorf(rpcResponse.Error.Message)
 				}
 			}
-			callback(cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response))
+			callback(response.DeletedIds, cli.proceedResponse(ctx, err, cacheKey, fallbackCheck, rpcResponse, &response))
 		}
 	}
 	return

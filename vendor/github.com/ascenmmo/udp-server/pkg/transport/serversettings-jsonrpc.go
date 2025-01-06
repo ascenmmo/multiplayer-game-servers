@@ -238,17 +238,17 @@ func (http *httpServerSettings) createRoom(ctx *fiber.Ctx, requestBase baseJsonR
 	}
 	return
 }
-func (http *httpServerSettings) serveSetNotifyServer(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "setnotifyserver", http.setNotifyServer)
+func (http *httpServerSettings) serveGetDeletedRooms(ctx *fiber.Ctx) (err error) {
+	return http.serveMethod(ctx, "getdeletedrooms", http.getDeletedRooms)
 }
-func (http *httpServerSettings) setNotifyServer(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
+func (http *httpServerSettings) getDeletedRooms(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
-	var request requestServerSettingsSetNotifyServer
+	var request requestServerSettingsGetDeletedRooms
 
 	methodCtx := ctx.UserContext()
 	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "setNotifyServer")
+	span.SetTag("method", "getDeletedRooms")
 
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
@@ -269,8 +269,8 @@ func (http *httpServerSettings) setNotifyServer(ctx *fiber.Ctx, requestBase base
 		request.Token = token
 	}
 
-	var response responseServerSettingsSetNotifyServer
-	err = http.svc.SetNotifyServer(methodCtx, request.Token, request.Id, request.Url)
+	var response responseServerSettingsGetDeletedRooms
+	response.DeletedIds, err = http.svc.GetDeletedRooms(methodCtx, request.Token, request.Ids)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
@@ -418,8 +418,8 @@ func (http *httpServerSettings) doSingleBatch(ctx *fiber.Ctx, request baseJsonRP
 		return http.getServerSettings(ctx, request)
 	case "createroom":
 		return http.createRoom(ctx, request)
-	case "setnotifyserver":
-		return http.setNotifyServer(ctx, request)
+	case "getdeletedrooms":
+		return http.getDeletedRooms(ctx, request)
 	default:
 		ext.Error.Set(span, true)
 		span.SetTag("msg", "invalid method '"+methodNameOrigin+"'")

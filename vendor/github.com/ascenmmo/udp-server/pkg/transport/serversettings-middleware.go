@@ -5,14 +5,13 @@ import (
 	"context"
 	"github.com/ascenmmo/udp-server/pkg/api"
 	"github.com/ascenmmo/udp-server/pkg/api/types"
-	"github.com/google/uuid"
 )
 
 type ServerSettingsGetConnectionsNum func(ctx context.Context, token string) (countConn int, exists bool, err error)
 type ServerSettingsHealthCheck func(ctx context.Context, token string) (exists bool, err error)
 type ServerSettingsGetServerSettings func(ctx context.Context, token string) (settings types.Settings, err error)
 type ServerSettingsCreateRoom func(ctx context.Context, token string, createRoom types.CreateRoomRequest) (err error)
-type ServerSettingsSetNotifyServer func(ctx context.Context, token string, id uuid.UUID, url string) (err error)
+type ServerSettingsGetDeletedRooms func(ctx context.Context, token string, ids []types.GetDeletedRooms) (deletedIds []types.GetDeletedRooms, err error)
 
 type MiddlewareServerSettings func(next api.ServerSettings) api.ServerSettings
 
@@ -20,4 +19,4 @@ type MiddlewareServerSettingsGetConnectionsNum func(next ServerSettingsGetConnec
 type MiddlewareServerSettingsHealthCheck func(next ServerSettingsHealthCheck) ServerSettingsHealthCheck
 type MiddlewareServerSettingsGetServerSettings func(next ServerSettingsGetServerSettings) ServerSettingsGetServerSettings
 type MiddlewareServerSettingsCreateRoom func(next ServerSettingsCreateRoom) ServerSettingsCreateRoom
-type MiddlewareServerSettingsSetNotifyServer func(next ServerSettingsSetNotifyServer) ServerSettingsSetNotifyServer
+type MiddlewareServerSettingsGetDeletedRooms func(next ServerSettingsGetDeletedRooms) ServerSettingsGetDeletedRooms

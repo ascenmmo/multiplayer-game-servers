@@ -8,10 +8,13 @@ import (
 	"github.com/google/uuid"
 )
 
-type DevToolsConnectionsCreateRoom func(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error)
-type DevToolsConnectionsGetRoomsAll func(ctx context.Context, token string, gameID uuid.UUID) (rooms []types.Room, err error)
-type DevToolsConnectionsJoinRoomByID func(ctx context.Context, token string, gameID uuid.UUID, roomID uuid.UUID) (newToken string, err error)
-type DevToolsConnectionsRemoveRoomByID func(ctx context.Context, token string, gameID uuid.UUID, roomID uuid.UUID) (err error)
+type DevToolsConnectionsCreateRoom func(ctx context.Context, token string, name string) (newToken string, err error)
+type DevToolsConnectionsGetRoomsAll func(ctx context.Context, token string) (rooms []types.Room, err error)
+type DevToolsConnectionsJoinRoomByID func(ctx context.Context, token string, roomID uuid.UUID) (newToken string, err error)
+type DevToolsConnectionsJoinRoomByRoomCode func(ctx context.Context, token string, roomCode string) (newToken string, err error)
+type DevToolsConnectionsGetMyRoom func(ctx context.Context, token string) (room types.Room, err error)
+type DevToolsConnectionsLeaveRoom func(ctx context.Context, token string, roomID uuid.UUID) (err error)
+type DevToolsConnectionsRemoveRoomByID func(ctx context.Context, token string, roomID uuid.UUID) (err error)
 type DevToolsConnectionsGetRoomsConnectionUrls func(ctx context.Context, token string) (connectionsServer []types.ConnectionServer, err error)
 
 type MiddlewareDevToolsConnections func(next multiplayer.DevToolsConnections) multiplayer.DevToolsConnections
@@ -19,5 +22,8 @@ type MiddlewareDevToolsConnections func(next multiplayer.DevToolsConnections) mu
 type MiddlewareDevToolsConnectionsCreateRoom func(next DevToolsConnectionsCreateRoom) DevToolsConnectionsCreateRoom
 type MiddlewareDevToolsConnectionsGetRoomsAll func(next DevToolsConnectionsGetRoomsAll) DevToolsConnectionsGetRoomsAll
 type MiddlewareDevToolsConnectionsJoinRoomByID func(next DevToolsConnectionsJoinRoomByID) DevToolsConnectionsJoinRoomByID
+type MiddlewareDevToolsConnectionsJoinRoomByRoomCode func(next DevToolsConnectionsJoinRoomByRoomCode) DevToolsConnectionsJoinRoomByRoomCode
+type MiddlewareDevToolsConnectionsGetMyRoom func(next DevToolsConnectionsGetMyRoom) DevToolsConnectionsGetMyRoom
+type MiddlewareDevToolsConnectionsLeaveRoom func(next DevToolsConnectionsLeaveRoom) DevToolsConnectionsLeaveRoom
 type MiddlewareDevToolsConnectionsRemoveRoomByID func(next DevToolsConnectionsRemoveRoomByID) DevToolsConnectionsRemoveRoomByID
 type MiddlewareDevToolsConnectionsGetRoomsConnectionUrls func(next DevToolsConnectionsGetRoomsConnectionUrls) DevToolsConnectionsGetRoomsConnectionUrls

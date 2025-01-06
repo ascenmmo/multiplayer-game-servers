@@ -2,6 +2,7 @@ package devtools
 
 import (
 	"context"
+	"fmt"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/service/access"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/storage"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
@@ -12,9 +13,10 @@ import (
 )
 
 type devTools struct {
-	accessGame    access.AccessGame
-	gameStorage   storage.GameStorage
-	serverStorage storage.ServersStorage
+	accessGame       access.AccessGame
+	gameStorage      storage.GameStorage
+	serverStorage    storage.ServersStorage
+	developerStorage storage.DeveloperStorage
 
 	token tokengenerator.TokenGenerator
 
@@ -71,7 +73,7 @@ func (g *devTools) GameAddOwner(ctx context.Context, token string, gameID, userI
 	return nil
 }
 
-func (g *devTools) GameRemoveUser(ctx context.Context, token string, gameID, userID uuid.UUID) (err error) {
+func (g *devTools) GameRemoveOwner(ctx context.Context, token string, gameID, userID uuid.UUID) (err error) {
 	info, err := g.token.ParseToken(token)
 	if err != nil {
 		return err
@@ -172,6 +174,16 @@ func (g *devTools) GetGameByGameID(ctx context.Context, token string, gameID uui
 	}
 	game.RemoveEmptyArray()
 
+	developers, err := g.developerStorage.FindByIDS(game.Owners)
+	if err != nil {
+		return game, nil
+	}
+
+	for _, v := range developers {
+		txt := fmt.Sprintf(`"%s":"%s"`, v.Nickname, v.ID)
+		game.OwnersInfoLint = append(game.OwnersInfoLint, txt)
+	}
+
 	return
 }
 
@@ -221,6 +233,6 @@ func (g *devTools) TurnOffServerInGame(ctx context.Context, token string, server
 	return nil
 }
 
-func NewDevTools(accessGame access.AccessGame, gameStorage storage.GameStorage, serverStorage storage.ServersStorage, token tokengenerator.TokenGenerator, logger *zerolog.Logger) multiplayer.DevTools {
-	return &devTools{accessGame: accessGame, gameStorage: gameStorage, serverStorage: serverStorage, token: token, logger: logger}
+func NewDevTools(accessGame access.AccessGame, gameStorage storage.GameStorage, serverStorage storage.ServersStorage, developerStorage storage.DeveloperStorage, token tokengenerator.TokenGenerator, logger *zerolog.Logger) multiplayer.DevTools {
+	return &devTools{accessGame: accessGame, gameStorage: gameStorage, serverStorage: serverStorage, developerStorage: developerStorage, token: token, logger: logger}
 }

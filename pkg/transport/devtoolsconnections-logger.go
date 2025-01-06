@@ -22,14 +22,14 @@ func loggerMiddlewareDevToolsConnections() MiddlewareDevToolsConnections {
 	}
 }
 
-func (m loggerDevToolsConnections) CreateRoom(ctx context.Context, token string, gameID uuid.UUID) (newToken string, err error) {
+func (m loggerDevToolsConnections) CreateRoom(ctx context.Context, token string, name string) (newToken string, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "createRoom").Logger()
 	defer func(begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
 				"request": viewer.Sprintf("%+v", requestDevToolsConnectionsCreateRoom{
-					GameID: gameID,
-					Token:  token,
+					Name:  name,
+					Token: token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsCreateRoom{NewToken: newToken}),
 			}
@@ -41,18 +41,15 @@ func (m loggerDevToolsConnections) CreateRoom(ctx context.Context, token string,
 		}
 		logger.Info().Func(logHandle).Msg("call createRoom")
 	}(time.Now())
-	return m.next.CreateRoom(ctx, token, gameID)
+	return m.next.CreateRoom(ctx, token, name)
 }
 
-func (m loggerDevToolsConnections) GetRoomsAll(ctx context.Context, token string, gameID uuid.UUID) (rooms []types.Room, err error) {
+func (m loggerDevToolsConnections) GetRoomsAll(ctx context.Context, token string) (rooms []types.Room, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "getRoomsAll").Logger()
 	defer func(begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
-				"request": viewer.Sprintf("%+v", requestDevToolsConnectionsGetRoomsAll{
-					GameID: gameID,
-					Token:  token,
-				}),
+				"request":  viewer.Sprintf("%+v", requestDevToolsConnectionsGetRoomsAll{Token: token}),
 				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsGetRoomsAll{Rooms: rooms}),
 			}
 			ev.Fields(fields).Str("took", time.Since(begin).String())
@@ -63,16 +60,15 @@ func (m loggerDevToolsConnections) GetRoomsAll(ctx context.Context, token string
 		}
 		logger.Info().Func(logHandle).Msg("call getRoomsAll")
 	}(time.Now())
-	return m.next.GetRoomsAll(ctx, token, gameID)
+	return m.next.GetRoomsAll(ctx, token)
 }
 
-func (m loggerDevToolsConnections) JoinRoomByID(ctx context.Context, token string, gameID uuid.UUID, roomID uuid.UUID) (newToken string, err error) {
+func (m loggerDevToolsConnections) JoinRoomByID(ctx context.Context, token string, roomID uuid.UUID) (newToken string, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "joinRoomByID").Logger()
 	defer func(begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
 				"request": viewer.Sprintf("%+v", requestDevToolsConnectionsJoinRoomByID{
-					GameID: gameID,
 					RoomID: roomID,
 					Token:  token,
 				}),
@@ -86,16 +82,78 @@ func (m loggerDevToolsConnections) JoinRoomByID(ctx context.Context, token strin
 		}
 		logger.Info().Func(logHandle).Msg("call joinRoomByID")
 	}(time.Now())
-	return m.next.JoinRoomByID(ctx, token, gameID, roomID)
+	return m.next.JoinRoomByID(ctx, token, roomID)
 }
 
-func (m loggerDevToolsConnections) RemoveRoomByID(ctx context.Context, token string, gameID uuid.UUID, roomID uuid.UUID) (err error) {
+func (m loggerDevToolsConnections) JoinRoomByRoomCode(ctx context.Context, token string, roomCode string) (newToken string, err error) {
+	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "joinRoomByRoomCode").Logger()
+	defer func(begin time.Time) {
+		logHandle := func(ev *zerolog.Event) {
+			fields := map[string]interface{}{
+				"request": viewer.Sprintf("%+v", requestDevToolsConnectionsJoinRoomByRoomCode{
+					RoomCode: roomCode,
+					Token:    token,
+				}),
+				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsJoinRoomByRoomCode{NewToken: newToken}),
+			}
+			ev.Fields(fields).Str("took", time.Since(begin).String())
+		}
+		if err != nil {
+			logger.Error().Err(err).Func(logHandle).Msg("call joinRoomByRoomCode")
+			return
+		}
+		logger.Info().Func(logHandle).Msg("call joinRoomByRoomCode")
+	}(time.Now())
+	return m.next.JoinRoomByRoomCode(ctx, token, roomCode)
+}
+
+func (m loggerDevToolsConnections) GetMyRoom(ctx context.Context, token string) (room types.Room, err error) {
+	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "getMyRoom").Logger()
+	defer func(begin time.Time) {
+		logHandle := func(ev *zerolog.Event) {
+			fields := map[string]interface{}{
+				"request":  viewer.Sprintf("%+v", requestDevToolsConnectionsGetMyRoom{Token: token}),
+				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsGetMyRoom{Room: room}),
+			}
+			ev.Fields(fields).Str("took", time.Since(begin).String())
+		}
+		if err != nil {
+			logger.Error().Err(err).Func(logHandle).Msg("call getMyRoom")
+			return
+		}
+		logger.Info().Func(logHandle).Msg("call getMyRoom")
+	}(time.Now())
+	return m.next.GetMyRoom(ctx, token)
+}
+
+func (m loggerDevToolsConnections) LeaveRoom(ctx context.Context, token string, roomID uuid.UUID) (err error) {
+	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "leaveRoom").Logger()
+	defer func(begin time.Time) {
+		logHandle := func(ev *zerolog.Event) {
+			fields := map[string]interface{}{
+				"request": viewer.Sprintf("%+v", requestDevToolsConnectionsLeaveRoom{
+					RoomID: roomID,
+					Token:  token,
+				}),
+				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsLeaveRoom{}),
+			}
+			ev.Fields(fields).Str("took", time.Since(begin).String())
+		}
+		if err != nil {
+			logger.Error().Err(err).Func(logHandle).Msg("call leaveRoom")
+			return
+		}
+		logger.Info().Func(logHandle).Msg("call leaveRoom")
+	}(time.Now())
+	return m.next.LeaveRoom(ctx, token, roomID)
+}
+
+func (m loggerDevToolsConnections) RemoveRoomByID(ctx context.Context, token string, roomID uuid.UUID) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "removeRoomByID").Logger()
 	defer func(begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
 				"request": viewer.Sprintf("%+v", requestDevToolsConnectionsRemoveRoomByID{
-					GameID: gameID,
 					RoomID: roomID,
 					Token:  token,
 				}),
@@ -109,7 +167,7 @@ func (m loggerDevToolsConnections) RemoveRoomByID(ctx context.Context, token str
 		}
 		logger.Info().Func(logHandle).Msg("call removeRoomByID")
 	}(time.Now())
-	return m.next.RemoveRoomByID(ctx, token, gameID, roomID)
+	return m.next.RemoveRoomByID(ctx, token, roomID)
 }
 
 func (m loggerDevToolsConnections) GetRoomsConnectionUrls(ctx context.Context, token string) (connectionsServer []types.ConnectionServer, err error) {

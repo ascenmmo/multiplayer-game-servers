@@ -146,8 +146,8 @@ func (srv *Server) doSingleBatch(ctx *fiber.Ctx, request baseJsonRPC) (response 
 		return srv.httpDevTools.createGame(ctx, request)
 	case "devtools.gameaddowner":
 		return srv.httpDevTools.gameAddOwner(ctx, request)
-	case "devtools.gameremoveuser":
-		return srv.httpDevTools.gameRemoveUser(ctx, request)
+	case "devtools.gameremoveowner":
+		return srv.httpDevTools.gameRemoveOwner(ctx, request)
 	case "devtools.updategame":
 		return srv.httpDevTools.updateGame(ctx, request)
 	case "devtools.deletegame":
@@ -182,6 +182,12 @@ func (srv *Server) doSingleBatch(ctx *fiber.Ctx, request baseJsonRPC) (response 
 		return srv.httpDevToolsConnections.getRoomsAll(ctx, request)
 	case "devtoolsconnections.joinroombyid":
 		return srv.httpDevToolsConnections.joinRoomByID(ctx, request)
+	case "devtoolsconnections.joinroombyroomcode":
+		return srv.httpDevToolsConnections.joinRoomByRoomCode(ctx, request)
+	case "devtoolsconnections.getmyroom":
+		return srv.httpDevToolsConnections.getMyRoom(ctx, request)
+	case "devtoolsconnections.leaveroom":
+		return srv.httpDevToolsConnections.leaveRoom(ctx, request)
 	case "devtoolsconnections.removeroombyid":
 		return srv.httpDevToolsConnections.removeRoomByID(ctx, request)
 	case "devtoolsconnections.getroomsconnectionurls":

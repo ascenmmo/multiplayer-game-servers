@@ -52,6 +52,9 @@ func (http *httpDevToolsConnections) SetRoutes(route *fiber.App) {
 	route.Post("/api/v1/devToolsConnections/createRoom", http.serveCreateRoom)
 	route.Post("/api/v1/devToolsConnections/getRoomsAll", http.serveGetRoomsAll)
 	route.Post("/api/v1/devToolsConnections/joinRoomByID", http.serveJoinRoomByID)
+	route.Post("/api/v1/devToolsConnections/joinRoomByRoomCode", http.serveJoinRoomByRoomCode)
+	route.Post("/api/v1/devToolsConnections/getMyRoom", http.serveGetMyRoom)
+	route.Post("/api/v1/devToolsConnections/leaveRoom", http.serveLeaveRoom)
 	route.Post("/api/v1/devToolsConnections/removeRoomByID", http.serveRemoveRoomByID)
 	route.Post("/api/v1/devToolsConnections/getRoomsConnectionUrls", http.serveGetRoomsConnectionUrls)
 }

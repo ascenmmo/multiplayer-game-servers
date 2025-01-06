@@ -48,4 +48,5 @@ func (http *httpServerSettings) SetRoutes(route *fiber.App) {
 	route.Post("/api/v1/rest/serverSettings/healthCheck", http.serveHealthCheck)
 	route.Post("/api/v1/rest/serverSettings/getServerSettings", http.serveGetServerSettings)
 	route.Post("/api/v1/rest/serverSettings/createRoom", http.serveCreateRoom)
+	route.Post("/api/v1/rest/serverSettings/getDeletedRooms", http.serveGetDeletedRooms)
 }

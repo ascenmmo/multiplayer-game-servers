@@ -53,17 +53,17 @@ func (m metricsDevTools) GameAddOwner(ctx context.Context, token string, gameID 
 	return m.next.GameAddOwner(ctx, token, gameID, userID)
 }
 
-func (m metricsDevTools) GameRemoveUser(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
+func (m metricsDevTools) GameRemoveOwner(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
 
 	defer func(begin time.Time) {
-		m.requestLatency.With("method", "gameRemoveUser", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+		m.requestLatency.With("method", "gameRemoveOwner", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
 	}(time.Now())
 
-	defer m.requestCount.With("method", "gameRemoveUser", "success", fmt.Sprint(err == nil)).Add(1)
+	defer m.requestCount.With("method", "gameRemoveOwner", "success", fmt.Sprint(err == nil)).Add(1)
 
-	m.requestCountAll.With("method", "gameRemoveUser").Add(1)
+	m.requestCountAll.With("method", "gameRemoveOwner").Add(1)
 
-	return m.next.GameRemoveUser(ctx, token, gameID, userID)
+	return m.next.GameRemoveOwner(ctx, token, gameID, userID)
 }
 
 func (m metricsDevTools) UpdateGame(ctx context.Context, token string, gameID uuid.UUID, newGame types.Game) (id uuid.UUID, err error) {

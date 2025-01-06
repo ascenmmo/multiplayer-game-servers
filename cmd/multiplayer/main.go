@@ -23,6 +23,7 @@ func main() {
 	//go exiter()
 
 	if env.DebugLogs {
+		prof()
 		logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 	}
 
@@ -41,8 +42,6 @@ func main() {
 	if env.RunTcpServer {
 		go start.TcpServer(ctx, logger)
 	}
-
-	prof()
 
 	<-shutdown
 }

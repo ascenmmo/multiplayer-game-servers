@@ -42,7 +42,7 @@ func (http *httpDevToolsConnections) createRoom(ctx *fiber.Ctx, requestBase base
 	}
 
 	var response responseDevToolsConnectionsCreateRoom
-	response.NewToken, err = http.svc.CreateRoom(methodCtx, request.Token, request.GameID)
+	response.NewToken, err = http.svc.CreateRoom(methodCtx, request.Token, request.Name)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
@@ -99,7 +99,7 @@ func (http *httpDevToolsConnections) getRoomsAll(ctx *fiber.Ctx, requestBase bas
 	}
 
 	var response responseDevToolsConnectionsGetRoomsAll
-	response.Rooms, err = http.svc.GetRoomsAll(methodCtx, request.Token, request.GameID)
+	response.Rooms, err = http.svc.GetRoomsAll(methodCtx, request.Token)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
@@ -156,7 +156,178 @@ func (http *httpDevToolsConnections) joinRoomByID(ctx *fiber.Ctx, requestBase ba
 	}
 
 	var response responseDevToolsConnectionsJoinRoomByID
-	response.NewToken, err = http.svc.JoinRoomByID(methodCtx, request.Token, request.GameID, request.RoomID)
+	response.NewToken, err = http.svc.JoinRoomByID(methodCtx, request.Token, request.RoomID)
+	if err != nil {
+		if http.errorHandler != nil {
+			err = http.errorHandler(err)
+		}
+		ext.Error.Set(span, true)
+		span.SetTag("msg", err)
+		span.SetTag("errData", toString(err))
+		code := internalError
+		if errCoder, ok := err.(withErrorCode); ok {
+			code = errCoder.Code()
+		}
+		return makeErrorResponseJsonRPC(requestBase.ID, code, err.Error(), err)
+	}
+	responseBase = &baseJsonRPC{
+		ID:      requestBase.ID,
+		Version: Version,
+	}
+	if responseBase.Result, err = json.Marshal(response); err != nil {
+		ext.Error.Set(span, true)
+		span.SetTag("msg", "response body could not be encoded: "+err.Error())
+		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
+	}
+	return
+}
+func (http *httpDevToolsConnections) serveJoinRoomByRoomCode(ctx *fiber.Ctx) (err error) {
+	return http.serveMethod(ctx, "joinroombyroomcode", http.joinRoomByRoomCode)
+}
+func (http *httpDevToolsConnections) joinRoomByRoomCode(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
+
+	var err error
+	var request requestDevToolsConnectionsJoinRoomByRoomCode
+
+	methodCtx := ctx.UserContext()
+	span := otg.SpanFromContext(methodCtx)
+	span.SetTag("method", "joinRoomByRoomCode")
+
+	if requestBase.Params != nil {
+		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
+			ext.Error.Set(span, true)
+			span.SetTag("msg", "request body could not be decoded: "+err.Error())
+			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
+		}
+	}
+	if requestBase.Version != Version {
+		ext.Error.Set(span, true)
+		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
+		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
+	}
+
+	if _token := string(ctx.Request().Header.Peek("Token")); _token != "" {
+		var token string
+		token = _token
+		request.Token = token
+	}
+
+	var response responseDevToolsConnectionsJoinRoomByRoomCode
+	response.NewToken, err = http.svc.JoinRoomByRoomCode(methodCtx, request.Token, request.RoomCode)
+	if err != nil {
+		if http.errorHandler != nil {
+			err = http.errorHandler(err)
+		}
+		ext.Error.Set(span, true)
+		span.SetTag("msg", err)
+		span.SetTag("errData", toString(err))
+		code := internalError
+		if errCoder, ok := err.(withErrorCode); ok {
+			code = errCoder.Code()
+		}
+		return makeErrorResponseJsonRPC(requestBase.ID, code, err.Error(), err)
+	}
+	responseBase = &baseJsonRPC{
+		ID:      requestBase.ID,
+		Version: Version,
+	}
+	if responseBase.Result, err = json.Marshal(response); err != nil {
+		ext.Error.Set(span, true)
+		span.SetTag("msg", "response body could not be encoded: "+err.Error())
+		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
+	}
+	return
+}
+func (http *httpDevToolsConnections) serveGetMyRoom(ctx *fiber.Ctx) (err error) {
+	return http.serveMethod(ctx, "getmyroom", http.getMyRoom)
+}
+func (http *httpDevToolsConnections) getMyRoom(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
+
+	var err error
+	var request requestDevToolsConnectionsGetMyRoom
+
+	methodCtx := ctx.UserContext()
+	span := otg.SpanFromContext(methodCtx)
+	span.SetTag("method", "getMyRoom")
+
+	if requestBase.Params != nil {
+		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
+			ext.Error.Set(span, true)
+			span.SetTag("msg", "request body could not be decoded: "+err.Error())
+			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
+		}
+	}
+	if requestBase.Version != Version {
+		ext.Error.Set(span, true)
+		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
+		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
+	}
+
+	if _token := string(ctx.Request().Header.Peek("Token")); _token != "" {
+		var token string
+		token = _token
+		request.Token = token
+	}
+
+	var response responseDevToolsConnectionsGetMyRoom
+	response.Room, err = http.svc.GetMyRoom(methodCtx, request.Token)
+	if err != nil {
+		if http.errorHandler != nil {
+			err = http.errorHandler(err)
+		}
+		ext.Error.Set(span, true)
+		span.SetTag("msg", err)
+		span.SetTag("errData", toString(err))
+		code := internalError
+		if errCoder, ok := err.(withErrorCode); ok {
+			code = errCoder.Code()
+		}
+		return makeErrorResponseJsonRPC(requestBase.ID, code, err.Error(), err)
+	}
+	responseBase = &baseJsonRPC{
+		ID:      requestBase.ID,
+		Version: Version,
+	}
+	if responseBase.Result, err = json.Marshal(response); err != nil {
+		ext.Error.Set(span, true)
+		span.SetTag("msg", "response body could not be encoded: "+err.Error())
+		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
+	}
+	return
+}
+func (http *httpDevToolsConnections) serveLeaveRoom(ctx *fiber.Ctx) (err error) {
+	return http.serveMethod(ctx, "leaveroom", http.leaveRoom)
+}
+func (http *httpDevToolsConnections) leaveRoom(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
+
+	var err error
+	var request requestDevToolsConnectionsLeaveRoom
+
+	methodCtx := ctx.UserContext()
+	span := otg.SpanFromContext(methodCtx)
+	span.SetTag("method", "leaveRoom")
+
+	if requestBase.Params != nil {
+		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
+			ext.Error.Set(span, true)
+			span.SetTag("msg", "request body could not be decoded: "+err.Error())
+			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
+		}
+	}
+	if requestBase.Version != Version {
+		ext.Error.Set(span, true)
+		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
+		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
+	}
+
+	if _token := string(ctx.Request().Header.Peek("Token")); _token != "" {
+		var token string
+		token = _token
+		request.Token = token
+	}
+
+	var response responseDevToolsConnectionsLeaveRoom
+	err = http.svc.LeaveRoom(methodCtx, request.Token, request.RoomID)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
@@ -213,7 +384,7 @@ func (http *httpDevToolsConnections) removeRoomByID(ctx *fiber.Ctx, requestBase 
 	}
 
 	var response responseDevToolsConnectionsRemoveRoomByID
-	err = http.svc.RemoveRoomByID(methodCtx, request.Token, request.GameID, request.RoomID)
+	err = http.svc.RemoveRoomByID(methodCtx, request.Token, request.RoomID)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
@@ -416,6 +587,12 @@ func (http *httpDevToolsConnections) doSingleBatch(ctx *fiber.Ctx, request baseJ
 		return http.getRoomsAll(ctx, request)
 	case "joinroombyid":
 		return http.joinRoomByID(ctx, request)
+	case "joinroombyroomcode":
+		return http.joinRoomByRoomCode(ctx, request)
+	case "getmyroom":
+		return http.getMyRoom(ctx, request)
+	case "leaveroom":
+		return http.leaveRoom(ctx, request)
 	case "removeroombyid":
 		return http.removeRoomByID(ctx, request)
 	case "getroomsconnectionurls":

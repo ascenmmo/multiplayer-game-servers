@@ -26,22 +26,28 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            transition: background 0.3s ease;
             z-index: 1000;
+            flex-wrap: wrap;
         }
 
         header h1 {
             margin: 0;
             font-size: 24px;
-            font-family: 'Dancing Script', cursive; /* Курсивный шрифт для логотипа */
+            font-family: 'Dancing Script', cursive;
             color: #00ff7f;
-            margin-left: 5%; /* Сдвиг логотипа на 10% влево */
+            margin-left: 5%;
             text-decoration: none;
+            flex-grow: 1;
+            text-align: center;
         }
 
         header nav {
             display: flex;
             gap: 20px;
             margin-right: 5%;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         header nav a {
@@ -51,11 +57,33 @@
             border: 2px solid #00ff7f;
             border-radius: 5px;
             transition: background 0.3s, color 0.3s;
+            font-size: 16px;
         }
 
         header nav a:hover {
             background: #00ff7f;
             color: #1c1c1c;
+        }
+
+        @media (max-width: 500px) {
+            header {
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 20px;
+                margin-left: 0;
+                text-align: center;
+            }
+
+            header nav a {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            header nav {
+                gap: 15px;
+            }
         }
 
         .container {
@@ -74,6 +102,47 @@
             border: 1px solid #ccc;
             margin: 10px; /* Упрощение отступов */
             box-sizing: border-box;
+        }
+
+        @media (max-width: 500px) {
+            header {
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 20px;
+                margin-left: 0;
+                text-align: center;
+            }
+
+            header nav a {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            header nav {
+                gap: 15px;
+            }
+
+            .container {
+                margin-top: 20%;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                padding-top: 80px;
+            }
+
+            #game-info,
+            #servers-box {
+                flex: 1;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+                position: relative;
+                overflow-y: auto;
+                border: 1px solid #ccc;
+                margin: 10px;
+                box-sizing: border-box;
+            }
         }
 
         h4 {
@@ -209,7 +278,7 @@
     <a href="/"><h1>ASCENMMO</h1></a>
     <nav>
         <a href="/developer/doc">Documentation</a>
-        <a href="/admin/info">Developer Info</a>
+        <a href="/admin/info">Developer</a>
         <a href="/admin/games">My Games</a>
         <a href="#" id="eng-button">Ру</a>
     </nav>
@@ -340,26 +409,31 @@
         };
 
         const renderGameInfo = (game) => {
+            const formattedText = game.ownersInfoList.join('\n');
             gameDetails.innerHTML = `
             <h4>${game.name}</h4>
 
             <div class="player-count">Number of players: ${game.count_players}</div>
             <div class="online-player-count">Number of online players: ${game.count_online}</div>
-            <input type="text" class="edit-game-name" id="edit-game-name" value="${game.name}" />
             <pre><code class="gameID show">gameID: "${game.gameID}"</code></pre>
 
-            <button class="save-game" id="save-game">Save changes</button>
-<!--            <button class="game-config" id="game-config">Удаленные процедуры</button>-->
-<!--            <button class="game-annalists" id="game-annalists">Аналитика</button>-->
+            <h4>Developers</h4>
+            <pre><code class="gameID show">${formattedText}</code></pre>
 
+            <button class="save-game" id="save-game">Save changes</button>
+            <button class="save-game" id="add-developer">Add developer</button>
+            <button class="save-game" id="delete-developer">Delete developer</button>
         `;
             document.getElementById('save-game').onclick = () => fetchUpdateGame();
-            // document.getElementById('game-config').onclick = () => fetchGameConfigs();
-            // document.getElementById('game-annalists').onclick = () => fetchGameAnnalists();
+            document.getElementById('add-developer').onclick = () => fetchAddDeveloper();
+            document.getElementById('delete-developer').onclick = () => fetchDeleteDeveloper();
         };
 
         const fetchUpdateGame = async () => {
-            const newName = document.getElementById('edit-game-name').value;
+            const newName = prompt('Write new game name');
+            if (!newName) {
+                return
+            }
             try {
                 const response = await fetch(`${backendUrl}/updateGame`, {
                     method: 'POST',
@@ -373,6 +447,74 @@
                         params: {
                             gameID,
                             newGame: {name: newName}
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    handleApiError(data.error, fetchUpdateGame);
+                }
+
+                alert('Game updated successfully!');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        const fetchAddDeveloper = async () => {
+            const devId = prompt('developer id');
+            if (!devId) {
+                return
+            }
+
+            try {
+                const response = await fetch(`${window.location.origin}/api/v1/devTools/gameAddOwner`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Token': getCookie('token')
+                    },
+                    body: JSON.stringify({
+                        id: 1,
+                        jsonrpc: "2.0",
+                        params: {
+                            gameID: gameID,
+                            userID: devId,
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    handleApiError(data.error, fetchUpdateGame);
+                }
+
+                alert('Game updated successfully!');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        const fetchDeleteDeveloper = async () => {
+            const devId = prompt('developer id');
+            if (!devId) {
+                return
+            }
+
+            try {
+                const response = await fetch(`${window.location.origin}/api/v1/devTools/gameRemoveOwner`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Token': getCookie('token')
+                    },
+                    body: JSON.stringify({
+                        id: 1,
+                        jsonrpc: "2.0",
+                        params: {
+                            gameID: gameID,
+                            userID: devId,
                         }
                     })
                 });

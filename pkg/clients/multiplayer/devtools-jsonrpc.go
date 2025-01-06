@@ -16,7 +16,7 @@ type ClientDevTools struct {
 
 type retDevToolsCreateGame = func(id uuid.UUID, err error)
 type retDevToolsGameAddOwner = func(err error)
-type retDevToolsGameRemoveUser = func(err error)
+type retDevToolsGameRemoveOwner = func(err error)
 type retDevToolsUpdateGame = func(id uuid.UUID, err error)
 type retDevToolsDeleteGame = func(err error)
 type retDevToolsGetMyGames = func(games []types.Game, err error)
@@ -144,20 +144,20 @@ func (cli *ClientDevTools) ReqGameAddOwner(ctx context.Context, callback retDevT
 	return
 }
 
-func (cli *ClientDevTools) GameRemoveUser(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
+func (cli *ClientDevTools) GameRemoveOwner(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
 
-	request := requestDevToolsGameRemoveUser{
+	request := requestDevToolsGameRemoveOwner{
 		GameID: gameID,
 		Token:  token,
 		UserID: userID,
 	}
-	var response responseDevToolsGameRemoveUser
+	var response responseDevToolsGameRemoveOwner
 	var rpcResponse *jsonrpc.ResponseRPC
 	cacheKey, _ := hasher.Hash(request)
-	rpcResponse, err = cli.rpc.Call(ctx, "devtools.gameremoveuser", request)
+	rpcResponse, err = cli.rpc.Call(ctx, "devtools.gameremoveowner", request)
 	var fallbackCheck func(error) bool
 	if cli.fallbackDevTools != nil {
-		fallbackCheck = cli.fallbackDevTools.GameRemoveUser
+		fallbackCheck = cli.fallbackDevTools.GameRemoveOwner
 	}
 	if rpcResponse != nil && rpcResponse.Error != nil {
 		if cli.errorDecoder != nil {
@@ -172,25 +172,25 @@ func (cli *ClientDevTools) GameRemoveUser(ctx context.Context, token string, gam
 	return err
 }
 
-func (cli *ClientDevTools) ReqGameRemoveUser(ctx context.Context, callback retDevToolsGameRemoveUser, token string, gameID uuid.UUID, userID uuid.UUID) (request RequestRPC) {
+func (cli *ClientDevTools) ReqGameRemoveOwner(ctx context.Context, callback retDevToolsGameRemoveOwner, token string, gameID uuid.UUID, userID uuid.UUID) (request RequestRPC) {
 
 	request = RequestRPC{rpcRequest: &jsonrpc.RequestRPC{
 		ID:      jsonrpc.NewID(),
 		JSONRPC: jsonrpc.Version,
-		Method:  "devtools.gameremoveuser",
-		Params: requestDevToolsGameRemoveUser{
+		Method:  "devtools.gameremoveowner",
+		Params: requestDevToolsGameRemoveOwner{
 			GameID: gameID,
 			Token:  token,
 			UserID: userID,
 		},
 	}}
 	if callback != nil {
-		var response responseDevToolsGameRemoveUser
+		var response responseDevToolsGameRemoveOwner
 		request.retHandler = func(err error, rpcResponse *jsonrpc.ResponseRPC) {
 			cacheKey, _ := hasher.Hash(request.rpcRequest.Params)
 			var fallbackCheck func(error) bool
 			if cli.fallbackDevTools != nil {
-				fallbackCheck = cli.fallbackDevTools.GameRemoveUser
+				fallbackCheck = cli.fallbackDevTools.GameRemoveOwner
 			}
 			if rpcResponse != nil && rpcResponse.Error != nil {
 				if cli.errorDecoder != nil {

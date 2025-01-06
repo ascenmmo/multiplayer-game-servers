@@ -9,13 +9,16 @@ type Room struct {
 	GameID uuid.UUID `json:"gameID" bson:"gameID"`
 	Name   string    `json:"name" bson:"name"`
 
-	CreatorID uuid.UUID `json:"creator_id" bson:"creator_id"`
+	RoomCode string `json:"roomCode" bson:"roomCode"`
 
-	Connections []uuid.UUID `json:"connections" bson:"connections"`
-	Servers     []uuid.UUID `json:"servers" bson:"servers"`
+	CreatorID uuid.UUID `json:"creatorID" bson:"creatorID"`
 
-	IsExists  bool  `json:"is_exists" bson:"is_exists"`
-	CreatedAt int64 `json:"created_at" bson:"created_at"`
+	Connections   []uuid.UUID `json:"connections" bson:"connections"`
+	Servers       []uuid.UUID `json:"servers" bson:"servers"`
+	ExistsServers []uuid.UUID `json:"existsServers" bson:"existsServers"`
+
+	IsExists  bool  `json:"isExists" bson:"isExists"`
+	CreatedAt int64 `json:"createdAt" bson:"createdAt"`
 }
 
 func (r *Room) RemoveConnectionID(id uuid.UUID) {

@@ -51,7 +51,7 @@ func (http *httpDevTools) SetRoutes(route *fiber.App) {
 	route.Post("/api/v1/devTools", http.serveBatch)
 	route.Post("/api/v1/devTools/createGame", http.serveCreateGame)
 	route.Post("/api/v1/devTools/gameAddOwner", http.serveGameAddOwner)
-	route.Post("/api/v1/devTools/gameRemoveUser", http.serveGameRemoveUser)
+	route.Post("/api/v1/devTools/gameRemoveOwner", http.serveGameRemoveOwner)
 	route.Post("/api/v1/devTools/updateGame", http.serveUpdateGame)
 	route.Post("/api/v1/devTools/deleteGame", http.serveDeleteGame)
 	route.Post("/api/v1/devTools/getMyGames", http.serveGetMyGames)

@@ -25,8 +25,8 @@ type DevTools interface {
 	// @tg summary=`server gameAddOwner`
 	GameAddOwner(ctx context.Context, token string, gameID, userID uuid.UUID) (err error)
 	// @tg http-headers=token|Token
-	// @tg summary=`server gameRemoveUser`
-	GameRemoveUser(ctx context.Context, token string, gameID, userID uuid.UUID) (err error)
+	// @tg summary=`server иameRemoveOwner`
+	GameRemoveOwner(ctx context.Context, token string, gameID, userID uuid.UUID) (err error)
 	// @tg http-headers=token|Token
 	// @tg summary=`server updateGame`
 	UpdateGame(ctx context.Context, token string, gameID uuid.UUID, newGame types.Game) (id uuid.UUID, err error)

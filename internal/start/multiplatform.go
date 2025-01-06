@@ -1,6 +1,7 @@
 package start
 
 import (
+	"context"
 	"fmt"
 	"github.com/ascenmmo/multiplayer-game-servers/env"
 	"github.com/ascenmmo/multiplayer-game-servers/internal/errors"
@@ -52,9 +53,12 @@ func Multiplayer(logger zerolog.Logger) {
 	clientService := registration.NewClientService(clientStorage, gameStorage, gameSavesStorage, roomStorage, token, &logger)
 
 	devToolsConnectionServicc := devtools.NewConnections(gameStorage, serverStorage, roomStorage, token, &logger)
-	devToolsService := devtools.NewDevTools(accessGameService, gameStorage, serverStorage, token, &logger)
+	connectionsScheduler := devtools.NewConnectionsScheduler(gameStorage, serverStorage, roomStorage, token, &logger)
+	devToolsService := devtools.NewDevTools(accessGameService, gameStorage, serverStorage, developerStorage, token, &logger)
 	devToolsServerService := devtools.NewServerService(accessGameService, gameStorage, serverStorage, token, &logger)
 	devToolsGameConfigs := devtools.NewGameConfigs(accessGameService, gameConfigStorage, token, &logger)
+
+	go connectionsScheduler.RoomCleaner(context.Background(), time.Minute*15, 300)
 
 	services := []transport.Option{
 		transport.MaxBodySize(10 * 1024 * 1024),

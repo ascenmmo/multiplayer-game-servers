@@ -10,13 +10,15 @@ import (
 	"github.com/ascenmmo/udp-server/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
+	"time"
 )
 
 type Service interface {
 	GetConnectionsNum() (countConn int, exists bool)
-	CreateRoom(token string) error
+	CreateRoom(token string, room types.CreateRoomRequest) error
 	GetUsersAndMessage(ds connection.DataSender, req []byte) (users []types.User, msg []byte, err error)
 	RemoveUser(ds connection.DataSender, userID uuid.UUID) (err error)
+	GetDeletedRooms(token string, ids []types.GetDeletedRooms) (deletedIds []types.GetDeletedRooms, err error)
 }
 
 type service struct {
@@ -37,7 +39,7 @@ func (s *service) GetConnectionsNum() (countConn int, exists bool) {
 
 	return count, true
 }
-func (s *service) CreateRoom(token string) error {
+func (s *service) CreateRoom(token string, room types.CreateRoomRequest) error {
 	clientInfo, err := s.token.ParseToken(token)
 	if err != nil {
 		return err
@@ -53,7 +55,7 @@ func (s *service) CreateRoom(token string) error {
 	s.setRoom(clientInfo, &types.Room{
 		GameID: clientInfo.GameID,
 		RoomID: clientInfo.RoomID,
-	})
+	}, room.RoomTTl)
 
 	return nil
 }
@@ -97,6 +99,33 @@ func (s *service) RemoveUser(ds connection.DataSender, userID uuid.UUID) (err er
 	return nil
 }
 
+func (s *service) GetDeletedRooms(token string, ids []types.GetDeletedRooms) (deletedIds []types.GetDeletedRooms, err error) {
+	info, err := s.token.ParseToken(token)
+	if err != nil {
+		return nil, err
+	}
+
+	roomsWithKey := make(map[string]types.GetDeletedRooms)
+	for _, id := range ids {
+		info.GameID = id.GameID
+		info.RoomID = id.RoomID
+		roomsWithKey[utils.GenerateRoomKey(info)] = id
+	}
+
+	for k, _ := range roomsWithKey {
+		_, ok := s.storage.GetData(k)
+		if !ok {
+			delete(roomsWithKey, k)
+		}
+	}
+
+	for _, v := range roomsWithKey {
+		deletedIds = append(deletedIds, v)
+	}
+
+	return deletedIds, nil
+}
+
 func (s *service) setNewUser(ds connection.DataSender, req []byte) (clientInfo *tokentype.Info, err error) {
 	token := string(req)
 
@@ -115,7 +144,7 @@ func (s *service) setNewUser(ds connection.DataSender, req []byte) (clientInfo *
 			GameID: clientInfo.GameID,
 			RoomID: clientInfo.RoomID,
 		}
-		s.setRoom(*clientInfo, room)
+		s.setRoom(*clientInfo, room, 0)
 	} else {
 		room, ok = roomData.(*types.Room)
 		if !ok {
@@ -175,8 +204,12 @@ func (s *service) getRoomByClientInfo(clientInfo tokentype.Info) (room *types.Ro
 	return room, nil
 }
 
-func (s *service) setRoom(clientInfo tokentype.Info, room *types.Room) {
+func (s *service) setRoom(clientInfo tokentype.Info, room *types.Room, ttl time.Duration) {
 	roomKey := utils.GenerateRoomKey(clientInfo)
+	if ttl != 0 {
+		s.storage.SetDataWithTTL(roomKey, room, ttl)
+		return
+	}
 	s.storage.SetData(roomKey, room)
 }
 

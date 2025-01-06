@@ -2,11 +2,13 @@ package types
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/ascenmmo/udp-server/pkg/api/types"
 	"github.com/ascenmmo/udp-server/pkg/clients/udpGameServer"
 	"github.com/google/uuid"
 	"strings"
+	"time"
 )
 
 const (
@@ -24,17 +26,26 @@ type Server struct {
 	ServerType     string      `json:"server_type" bson:"server_type"`
 	Region         string      `json:"region" bson:"region"`
 	ConnectionPort string      `json:"connection_port" bson:"connection_port"`
+	MaxConnections int         `json:"maxConnections" bson:"max_connections"`
 
 	AscenmmoServer bool `json:"ascenmmo_server" bson:"ascenmmo_server"`
 	IsActive       bool `json:"is_active" bson:"is_active"`
 }
 
 type ConnectionServer struct {
-	Address        string
-	ConnectionPort string
-	Path           string
-	FullURL        string
-	ServerType     string
+	ID             uuid.UUID `json:"id"`
+	Address        string    `json:"address"`
+	ConnectionPort string    `json:"connectionPort"`
+	Path           string    `json:"path"`
+	FullURL        string    `json:"fullURL"`
+	ServerType     string    `json:"serverType"`
+	IsExists       bool      `json:"isExists"`
+}
+
+func (s *Server) GetConnectionsNum(ctx context.Context, token string) (countConn int, exists bool, err error) {
+	cli := udpGameServer.New(s.getRestUrl())
+	countConn, exists, err = cli.ServerSettings().GetConnectionsNum(ctx, token)
+	return countConn, exists, err
 }
 
 func (s *Server) IsExists(ctx context.Context, token string) (bool, error) {
@@ -53,15 +64,47 @@ func (s *Server) IsExists(ctx context.Context, token string) (bool, error) {
 	return s.IsActive, err
 }
 
-func (s *Server) CreateRoom(ctx context.Context, token string) (err error) {
+func (s *Server) CreateRoom(ctx context.Context, token string, ttl time.Duration) (err error) {
 	cli := udpGameServer.New(s.getRestUrl())
 
-	err = cli.ServerSettings().CreateRoom(ctx, token, types.CreateRoomRequest{})
+	err = cli.ServerSettings().CreateRoom(ctx, token, types.CreateRoomRequest{
+		RoomTTl: ttl,
+	})
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (s *Server) GetDeletedRooms(ctx context.Context, token string, ids []GetDeletedRooms) (resultIDs []GetDeletedRooms, err error) {
+	cli := udpGameServer.New(s.getRestUrl())
+
+	var idsArray []types.GetDeletedRooms
+	marshal, err := json.Marshal(ids)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(marshal, &idsArray)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := cli.ServerSettings().GetDeletedRooms(ctx, token, idsArray)
+	if err != nil {
+		return nil, err
+	}
+
+	m, err := json.Marshal(resp)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(m, &resultIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	return resultIDs, nil
 }
 
 func (s *Server) RemoveOwner(ownerID uuid.UUID) {
@@ -99,6 +142,7 @@ func (s *Server) IsOwner(ownerID uuid.UUID) bool {
 }
 
 func (s *Server) GetConnectionServer() (c ConnectionServer) {
+	c.ID = s.ID
 	c.Address = s.gatSingleAddress()
 	c.ConnectionPort = s.ConnectionPort
 
@@ -113,6 +157,7 @@ func (s *Server) GetConnectionServer() (c ConnectionServer) {
 
 	c.ServerType = s.ServerType
 	c.FullURL = c.Address + ":" + c.ConnectionPort + c.Path
+	c.IsExists = true
 
 	return c
 }

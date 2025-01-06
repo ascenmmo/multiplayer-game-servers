@@ -35,3 +35,12 @@ type requestServerSettingsCreateRoom struct {
 
 // Formal exchange type, please do not delete.
 type responseServerSettingsCreateRoom struct{}
+
+type requestServerSettingsGetDeletedRooms struct {
+	Token string                  `json:"token"`
+	Ids   []types.GetDeletedRooms `json:"ids"`
+}
+
+type responseServerSettingsGetDeletedRooms struct {
+	DeletedIds []types.GetDeletedRooms `json:"deletedIds"`
+}
