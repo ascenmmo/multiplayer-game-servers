@@ -248,6 +248,10 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 	}
 
 	for _, server := range uniqueServers {
+		if _, ok := uniqueServerType[server.ServerType]; ok {
+			continue
+		}
+
 		connNum, exists, err := server.GetConnectionsNum(ctx, token)
 		if err != nil {
 			c.logger.Error().Err(err).Msg("server error create room")
@@ -255,10 +259,6 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 		}
 
 		if server.MaxConnections < connNum+len(room.Connections) || !exists {
-			continue
-		}
-
-		if _, ok := uniqueServerType[server.ServerType]; ok {
 			continue
 		}
 

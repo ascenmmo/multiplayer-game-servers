@@ -58,7 +58,7 @@ func Multiplayer(logger zerolog.Logger) {
 	devToolsServerService := devtools.NewServerService(accessGameService, gameStorage, serverStorage, token, &logger)
 	devToolsGameConfigs := devtools.NewGameConfigs(accessGameService, gameConfigStorage, token, &logger)
 
-	go connectionsScheduler.RoomCleaner(context.Background(), time.Minute*15, 300)
+	go connectionsScheduler.RoomCleaner(context.Background(), time.Minute*15, 0)
 
 	services := []transport.Option{
 		transport.MaxBodySize(10 * 1024 * 1024),
