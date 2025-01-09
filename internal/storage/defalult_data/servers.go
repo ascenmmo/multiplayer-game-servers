@@ -16,6 +16,7 @@ var (
 		Region:         "europe",
 		IsActive:       true,
 		AscenmmoServer: true,
+		MaxConnections: 8000,
 	}
 
 	defaultServerWebsocket = types.Server{
@@ -27,6 +28,7 @@ var (
 		Region:         "europe",
 		IsActive:       true,
 		AscenmmoServer: true,
+		MaxConnections: 8000,
 	}
 
 	defaultServerTCP = types.Server{
@@ -38,6 +40,7 @@ var (
 		Region:         "europe",
 		IsActive:       true,
 		AscenmmoServer: true,
+		MaxConnections: 8000,
 	}
 )
 
