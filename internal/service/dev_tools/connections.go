@@ -51,7 +51,7 @@ func (c *connections) CreateRoom(ctx context.Context, token string, name string)
 		GameID:      info.GameID,
 		CreatorID:   info.UserID,
 		Connections: []uuid.UUID{info.UserID},
-		CreatedAt:   time.Now().Unix(),
+		CreatedAt:   time.Now(),
 	}
 	room.RoomCode = utills.GenerateRoomCode(room.ID)
 
@@ -235,20 +235,30 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 		}
 	}()
 
+	if len(room.ExistsServers) != 0 {
+		return nil, nil
+	}
+
 	uniqueServerType := make(map[string]types.ConnectionServer)
+	uniqueServers := make(map[uuid.UUID]types.Server)
 	uniqueAllTypes := make(map[string]struct{})
+
 	for _, server := range servers {
+		uniqueServers[server.ID] = server
+	}
+
+	for _, server := range uniqueServers {
+		if _, ok := uniqueServerType[server.ServerType]; ok {
+			continue
+		}
+
 		connNum, exists, err := server.GetConnectionsNum(ctx, token)
 		if err != nil {
 			c.logger.Error().Err(err).Msg("server error create room")
 			continue
 		}
 
-		if server.MaxConnections < connNum+len(room.Connections) && exists {
-			continue
-		}
-
-		if _, ok := uniqueServerType[server.ServerType]; ok {
+		if server.MaxConnections < connNum+len(room.Connections) || !exists {
 			continue
 		}
 
