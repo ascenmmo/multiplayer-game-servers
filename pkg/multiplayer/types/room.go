@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/google/uuid"
+	"time"
 )
 
 type Room struct {
@@ -17,8 +18,8 @@ type Room struct {
 	Servers       []uuid.UUID `json:"servers" bson:"servers"`
 	ExistsServers []uuid.UUID `json:"existsServers" bson:"existsServers"`
 
-	IsExists  bool  `json:"isExists" bson:"isExists"`
-	CreatedAt int64 `json:"createdAt" bson:"createdAt"`
+	IsExists  bool      `json:"isExists" bson:"isExists"`
+	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
 }
 
 func (r *Room) RemoveConnectionID(id uuid.UUID) {
