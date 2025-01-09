@@ -235,6 +235,10 @@ func (c *connections) GetRoomsConnectionUrls(ctx context.Context, token string) 
 		}
 	}()
 
+	if len(room.ExistsServers) != 0 {
+		return nil, nil
+	}
+
 	uniqueServerType := make(map[string]types.ConnectionServer)
 	uniqueServers := make(map[uuid.UUID]types.Server)
 	uniqueAllTypes := make(map[string]struct{})

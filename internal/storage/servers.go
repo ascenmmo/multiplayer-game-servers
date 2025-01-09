@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"github.com/ascenmmo/multiplayer-game-servers/internal/errors"
 	defalultdata "github.com/ascenmmo/multiplayer-game-servers/internal/storage/defalult_data"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	"github.com/google/uuid"
@@ -53,6 +54,10 @@ func (d *serversStorage) FindByIDs(serversIDs []uuid.UUID) (servers []types.Serv
 	err = cur.All(context.TODO(), &servers)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(servers) == 0 {
+		return nil, errors.ErrServerCreatingRoomAllServesOffError
 	}
 
 	return servers, nil
