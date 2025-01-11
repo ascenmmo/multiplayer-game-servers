@@ -6,6 +6,7 @@ import (
 	defalultdata "github.com/ascenmmo/multiplayer-game-servers/internal/storage/defalult_data"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -164,7 +165,7 @@ func (d *serversStorage) Delete(serversID uuid.UUID) (err error) {
 func (d *serversStorage) addDefaultServers() (err error) {
 	servers, err := d.FindAll(DefaultUserID)
 	if err != nil {
-		return err
+		log.Err(err).Msg("addDefaultServers")
 	}
 
 	if len(servers) == 0 {
