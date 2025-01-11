@@ -169,7 +169,7 @@ func (d *serversStorage) addDefaultServers() (err error) {
 	}
 
 	if len(servers) == 0 {
-		for _, v := range servers {
+		for _, v := range defalultdata.AddServers(DefaultUserID) {
 			err = d.CreateServer(v)
 			if err != nil {
 				return err
