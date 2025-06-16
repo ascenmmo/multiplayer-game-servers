@@ -3,65 +3,87 @@ package transport
 
 import (
 	"context"
-	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
-	"github.com/go-kit/kit/metrics"
 	"github.com/google/uuid"
-	"time"
 )
 
 type metricsDevToolsGameConfigs struct {
-	next            multiplayer.DevToolsGameConfigs
-	requestCount    metrics.Counter
-	requestCountAll metrics.Counter
-	requestLatency  metrics.Histogram
+	next multiplayer.DevToolsGameConfigs
 }
 
 func metricsMiddlewareDevToolsGameConfigs(next multiplayer.DevToolsGameConfigs) multiplayer.DevToolsGameConfigs {
-	return &metricsDevToolsGameConfigs{
-		next:            next,
-		requestCount:    RequestCount.With("service", "DevToolsGameConfigs"),
-		requestCountAll: RequestCountAll.With("service", "DevToolsGameConfigs"),
-		requestLatency:  RequestLatency.With("service", "DevToolsGameConfigs"),
-	}
+	return &metricsDevToolsGameConfigs{next: next}
 }
 
 func (m metricsDevToolsGameConfigs) CreateOrUpdateConfig(ctx context.Context, token string, configs types.GameConfigs) (err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "createOrUpdateConfig", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsGameConfigs", "createOrUpdateConfig", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsGameConfigs", "createOrUpdateConfig", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsGameConfigs", "createOrUpdateConfig", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "createOrUpdateConfig", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "createOrUpdateConfig").Add(1)
 
 	return m.next.CreateOrUpdateConfig(ctx, token, configs)
 }
 
 func (m metricsDevToolsGameConfigs) GetGameConfig(ctx context.Context, token string, gameID uuid.UUID) (configs types.GameConfigs, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "getGameConfig", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsGameConfigs", "getGameConfig", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsGameConfigs", "getGameConfig", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsGameConfigs", "getGameConfig", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "getGameConfig", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "getGameConfig").Add(1)
 
 	return m.next.GetGameConfig(ctx, token, gameID)
 }
 
 func (m metricsDevToolsGameConfigs) GetGameResultConfigPreview(ctx context.Context, token string, gameID uuid.UUID) (gameResult types.GameConfigResults, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "getGameResultConfigPreview", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsGameConfigs", "getGameResultConfigPreview", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsGameConfigs", "getGameResultConfigPreview", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsGameConfigs", "getGameResultConfigPreview", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "getGameResultConfigPreview", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "getGameResultConfigPreview").Add(1)
 
 	return m.next.GetGameResultConfigPreview(ctx, token, gameID)
 }

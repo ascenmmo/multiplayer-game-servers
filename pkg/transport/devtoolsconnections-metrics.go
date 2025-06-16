@@ -3,130 +3,202 @@ package transport
 
 import (
 	"context"
-	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
-	"github.com/go-kit/kit/metrics"
 	"github.com/google/uuid"
-	"time"
 )
 
 type metricsDevToolsConnections struct {
-	next            multiplayer.DevToolsConnections
-	requestCount    metrics.Counter
-	requestCountAll metrics.Counter
-	requestLatency  metrics.Histogram
+	next multiplayer.DevToolsConnections
 }
 
 func metricsMiddlewareDevToolsConnections(next multiplayer.DevToolsConnections) multiplayer.DevToolsConnections {
-	return &metricsDevToolsConnections{
-		next:            next,
-		requestCount:    RequestCount.With("service", "DevToolsConnections"),
-		requestCountAll: RequestCountAll.With("service", "DevToolsConnections"),
-		requestLatency:  RequestLatency.With("service", "DevToolsConnections"),
-	}
+	return &metricsDevToolsConnections{next: next}
 }
 
 func (m metricsDevToolsConnections) CreateRoom(ctx context.Context, token string, name string) (newToken string, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "createRoom", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsConnections", "createRoom", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsConnections", "createRoom", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsConnections", "createRoom", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "createRoom", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "createRoom").Add(1)
 
 	return m.next.CreateRoom(ctx, token, name)
 }
 
 func (m metricsDevToolsConnections) GetRoomsAll(ctx context.Context, token string) (rooms []types.Room, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "getRoomsAll", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsConnections", "getRoomsAll", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsConnections", "getRoomsAll", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsConnections", "getRoomsAll", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "getRoomsAll", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "getRoomsAll").Add(1)
 
 	return m.next.GetRoomsAll(ctx, token)
 }
 
 func (m metricsDevToolsConnections) JoinRoomByID(ctx context.Context, token string, roomID uuid.UUID) (newToken string, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "joinRoomByID", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsConnections", "joinRoomByID", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsConnections", "joinRoomByID", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsConnections", "joinRoomByID", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "joinRoomByID", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "joinRoomByID").Add(1)
 
 	return m.next.JoinRoomByID(ctx, token, roomID)
 }
 
 func (m metricsDevToolsConnections) JoinRoomByRoomCode(ctx context.Context, token string, roomCode string) (newToken string, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "joinRoomByRoomCode", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsConnections", "joinRoomByRoomCode", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsConnections", "joinRoomByRoomCode", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsConnections", "joinRoomByRoomCode", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "joinRoomByRoomCode", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "joinRoomByRoomCode").Add(1)
 
 	return m.next.JoinRoomByRoomCode(ctx, token, roomCode)
 }
 
 func (m metricsDevToolsConnections) GetMyRoom(ctx context.Context, token string) (room types.Room, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "getMyRoom", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsConnections", "getMyRoom", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsConnections", "getMyRoom", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsConnections", "getMyRoom", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "getMyRoom", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "getMyRoom").Add(1)
 
 	return m.next.GetMyRoom(ctx, token)
 }
 
 func (m metricsDevToolsConnections) LeaveRoom(ctx context.Context, token string, roomID uuid.UUID) (err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "leaveRoom", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsConnections", "leaveRoom", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsConnections", "leaveRoom", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsConnections", "leaveRoom", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "leaveRoom", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "leaveRoom").Add(1)
 
 	return m.next.LeaveRoom(ctx, token, roomID)
 }
 
 func (m metricsDevToolsConnections) RemoveRoomByID(ctx context.Context, token string, roomID uuid.UUID) (err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "removeRoomByID", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsConnections", "removeRoomByID", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsConnections", "removeRoomByID", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsConnections", "removeRoomByID", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "removeRoomByID", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "removeRoomByID").Add(1)
 
 	return m.next.RemoveRoomByID(ctx, token, roomID)
 }
 
 func (m metricsDevToolsConnections) GetRoomsConnectionUrls(ctx context.Context, token string) (connectionsServer []types.ConnectionServer, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "getRoomsConnectionUrls", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsConnections", "getRoomsConnectionUrls", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsConnections", "getRoomsConnectionUrls", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsConnections", "getRoomsConnectionUrls", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "getRoomsConnectionUrls", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "getRoomsConnectionUrls").Add(1)
 
 	return m.next.GetRoomsConnectionUrls(ctx, token)
 }

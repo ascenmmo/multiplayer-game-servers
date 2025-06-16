@@ -3,12 +3,13 @@ package transport
 
 import (
 	"context"
+	"time"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/transport/viewer"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 type loggerDevelopers struct {
@@ -23,16 +24,17 @@ func loggerMiddlewareDevelopers() MiddlewareDevelopers {
 
 func (m loggerDevelopers) SignUp(ctx context.Context, developer types.Developer) (token string, refresh string, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "Developers").Str("method", "signUp").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":  "developers.signUp",
 				"request": viewer.Sprintf("%+v", requestDevelopersSignUp{Developer: developer}),
 				"response": viewer.Sprintf("%+v", responseDevelopersSignUp{
 					Refresh: refresh,
 					Token:   token,
 				}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call signUp")
@@ -45,16 +47,17 @@ func (m loggerDevelopers) SignUp(ctx context.Context, developer types.Developer)
 
 func (m loggerDevelopers) SignIn(ctx context.Context, developer types.Developer) (token string, refresh string, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "Developers").Str("method", "signIn").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":  "developers.signIn",
 				"request": viewer.Sprintf("%+v", requestDevelopersSignIn{Developer: developer}),
 				"response": viewer.Sprintf("%+v", responseDevelopersSignIn{
 					Refresh: refresh,
 					Token:   token,
 				}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call signIn")
@@ -67,9 +70,10 @@ func (m loggerDevelopers) SignIn(ctx context.Context, developer types.Developer)
 
 func (m loggerDevelopers) RefreshToken(ctx context.Context, token string, refresh string) (newToken string, newRefresh string, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "Developers").Str("method", "refreshToken").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "developers.refreshToken",
 				"request": viewer.Sprintf("%+v", requestDevelopersRefreshToken{
 					Refresh: refresh,
 					Token:   token,
@@ -79,7 +83,7 @@ func (m loggerDevelopers) RefreshToken(ctx context.Context, token string, refres
 					NewToken:   newToken,
 				}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call refreshToken")
@@ -92,13 +96,14 @@ func (m loggerDevelopers) RefreshToken(ctx context.Context, token string, refres
 
 func (m loggerDevelopers) GetDeveloper(ctx context.Context, token string) (developer types.Developer, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "Developers").Str("method", "getDeveloper").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":   "developers.getDeveloper",
 				"request":  viewer.Sprintf("%+v", requestDevelopersGetDeveloper{Token: token}),
 				"response": viewer.Sprintf("%+v", responseDevelopersGetDeveloper{Developer: developer}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getDeveloper")
@@ -111,16 +116,17 @@ func (m loggerDevelopers) GetDeveloper(ctx context.Context, token string) (devel
 
 func (m loggerDevelopers) UpdateDeveloper(ctx context.Context, token string, developer types.Developer) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "Developers").Str("method", "updateDeveloper").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "developers.updateDeveloper",
 				"request": viewer.Sprintf("%+v", requestDevelopersUpdateDeveloper{
 					Developer: developer,
 					Token:     token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevelopersUpdateDeveloper{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call updateDeveloper")

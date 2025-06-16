@@ -3,10 +3,13 @@ package transport
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	"github.com/google/uuid"
-	"github.com/opentracing/opentracing-go"
+	otel "go.opentelemetry.io/otel"
+	trace "go.opentelemetry.io/otel/trace"
 )
 
 type traceDevToolsConnections struct {
@@ -18,49 +21,89 @@ func traceMiddlewareDevToolsConnections(next multiplayer.DevToolsConnections) mu
 }
 
 func (svc traceDevToolsConnections) CreateRoom(ctx context.Context, token string, name string) (newToken string, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "CreateRoom")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsConnections.createRoom")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.CreateRoom(ctx, token, name)
 }
 
 func (svc traceDevToolsConnections) GetRoomsAll(ctx context.Context, token string) (rooms []types.Room, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetRoomsAll")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsConnections.getRoomsAll")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetRoomsAll(ctx, token)
 }
 
 func (svc traceDevToolsConnections) JoinRoomByID(ctx context.Context, token string, roomID uuid.UUID) (newToken string, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "JoinRoomByID")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsConnections.joinRoomByID")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.JoinRoomByID(ctx, token, roomID)
 }
 
 func (svc traceDevToolsConnections) JoinRoomByRoomCode(ctx context.Context, token string, roomCode string) (newToken string, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "JoinRoomByRoomCode")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsConnections.joinRoomByRoomCode")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.JoinRoomByRoomCode(ctx, token, roomCode)
 }
 
 func (svc traceDevToolsConnections) GetMyRoom(ctx context.Context, token string) (room types.Room, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetMyRoom")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsConnections.getMyRoom")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetMyRoom(ctx, token)
 }
 
 func (svc traceDevToolsConnections) LeaveRoom(ctx context.Context, token string, roomID uuid.UUID) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "LeaveRoom")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsConnections.leaveRoom")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.LeaveRoom(ctx, token, roomID)
 }
 
 func (svc traceDevToolsConnections) RemoveRoomByID(ctx context.Context, token string, roomID uuid.UUID) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "RemoveRoomByID")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsConnections.removeRoomByID")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.RemoveRoomByID(ctx, token, roomID)
 }
 
 func (svc traceDevToolsConnections) GetRoomsConnectionUrls(ctx context.Context, token string) (connectionsServer []types.ConnectionServer, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetRoomsConnectionUrls")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsConnections.getRoomsConnectionUrls")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetRoomsConnectionUrls(ctx, token)
 }

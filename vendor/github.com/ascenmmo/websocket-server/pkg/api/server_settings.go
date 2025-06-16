@@ -3,13 +3,15 @@
 // @tg title=`Ascenmmo Rest API`
 // @tg servers=`http://stage.ascenmmo.com;stage cluster`
 //
-//go:generate tg transport --services . --out ../../pkg/transport --outSwagger ../../pkg/swagger.yaml
-//go:generate tg client -go --services . --outPath ../../pkg/clients/wsGameServer
+//go:generate go tool github.com/seniorGolang/tg/v2/cmd/tg transport --services . --out ../transport --outSwagger ../swagger.yaml
+//go:generate go tool github.com/seniorGolang/tg/v2/cmd/tg client -go --services . --outPath ../../clients/suppliers
+//go:generate goimports -l -w ../transport ../../clients/suppliers
 
 package api
 
 import (
 	"context"
+
 	"github.com/ascenmmo/websocket-server/pkg/api/types"
 )
 

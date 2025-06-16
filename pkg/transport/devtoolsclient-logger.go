@@ -3,13 +3,14 @@ package transport
 
 import (
 	"context"
+	"time"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/transport/viewer"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 type loggerDevToolsClient struct {
@@ -24,16 +25,17 @@ func loggerMiddlewareDevToolsClient() MiddlewareDevToolsClient {
 
 func (m loggerDevToolsClient) SignUp(ctx context.Context, client types.Client) (token string, refresh string, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsClient").Str("method", "signUp").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":  "devToolsClient.signUp",
 				"request": viewer.Sprintf("%+v", requestDevToolsClientSignUp{Client: client}),
 				"response": viewer.Sprintf("%+v", responseDevToolsClientSignUp{
 					Refresh: refresh,
 					Token:   token,
 				}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call signUp")
@@ -46,16 +48,17 @@ func (m loggerDevToolsClient) SignUp(ctx context.Context, client types.Client) (
 
 func (m loggerDevToolsClient) SignIn(ctx context.Context, client types.Client) (token string, refresh string, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsClient").Str("method", "signIn").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":  "devToolsClient.signIn",
 				"request": viewer.Sprintf("%+v", requestDevToolsClientSignIn{Client: client}),
 				"response": viewer.Sprintf("%+v", responseDevToolsClientSignIn{
 					Refresh: refresh,
 					Token:   token,
 				}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call signIn")
@@ -68,9 +71,10 @@ func (m loggerDevToolsClient) SignIn(ctx context.Context, client types.Client) (
 
 func (m loggerDevToolsClient) RefreshToken(ctx context.Context, token string, refresh string) (newToken string, newRefresh string, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsClient").Str("method", "refreshToken").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsClient.refreshToken",
 				"request": viewer.Sprintf("%+v", requestDevToolsClientRefreshToken{
 					Refresh: refresh,
 					Token:   token,
@@ -80,7 +84,7 @@ func (m loggerDevToolsClient) RefreshToken(ctx context.Context, token string, re
 					NewToken:   newToken,
 				}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call refreshToken")
@@ -93,16 +97,17 @@ func (m loggerDevToolsClient) RefreshToken(ctx context.Context, token string, re
 
 func (m loggerDevToolsClient) GetClient(ctx context.Context, token string, gameID uuid.UUID) (client types.Client, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsClient").Str("method", "getClient").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsClient.getClient",
 				"request": viewer.Sprintf("%+v", requestDevToolsClientGetClient{
 					GameID: gameID,
 					Token:  token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsClientGetClient{Client: client}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getClient")
@@ -115,16 +120,17 @@ func (m loggerDevToolsClient) GetClient(ctx context.Context, token string, gameI
 
 func (m loggerDevToolsClient) UpdateClient(ctx context.Context, token string, client types.Client) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsClient").Str("method", "updateClient").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsClient.updateClient",
 				"request": viewer.Sprintf("%+v", requestDevToolsClientUpdateClient{
 					Client: client,
 					Token:  token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsClientUpdateClient{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call updateClient")
@@ -137,13 +143,14 @@ func (m loggerDevToolsClient) UpdateClient(ctx context.Context, token string, cl
 
 func (m loggerDevToolsClient) GetGameSaves(ctx context.Context, token string) (gameSaves types.GameSaves, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsClient").Str("method", "getGameSaves").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":   "devToolsClient.getGameSaves",
 				"request":  viewer.Sprintf("%+v", requestDevToolsClientGetGameSaves{Token: token}),
 				"response": viewer.Sprintf("%+v", responseDevToolsClientGetGameSaves{GameSaves: gameSaves}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getGameSaves")
@@ -156,16 +163,17 @@ func (m loggerDevToolsClient) GetGameSaves(ctx context.Context, token string) (g
 
 func (m loggerDevToolsClient) SetGameSaves(ctx context.Context, token string, gameSaves types.GameSaves) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsClient").Str("method", "setGameSaves").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsClient.setGameSaves",
 				"request": viewer.Sprintf("%+v", requestDevToolsClientSetGameSaves{
 					GameSaves: gameSaves,
 					Token:     token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsClientSetGameSaves{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call setGameSaves")
@@ -178,13 +186,14 @@ func (m loggerDevToolsClient) SetGameSaves(ctx context.Context, token string, ga
 
 func (m loggerDevToolsClient) DeleteGameSaves(ctx context.Context, token string) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsClient").Str("method", "deleteGameSaves").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":   "devToolsClient.deleteGameSaves",
 				"request":  viewer.Sprintf("%+v", requestDevToolsClientDeleteGameSaves{Token: token}),
 				"response": viewer.Sprintf("%+v", responseDevToolsClientDeleteGameSaves{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call deleteGameSaves")

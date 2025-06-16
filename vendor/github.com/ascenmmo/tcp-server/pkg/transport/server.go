@@ -2,11 +2,15 @@
 package transport
 
 import (
+	"context"
 	"encoding/json"
+	"io"
+
+	"github.com/ascenmmo/tcp-server/pkg/transport/tracer"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"io"
+	attribute "go.opentelemetry.io/otel/attribute"
 )
 
 type Server struct {
@@ -17,8 +21,9 @@ type Server struct {
 
 	config fiber.Config
 
-	srvHTTP   *fiber.App
-	srvHealth *fiber.App
+	srvHTTP    *fiber.App
+	srvHealth  *fiber.App
+	srvMetrics *fiber.App
 
 	reporterCloser io.Closer
 
@@ -44,6 +49,7 @@ func New(log zerolog.Logger, options ...Option) (srv *Server) {
 	}
 	srv.srvHTTP = fiber.New(srv.config)
 	srv.srvHTTP.Use(recoverHandler)
+	srv.srvHTTP.Use(tracer.Middleware())
 	srv.srvHTTP.Use(srv.setLogger)
 	srv.srvHTTP.Use(srv.logLevelHandler)
 	srv.srvHTTP.Use(srv.headersHandler)
@@ -96,7 +102,9 @@ func (srv *Server) Shutdown() {
 	}
 }
 
-func (srv *Server) WithTrace() *Server {
+func (srv *Server) WithTrace(ctx context.Context, appName string, endpoint string, attributes ...attribute.KeyValue) *Server {
+
+	tracer.Init(ctx, appName, endpoint, attributes...)
 	if srv.httpGameConnections != nil {
 		srv.httpGameConnections = srv.GameConnections().WithTrace()
 	}

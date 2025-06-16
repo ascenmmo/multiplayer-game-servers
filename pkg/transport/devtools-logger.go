@@ -3,13 +3,14 @@ package transport
 
 import (
 	"context"
+	"time"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/transport/viewer"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 type loggerDevTools struct {
@@ -24,16 +25,17 @@ func loggerMiddlewareDevTools() MiddlewareDevTools {
 
 func (m loggerDevTools) CreateGame(ctx context.Context, token string, game types.Game) (id uuid.UUID, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevTools").Str("method", "createGame").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devTools.createGame",
 				"request": viewer.Sprintf("%+v", requestDevToolsCreateGame{
 					Game:  game,
 					Token: token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsCreateGame{Id: id}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call createGame")
@@ -46,9 +48,10 @@ func (m loggerDevTools) CreateGame(ctx context.Context, token string, game types
 
 func (m loggerDevTools) GameAddOwner(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevTools").Str("method", "gameAddOwner").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devTools.gameAddOwner",
 				"request": viewer.Sprintf("%+v", requestDevToolsGameAddOwner{
 					GameID: gameID,
 					Token:  token,
@@ -56,7 +59,7 @@ func (m loggerDevTools) GameAddOwner(ctx context.Context, token string, gameID u
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsGameAddOwner{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call gameAddOwner")
@@ -69,9 +72,10 @@ func (m loggerDevTools) GameAddOwner(ctx context.Context, token string, gameID u
 
 func (m loggerDevTools) GameRemoveOwner(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevTools").Str("method", "gameRemoveOwner").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devTools.gameRemoveOwner",
 				"request": viewer.Sprintf("%+v", requestDevToolsGameRemoveOwner{
 					GameID: gameID,
 					Token:  token,
@@ -79,7 +83,7 @@ func (m loggerDevTools) GameRemoveOwner(ctx context.Context, token string, gameI
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsGameRemoveOwner{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call gameRemoveOwner")
@@ -92,9 +96,10 @@ func (m loggerDevTools) GameRemoveOwner(ctx context.Context, token string, gameI
 
 func (m loggerDevTools) UpdateGame(ctx context.Context, token string, gameID uuid.UUID, newGame types.Game) (id uuid.UUID, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevTools").Str("method", "updateGame").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devTools.updateGame",
 				"request": viewer.Sprintf("%+v", requestDevToolsUpdateGame{
 					GameID:  gameID,
 					NewGame: newGame,
@@ -102,7 +107,7 @@ func (m loggerDevTools) UpdateGame(ctx context.Context, token string, gameID uui
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsUpdateGame{Id: id}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call updateGame")
@@ -115,16 +120,17 @@ func (m loggerDevTools) UpdateGame(ctx context.Context, token string, gameID uui
 
 func (m loggerDevTools) DeleteGame(ctx context.Context, token string, gameID uuid.UUID) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevTools").Str("method", "deleteGame").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devTools.deleteGame",
 				"request": viewer.Sprintf("%+v", requestDevToolsDeleteGame{
 					GameID: gameID,
 					Token:  token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsDeleteGame{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call deleteGame")
@@ -137,13 +143,14 @@ func (m loggerDevTools) DeleteGame(ctx context.Context, token string, gameID uui
 
 func (m loggerDevTools) GetMyGames(ctx context.Context, token string) (games []types.Game, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevTools").Str("method", "getMyGames").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":   "devTools.getMyGames",
 				"request":  viewer.Sprintf("%+v", requestDevToolsGetMyGames{Token: token}),
 				"response": viewer.Sprintf("%+v", responseDevToolsGetMyGames{Games: games}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getMyGames")
@@ -156,16 +163,17 @@ func (m loggerDevTools) GetMyGames(ctx context.Context, token string) (games []t
 
 func (m loggerDevTools) GetGameByGameID(ctx context.Context, token string, gameID uuid.UUID) (game types.Game, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevTools").Str("method", "getGameByGameID").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devTools.getGameByGameID",
 				"request": viewer.Sprintf("%+v", requestDevToolsGetGameByGameID{
 					GameID: gameID,
 					Token:  token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsGetGameByGameID{Game: game}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getGameByGameID")
@@ -178,9 +186,10 @@ func (m loggerDevTools) GetGameByGameID(ctx context.Context, token string, gameI
 
 func (m loggerDevTools) TurnOnServerInGame(ctx context.Context, token string, serverID uuid.UUID, gameId uuid.UUID) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevTools").Str("method", "turnOnServerInGame").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devTools.turnOnServerInGame",
 				"request": viewer.Sprintf("%+v", requestDevToolsTurnOnServerInGame{
 					GameId:   gameId,
 					ServerID: serverID,
@@ -188,7 +197,7 @@ func (m loggerDevTools) TurnOnServerInGame(ctx context.Context, token string, se
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsTurnOnServerInGame{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call turnOnServerInGame")
@@ -201,9 +210,10 @@ func (m loggerDevTools) TurnOnServerInGame(ctx context.Context, token string, se
 
 func (m loggerDevTools) TurnOffServerInGame(ctx context.Context, token string, serverID uuid.UUID, gameId uuid.UUID) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevTools").Str("method", "turnOffServerInGame").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devTools.turnOffServerInGame",
 				"request": viewer.Sprintf("%+v", requestDevToolsTurnOffServerInGame{
 					GameId:   gameId,
 					ServerID: serverID,
@@ -211,7 +221,7 @@ func (m loggerDevTools) TurnOffServerInGame(ctx context.Context, token string, s
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsTurnOffServerInGame{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call turnOffServerInGame")

@@ -3,35 +3,42 @@ package transport
 
 import (
 	"encoding/json"
-	"github.com/gofiber/fiber/v2"
-	otg "github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
 	"strings"
 	"sync"
+
+	"github.com/ascenmmo/multiplayer-game-servers/pkg/transport/context"
+	"github.com/gofiber/fiber/v2"
+	"github.com/rs/zerolog/log"
 )
 
 func (http *httpDevToolsConnections) serveCreateRoom(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "createroom", http.createRoom)
+	return http._serveMethod(ctx, "createroom", http.createRoom)
 }
 func (http *httpDevToolsConnections) createRoom(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsConnectionsCreateRoom
+	var response responseDevToolsConnectionsCreateRoom
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "createRoom")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsConnections.createRoom").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "createroom",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsconnections",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -41,15 +48,11 @@ func (http *httpDevToolsConnections) createRoom(ctx *fiber.Ctx, requestBase base
 		request.Token = token
 	}
 
-	var response responseDevToolsConnectionsCreateRoom
 	response.NewToken, err = http.svc.CreateRoom(methodCtx, request.Token, request.Name)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -61,34 +64,39 @@ func (http *httpDevToolsConnections) createRoom(ctx *fiber.Ctx, requestBase base
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsConnections) serveGetRoomsAll(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "getroomsall", http.getRoomsAll)
+	return http._serveMethod(ctx, "getroomsall", http.getRoomsAll)
 }
 func (http *httpDevToolsConnections) getRoomsAll(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsConnectionsGetRoomsAll
+	var response responseDevToolsConnectionsGetRoomsAll
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "getRoomsAll")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsConnections.getRoomsAll").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "getroomsall",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsconnections",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -98,15 +106,11 @@ func (http *httpDevToolsConnections) getRoomsAll(ctx *fiber.Ctx, requestBase bas
 		request.Token = token
 	}
 
-	var response responseDevToolsConnectionsGetRoomsAll
 	response.Rooms, err = http.svc.GetRoomsAll(methodCtx, request.Token)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -118,34 +122,39 @@ func (http *httpDevToolsConnections) getRoomsAll(ctx *fiber.Ctx, requestBase bas
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsConnections) serveJoinRoomByID(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "joinroombyid", http.joinRoomByID)
+	return http._serveMethod(ctx, "joinroombyid", http.joinRoomByID)
 }
 func (http *httpDevToolsConnections) joinRoomByID(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsConnectionsJoinRoomByID
+	var response responseDevToolsConnectionsJoinRoomByID
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "joinRoomByID")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsConnections.joinRoomByID").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "joinroombyid",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsconnections",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -155,15 +164,11 @@ func (http *httpDevToolsConnections) joinRoomByID(ctx *fiber.Ctx, requestBase ba
 		request.Token = token
 	}
 
-	var response responseDevToolsConnectionsJoinRoomByID
 	response.NewToken, err = http.svc.JoinRoomByID(methodCtx, request.Token, request.RoomID)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -175,34 +180,39 @@ func (http *httpDevToolsConnections) joinRoomByID(ctx *fiber.Ctx, requestBase ba
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsConnections) serveJoinRoomByRoomCode(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "joinroombyroomcode", http.joinRoomByRoomCode)
+	return http._serveMethod(ctx, "joinroombyroomcode", http.joinRoomByRoomCode)
 }
 func (http *httpDevToolsConnections) joinRoomByRoomCode(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsConnectionsJoinRoomByRoomCode
+	var response responseDevToolsConnectionsJoinRoomByRoomCode
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "joinRoomByRoomCode")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsConnections.joinRoomByRoomCode").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "joinroombyroomcode",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsconnections",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -212,15 +222,11 @@ func (http *httpDevToolsConnections) joinRoomByRoomCode(ctx *fiber.Ctx, requestB
 		request.Token = token
 	}
 
-	var response responseDevToolsConnectionsJoinRoomByRoomCode
 	response.NewToken, err = http.svc.JoinRoomByRoomCode(methodCtx, request.Token, request.RoomCode)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -232,34 +238,39 @@ func (http *httpDevToolsConnections) joinRoomByRoomCode(ctx *fiber.Ctx, requestB
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsConnections) serveGetMyRoom(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "getmyroom", http.getMyRoom)
+	return http._serveMethod(ctx, "getmyroom", http.getMyRoom)
 }
 func (http *httpDevToolsConnections) getMyRoom(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsConnectionsGetMyRoom
+	var response responseDevToolsConnectionsGetMyRoom
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "getMyRoom")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsConnections.getMyRoom").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "getmyroom",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsconnections",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -269,15 +280,11 @@ func (http *httpDevToolsConnections) getMyRoom(ctx *fiber.Ctx, requestBase baseJ
 		request.Token = token
 	}
 
-	var response responseDevToolsConnectionsGetMyRoom
 	response.Room, err = http.svc.GetMyRoom(methodCtx, request.Token)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -289,34 +296,39 @@ func (http *httpDevToolsConnections) getMyRoom(ctx *fiber.Ctx, requestBase baseJ
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsConnections) serveLeaveRoom(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "leaveroom", http.leaveRoom)
+	return http._serveMethod(ctx, "leaveroom", http.leaveRoom)
 }
 func (http *httpDevToolsConnections) leaveRoom(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsConnectionsLeaveRoom
+	var response responseDevToolsConnectionsLeaveRoom
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "leaveRoom")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsConnections.leaveRoom").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "leaveroom",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsconnections",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -326,15 +338,11 @@ func (http *httpDevToolsConnections) leaveRoom(ctx *fiber.Ctx, requestBase baseJ
 		request.Token = token
 	}
 
-	var response responseDevToolsConnectionsLeaveRoom
 	err = http.svc.LeaveRoom(methodCtx, request.Token, request.RoomID)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -346,34 +354,39 @@ func (http *httpDevToolsConnections) leaveRoom(ctx *fiber.Ctx, requestBase baseJ
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsConnections) serveRemoveRoomByID(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "removeroombyid", http.removeRoomByID)
+	return http._serveMethod(ctx, "removeroombyid", http.removeRoomByID)
 }
 func (http *httpDevToolsConnections) removeRoomByID(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsConnectionsRemoveRoomByID
+	var response responseDevToolsConnectionsRemoveRoomByID
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "removeRoomByID")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsConnections.removeRoomByID").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "removeroombyid",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsconnections",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -383,15 +396,11 @@ func (http *httpDevToolsConnections) removeRoomByID(ctx *fiber.Ctx, requestBase 
 		request.Token = token
 	}
 
-	var response responseDevToolsConnectionsRemoveRoomByID
 	err = http.svc.RemoveRoomByID(methodCtx, request.Token, request.RoomID)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -403,34 +412,39 @@ func (http *httpDevToolsConnections) removeRoomByID(ctx *fiber.Ctx, requestBase 
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsConnections) serveGetRoomsConnectionUrls(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "getroomsconnectionurls", http.getRoomsConnectionUrls)
+	return http._serveMethod(ctx, "getroomsconnectionurls", http.getRoomsConnectionUrls)
 }
 func (http *httpDevToolsConnections) getRoomsConnectionUrls(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsConnectionsGetRoomsConnectionUrls
+	var response responseDevToolsConnectionsGetRoomsConnectionUrls
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "getRoomsConnectionUrls")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsConnections.getRoomsConnectionUrls").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "getroomsconnectionurls",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsconnections",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -440,15 +454,11 @@ func (http *httpDevToolsConnections) getRoomsConnectionUrls(ctx *fiber.Ctx, requ
 		request.Token = token
 	}
 
-	var response responseDevToolsConnectionsGetRoomsConnectionUrls
 	response.ConnectionsServer, err = http.svc.GetRoomsConnectionUrls(methodCtx, request.Token)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -460,21 +470,15 @@ func (http *httpDevToolsConnections) getRoomsConnectionUrls(ctx *fiber.Ctx, requ
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
-func (http *httpDevToolsConnections) serveMethod(ctx *fiber.Ctx, methodName string, methodHandler methodJsonRPC) (err error) {
-
-	span := otg.SpanFromContext(ctx.UserContext())
-	span.SetTag("method", methodName)
+func (http *httpDevToolsConnections) _serveMethod(ctx *fiber.Ctx, methodName string, methodHandler methodJsonRPC) (err error) {
 
 	methodHTTP := ctx.Method()
 	if methodHTTP != fiber.MethodPost {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "only POST method supported")
 		ctx.Response().SetStatusCode(fiber.StatusMethodNotAllowed)
 		if _, err = ctx.WriteString("only POST method supported"); err != nil {
 			return
@@ -483,15 +487,11 @@ func (http *httpDevToolsConnections) serveMethod(ctx *fiber.Ctx, methodName stri
 	var request baseJsonRPC
 	var response *baseJsonRPC
 	if err = json.Unmarshal(ctx.Body(), &request); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "request body could not be decoded: "+err.Error())
 		return sendResponse(ctx, makeErrorResponseJsonRPC([]byte("\"0\""), parseError, "request body could not be decoded: "+err.Error(), nil))
 	}
 	methodNameOrigin := request.Method
 	method := strings.ToLower(request.Method)
 	if method != "" && method != methodName {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "invalid method "+methodNameOrigin)
 		return sendResponse(ctx, makeErrorResponseJsonRPC(request.ID, methodNotFoundError, "invalid method "+methodNameOrigin, nil))
 	}
 	response = methodHandler(ctx, request)
@@ -545,11 +545,8 @@ func (http *httpDevToolsConnections) serveBatch(ctx *fiber.Ctx) (err error) {
 
 	var single bool
 	var requests []baseJsonRPC
-	batchSpan := otg.SpanFromContext(ctx.UserContext())
 	methodHTTP := ctx.Method()
 	if methodHTTP != fiber.MethodPost {
-		ext.Error.Set(batchSpan, true)
-		batchSpan.SetTag("msg", "only POST method supported")
 		ctx.Response().SetStatusCode(fiber.StatusMethodNotAllowed)
 		if _, err = ctx.WriteString("only POST method supported"); err != nil {
 			return
@@ -559,8 +556,6 @@ func (http *httpDevToolsConnections) serveBatch(ctx *fiber.Ctx) (err error) {
 	if err = json.Unmarshal(ctx.Body(), &requests); err != nil {
 		var request baseJsonRPC
 		if err = json.Unmarshal(ctx.Body(), &request); err != nil {
-			ext.Error.Set(batchSpan, true)
-			batchSpan.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return sendResponse(ctx, makeErrorResponseJsonRPC([]byte("\"0\""), parseError, "request body could not be decoded: "+err.Error(), nil))
 		}
 		single = true
@@ -573,13 +568,8 @@ func (http *httpDevToolsConnections) serveBatch(ctx *fiber.Ctx) (err error) {
 }
 func (http *httpDevToolsConnections) doSingleBatch(ctx *fiber.Ctx, request baseJsonRPC) (response *baseJsonRPC) {
 
-	methodContext := ctx.UserContext()
 	methodNameOrigin := request.Method
 	method := strings.ToLower(request.Method)
-	batchSpan := otg.SpanFromContext(methodContext)
-	span := otg.StartSpan(request.Method, otg.ChildOf(batchSpan.Context()))
-	defer span.Finish()
-	methodContext = otg.ContextWithSpan(ctx.UserContext(), span)
 	switch method {
 	case "createroom":
 		return http.createRoom(ctx, request)
@@ -598,8 +588,6 @@ func (http *httpDevToolsConnections) doSingleBatch(ctx *fiber.Ctx, request baseJ
 	case "getroomsconnectionurls":
 		return http.getRoomsConnectionUrls(ctx, request)
 	default:
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "invalid method '"+methodNameOrigin+"'")
 		return makeErrorResponseJsonRPC(request.ID, methodNotFoundError, "invalid method '"+methodNameOrigin+"'", nil)
 	}
 }

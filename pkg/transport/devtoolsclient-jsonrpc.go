@@ -3,47 +3,50 @@ package transport
 
 import (
 	"encoding/json"
-	"github.com/gofiber/fiber/v2"
-	otg "github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
 	"strings"
 	"sync"
+
+	"github.com/ascenmmo/multiplayer-game-servers/pkg/transport/context"
+	"github.com/gofiber/fiber/v2"
+	"github.com/rs/zerolog/log"
 )
 
 func (http *httpDevToolsClient) serveSignUp(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "signup", http.signUp)
+	return http._serveMethod(ctx, "signup", http.signUp)
 }
 func (http *httpDevToolsClient) signUp(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsClientSignUp
+	var response responseDevToolsClientSignUp
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "signUp")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsClient.signUp").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "signup",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsclient",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
-	var response responseDevToolsClientSignUp
 	response.Token, response.Refresh, err = http.svc.SignUp(methodCtx, request.Client)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -55,46 +58,47 @@ func (http *httpDevToolsClient) signUp(ctx *fiber.Ctx, requestBase baseJsonRPC) 
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsClient) serveSignIn(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "signin", http.signIn)
+	return http._serveMethod(ctx, "signin", http.signIn)
 }
 func (http *httpDevToolsClient) signIn(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsClientSignIn
+	var response responseDevToolsClientSignIn
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "signIn")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsClient.signIn").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "signin",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsclient",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
-	var response responseDevToolsClientSignIn
 	response.Token, response.Refresh, err = http.svc.SignIn(methodCtx, request.Client)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -106,34 +110,39 @@ func (http *httpDevToolsClient) signIn(ctx *fiber.Ctx, requestBase baseJsonRPC) 
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsClient) serveRefreshToken(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "refreshtoken", http.refreshToken)
+	return http._serveMethod(ctx, "refreshtoken", http.refreshToken)
 }
 func (http *httpDevToolsClient) refreshToken(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsClientRefreshToken
+	var response responseDevToolsClientRefreshToken
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "refreshToken")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsClient.refreshToken").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "refreshtoken",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsclient",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -148,15 +157,11 @@ func (http *httpDevToolsClient) refreshToken(ctx *fiber.Ctx, requestBase baseJso
 		request.Refresh = refresh
 	}
 
-	var response responseDevToolsClientRefreshToken
 	response.NewToken, response.NewRefresh, err = http.svc.RefreshToken(methodCtx, request.Token, request.Refresh)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -168,34 +173,39 @@ func (http *httpDevToolsClient) refreshToken(ctx *fiber.Ctx, requestBase baseJso
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsClient) serveGetClient(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "getclient", http.getClient)
+	return http._serveMethod(ctx, "getclient", http.getClient)
 }
 func (http *httpDevToolsClient) getClient(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsClientGetClient
+	var response responseDevToolsClientGetClient
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "getClient")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsClient.getClient").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "getclient",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsclient",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -205,15 +215,11 @@ func (http *httpDevToolsClient) getClient(ctx *fiber.Ctx, requestBase baseJsonRP
 		request.Token = token
 	}
 
-	var response responseDevToolsClientGetClient
 	response.Client, err = http.svc.GetClient(methodCtx, request.Token, request.GameID)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -225,34 +231,39 @@ func (http *httpDevToolsClient) getClient(ctx *fiber.Ctx, requestBase baseJsonRP
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsClient) serveUpdateClient(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "updateclient", http.updateClient)
+	return http._serveMethod(ctx, "updateclient", http.updateClient)
 }
 func (http *httpDevToolsClient) updateClient(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsClientUpdateClient
+	var response responseDevToolsClientUpdateClient
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "updateClient")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsClient.updateClient").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "updateclient",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsclient",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -262,15 +273,11 @@ func (http *httpDevToolsClient) updateClient(ctx *fiber.Ctx, requestBase baseJso
 		request.Token = token
 	}
 
-	var response responseDevToolsClientUpdateClient
 	err = http.svc.UpdateClient(methodCtx, request.Token, request.Client)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -282,34 +289,39 @@ func (http *httpDevToolsClient) updateClient(ctx *fiber.Ctx, requestBase baseJso
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsClient) serveGetGameSaves(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "getgamesaves", http.getGameSaves)
+	return http._serveMethod(ctx, "getgamesaves", http.getGameSaves)
 }
 func (http *httpDevToolsClient) getGameSaves(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsClientGetGameSaves
+	var response responseDevToolsClientGetGameSaves
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "getGameSaves")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsClient.getGameSaves").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "getgamesaves",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsclient",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -319,15 +331,11 @@ func (http *httpDevToolsClient) getGameSaves(ctx *fiber.Ctx, requestBase baseJso
 		request.Token = token
 	}
 
-	var response responseDevToolsClientGetGameSaves
 	response.GameSaves, err = http.svc.GetGameSaves(methodCtx, request.Token)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -339,34 +347,39 @@ func (http *httpDevToolsClient) getGameSaves(ctx *fiber.Ctx, requestBase baseJso
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsClient) serveSetGameSaves(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "setgamesaves", http.setGameSaves)
+	return http._serveMethod(ctx, "setgamesaves", http.setGameSaves)
 }
 func (http *httpDevToolsClient) setGameSaves(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsClientSetGameSaves
+	var response responseDevToolsClientSetGameSaves
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "setGameSaves")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsClient.setGameSaves").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "setgamesaves",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsclient",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -376,15 +389,11 @@ func (http *httpDevToolsClient) setGameSaves(ctx *fiber.Ctx, requestBase baseJso
 		request.Token = token
 	}
 
-	var response responseDevToolsClientSetGameSaves
 	err = http.svc.SetGameSaves(methodCtx, request.Token, request.GameSaves)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -396,34 +405,39 @@ func (http *httpDevToolsClient) setGameSaves(ctx *fiber.Ctx, requestBase baseJso
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
 func (http *httpDevToolsClient) serveDeleteGameSaves(ctx *fiber.Ctx) (err error) {
-	return http.serveMethod(ctx, "deletegamesaves", http.deleteGameSaves)
+	return http._serveMethod(ctx, "deletegamesaves", http.deleteGameSaves)
 }
 func (http *httpDevToolsClient) deleteGameSaves(ctx *fiber.Ctx, requestBase baseJsonRPC) (responseBase *baseJsonRPC) {
 
 	var err error
 	var request requestDevToolsClientDeleteGameSaves
+	var response responseDevToolsClientDeleteGameSaves
 
 	methodCtx := ctx.UserContext()
-	span := otg.SpanFromContext(methodCtx)
-	span.SetTag("method", "deleteGameSaves")
+	methodCtx = log.Ctx(methodCtx).With().Str("method", "devToolsClient.deleteGameSaves").Logger().WithContext(methodCtx)
 
+	defer func() {
+		ctx.SetUserContext(context.WithCtx(methodCtx, MethodCallMeta{
+
+			Err:      err,
+			Method:   "deletegamesaves",
+			Request:  &request,
+			Response: &response,
+			Service:  "devtoolsclient",
+		}))
+	}()
 	if requestBase.Params != nil {
 		if err = json.Unmarshal(requestBase.Params, &request); err != nil {
-			ext.Error.Set(span, true)
-			span.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return makeErrorResponseJsonRPC(requestBase.ID, parseError, "request body could not be decoded: "+err.Error(), nil)
 		}
 	}
 	if requestBase.Version != Version {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "incorrect protocol version: "+requestBase.Version)
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "incorrect protocol version: "+requestBase.Version, nil)
 	}
 
@@ -433,15 +447,11 @@ func (http *httpDevToolsClient) deleteGameSaves(ctx *fiber.Ctx, requestBase base
 		request.Token = token
 	}
 
-	var response responseDevToolsClientDeleteGameSaves
 	err = http.svc.DeleteGameSaves(methodCtx, request.Token)
 	if err != nil {
 		if http.errorHandler != nil {
 			err = http.errorHandler(err)
 		}
-		ext.Error.Set(span, true)
-		span.SetTag("msg", err)
-		span.SetTag("errData", toString(err))
 		code := internalError
 		if errCoder, ok := err.(withErrorCode); ok {
 			code = errCoder.Code()
@@ -453,21 +463,15 @@ func (http *httpDevToolsClient) deleteGameSaves(ctx *fiber.Ctx, requestBase base
 		Version: Version,
 	}
 	if responseBase.Result, err = json.Marshal(response); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "response body could not be encoded: "+err.Error())
 		return makeErrorResponseJsonRPC(requestBase.ID, parseError, "response body could not be encoded: "+err.Error(), nil)
 	}
+
 	return
 }
-func (http *httpDevToolsClient) serveMethod(ctx *fiber.Ctx, methodName string, methodHandler methodJsonRPC) (err error) {
-
-	span := otg.SpanFromContext(ctx.UserContext())
-	span.SetTag("method", methodName)
+func (http *httpDevToolsClient) _serveMethod(ctx *fiber.Ctx, methodName string, methodHandler methodJsonRPC) (err error) {
 
 	methodHTTP := ctx.Method()
 	if methodHTTP != fiber.MethodPost {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "only POST method supported")
 		ctx.Response().SetStatusCode(fiber.StatusMethodNotAllowed)
 		if _, err = ctx.WriteString("only POST method supported"); err != nil {
 			return
@@ -476,15 +480,11 @@ func (http *httpDevToolsClient) serveMethod(ctx *fiber.Ctx, methodName string, m
 	var request baseJsonRPC
 	var response *baseJsonRPC
 	if err = json.Unmarshal(ctx.Body(), &request); err != nil {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "request body could not be decoded: "+err.Error())
 		return sendResponse(ctx, makeErrorResponseJsonRPC([]byte("\"0\""), parseError, "request body could not be decoded: "+err.Error(), nil))
 	}
 	methodNameOrigin := request.Method
 	method := strings.ToLower(request.Method)
 	if method != "" && method != methodName {
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "invalid method "+methodNameOrigin)
 		return sendResponse(ctx, makeErrorResponseJsonRPC(request.ID, methodNotFoundError, "invalid method "+methodNameOrigin, nil))
 	}
 	response = methodHandler(ctx, request)
@@ -538,11 +538,8 @@ func (http *httpDevToolsClient) serveBatch(ctx *fiber.Ctx) (err error) {
 
 	var single bool
 	var requests []baseJsonRPC
-	batchSpan := otg.SpanFromContext(ctx.UserContext())
 	methodHTTP := ctx.Method()
 	if methodHTTP != fiber.MethodPost {
-		ext.Error.Set(batchSpan, true)
-		batchSpan.SetTag("msg", "only POST method supported")
 		ctx.Response().SetStatusCode(fiber.StatusMethodNotAllowed)
 		if _, err = ctx.WriteString("only POST method supported"); err != nil {
 			return
@@ -552,8 +549,6 @@ func (http *httpDevToolsClient) serveBatch(ctx *fiber.Ctx) (err error) {
 	if err = json.Unmarshal(ctx.Body(), &requests); err != nil {
 		var request baseJsonRPC
 		if err = json.Unmarshal(ctx.Body(), &request); err != nil {
-			ext.Error.Set(batchSpan, true)
-			batchSpan.SetTag("msg", "request body could not be decoded: "+err.Error())
 			return sendResponse(ctx, makeErrorResponseJsonRPC([]byte("\"0\""), parseError, "request body could not be decoded: "+err.Error(), nil))
 		}
 		single = true
@@ -566,13 +561,8 @@ func (http *httpDevToolsClient) serveBatch(ctx *fiber.Ctx) (err error) {
 }
 func (http *httpDevToolsClient) doSingleBatch(ctx *fiber.Ctx, request baseJsonRPC) (response *baseJsonRPC) {
 
-	methodContext := ctx.UserContext()
 	methodNameOrigin := request.Method
 	method := strings.ToLower(request.Method)
-	batchSpan := otg.SpanFromContext(methodContext)
-	span := otg.StartSpan(request.Method, otg.ChildOf(batchSpan.Context()))
-	defer span.Finish()
-	methodContext = otg.ContextWithSpan(ctx.UserContext(), span)
 	switch method {
 	case "signup":
 		return http.signUp(ctx, request)
@@ -591,8 +581,6 @@ func (http *httpDevToolsClient) doSingleBatch(ctx *fiber.Ctx, request baseJsonRP
 	case "deletegamesaves":
 		return http.deleteGameSaves(ctx, request)
 	default:
-		ext.Error.Set(span, true)
-		span.SetTag("msg", "invalid method '"+methodNameOrigin+"'")
 		return makeErrorResponseJsonRPC(request.ID, methodNotFoundError, "invalid method '"+methodNameOrigin+"'", nil)
 	}
 }

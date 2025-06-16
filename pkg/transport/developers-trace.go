@@ -3,9 +3,12 @@ package transport
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
-	"github.com/opentracing/opentracing-go"
+	otel "go.opentelemetry.io/otel"
+	trace "go.opentelemetry.io/otel/trace"
 )
 
 type traceDevelopers struct {
@@ -17,31 +20,56 @@ func traceMiddlewareDevelopers(next multiplayer.Developers) multiplayer.Develope
 }
 
 func (svc traceDevelopers) SignUp(ctx context.Context, developer types.Developer) (token string, refresh string, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "SignUp")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "developers.signUp")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.SignUp(ctx, developer)
 }
 
 func (svc traceDevelopers) SignIn(ctx context.Context, developer types.Developer) (token string, refresh string, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "SignIn")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "developers.signIn")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.SignIn(ctx, developer)
 }
 
 func (svc traceDevelopers) RefreshToken(ctx context.Context, token string, refresh string) (newToken string, newRefresh string, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "RefreshToken")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "developers.refreshToken")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.RefreshToken(ctx, token, refresh)
 }
 
 func (svc traceDevelopers) GetDeveloper(ctx context.Context, token string) (developer types.Developer, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetDeveloper")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "developers.getDeveloper")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetDeveloper(ctx, token)
 }
 
 func (svc traceDevelopers) UpdateDeveloper(ctx context.Context, token string, developer types.Developer) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "UpdateDeveloper")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "developers.updateDeveloper")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.UpdateDeveloper(ctx, token, developer)
 }

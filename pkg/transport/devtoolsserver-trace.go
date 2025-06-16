@@ -3,10 +3,13 @@ package transport
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	"github.com/google/uuid"
-	"github.com/opentracing/opentracing-go"
+	otel "go.opentelemetry.io/otel"
+	trace "go.opentelemetry.io/otel/trace"
 )
 
 type traceDevToolsServer struct {
@@ -18,19 +21,34 @@ func traceMiddlewareDevToolsServer(next multiplayer.DevToolsServer) multiplayer.
 }
 
 func (svc traceDevToolsServer) AddServer(ctx context.Context, token string, name string, address string) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "AddServer")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsServer.addServer")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.AddServer(ctx, token, name, address)
 }
 
 func (svc traceDevToolsServer) GetServers(ctx context.Context, token string) (servers []types.Server, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetServers")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsServer.getServers")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetServers(ctx, token)
 }
 
 func (svc traceDevToolsServer) DeleteServers(ctx context.Context, token string, serverID uuid.UUID) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "DeleteServers")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsServer.deleteServers")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.DeleteServers(ctx, token, serverID)
 }

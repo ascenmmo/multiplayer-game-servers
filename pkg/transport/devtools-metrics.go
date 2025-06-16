@@ -3,143 +3,225 @@ package transport
 
 import (
 	"context"
-	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
-	"github.com/go-kit/kit/metrics"
 	"github.com/google/uuid"
-	"time"
 )
 
 type metricsDevTools struct {
-	next            multiplayer.DevTools
-	requestCount    metrics.Counter
-	requestCountAll metrics.Counter
-	requestLatency  metrics.Histogram
+	next multiplayer.DevTools
 }
 
 func metricsMiddlewareDevTools(next multiplayer.DevTools) multiplayer.DevTools {
-	return &metricsDevTools{
-		next:            next,
-		requestCount:    RequestCount.With("service", "DevTools"),
-		requestCountAll: RequestCountAll.With("service", "DevTools"),
-		requestLatency:  RequestLatency.With("service", "DevTools"),
-	}
+	return &metricsDevTools{next: next}
 }
 
 func (m metricsDevTools) CreateGame(ctx context.Context, token string, game types.Game) (id uuid.UUID, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "createGame", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devTools", "createGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devTools", "createGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devTools", "createGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "createGame", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "createGame").Add(1)
 
 	return m.next.CreateGame(ctx, token, game)
 }
 
 func (m metricsDevTools) GameAddOwner(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "gameAddOwner", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devTools", "gameAddOwner", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devTools", "gameAddOwner", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devTools", "gameAddOwner", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "gameAddOwner", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "gameAddOwner").Add(1)
 
 	return m.next.GameAddOwner(ctx, token, gameID, userID)
 }
 
 func (m metricsDevTools) GameRemoveOwner(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "gameRemoveOwner", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devTools", "gameRemoveOwner", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devTools", "gameRemoveOwner", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devTools", "gameRemoveOwner", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "gameRemoveOwner", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "gameRemoveOwner").Add(1)
 
 	return m.next.GameRemoveOwner(ctx, token, gameID, userID)
 }
 
 func (m metricsDevTools) UpdateGame(ctx context.Context, token string, gameID uuid.UUID, newGame types.Game) (id uuid.UUID, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "updateGame", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devTools", "updateGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devTools", "updateGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devTools", "updateGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "updateGame", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "updateGame").Add(1)
 
 	return m.next.UpdateGame(ctx, token, gameID, newGame)
 }
 
 func (m metricsDevTools) DeleteGame(ctx context.Context, token string, gameID uuid.UUID) (err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "deleteGame", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devTools", "deleteGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devTools", "deleteGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devTools", "deleteGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "deleteGame", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "deleteGame").Add(1)
 
 	return m.next.DeleteGame(ctx, token, gameID)
 }
 
 func (m metricsDevTools) GetMyGames(ctx context.Context, token string) (games []types.Game, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "getMyGames", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devTools", "getMyGames", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devTools", "getMyGames", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devTools", "getMyGames", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "getMyGames", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "getMyGames").Add(1)
 
 	return m.next.GetMyGames(ctx, token)
 }
 
 func (m metricsDevTools) GetGameByGameID(ctx context.Context, token string, gameID uuid.UUID) (game types.Game, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "getGameByGameID", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devTools", "getGameByGameID", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devTools", "getGameByGameID", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devTools", "getGameByGameID", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "getGameByGameID", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "getGameByGameID").Add(1)
 
 	return m.next.GetGameByGameID(ctx, token, gameID)
 }
 
 func (m metricsDevTools) TurnOnServerInGame(ctx context.Context, token string, serverID uuid.UUID, gameId uuid.UUID) (err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "turnOnServerInGame", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devTools", "turnOnServerInGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devTools", "turnOnServerInGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devTools", "turnOnServerInGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "turnOnServerInGame", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "turnOnServerInGame").Add(1)
 
 	return m.next.TurnOnServerInGame(ctx, token, serverID, gameId)
 }
 
 func (m metricsDevTools) TurnOffServerInGame(ctx context.Context, token string, serverID uuid.UUID, gameId uuid.UUID) (err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "turnOffServerInGame", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devTools", "turnOffServerInGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devTools", "turnOffServerInGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devTools", "turnOffServerInGame", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "turnOffServerInGame", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "turnOffServerInGame").Add(1)
 
 	return m.next.TurnOffServerInGame(ctx, token, serverID, gameId)
 }

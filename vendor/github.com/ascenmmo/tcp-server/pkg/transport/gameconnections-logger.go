@@ -3,13 +3,14 @@ package transport
 
 import (
 	"context"
+	"time"
+
 	"github.com/ascenmmo/tcp-server/pkg/api"
 	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/ascenmmo/tcp-server/pkg/transport/viewer"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 type loggerGameConnections struct {
@@ -24,16 +25,17 @@ func loggerMiddlewareGameConnections() MiddlewareGameConnections {
 
 func (m loggerGameConnections) SetSendMessage(ctx context.Context, token string, message types.RequestSetMessage) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "GameConnections").Str("method", "setSendMessage").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "gameConnections.setSendMessage",
 				"request": viewer.Sprintf("%+v", requestGameConnectionsSetSendMessage{
 					Message: message,
 					Token:   token,
 				}),
 				"response": viewer.Sprintf("%+v", responseGameConnectionsSetSendMessage{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call setSendMessage")
@@ -46,13 +48,14 @@ func (m loggerGameConnections) SetSendMessage(ctx context.Context, token string,
 
 func (m loggerGameConnections) GetMessage(ctx context.Context, token string) (messages types.ResponseGetMessage, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "GameConnections").Str("method", "getMessage").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":   "gameConnections.getMessage",
 				"request":  viewer.Sprintf("%+v", requestGameConnectionsGetMessage{Token: token}),
 				"response": viewer.Sprintf("%+v", responseGameConnectionsGetMessage{Messages: messages}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getMessage")
@@ -65,16 +68,17 @@ func (m loggerGameConnections) GetMessage(ctx context.Context, token string) (me
 
 func (m loggerGameConnections) RemoveUser(ctx context.Context, token string, userID uuid.UUID) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "GameConnections").Str("method", "removeUser").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "gameConnections.removeUser",
 				"request": viewer.Sprintf("%+v", requestGameConnectionsRemoveUser{
 					Token:  token,
 					UserID: userID,
 				}),
 				"response": viewer.Sprintf("%+v", responseGameConnectionsRemoveUser{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call removeUser")

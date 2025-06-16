@@ -3,9 +3,12 @@ package transport
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/ascenmmo/tcp-server/pkg/api"
 	"github.com/ascenmmo/tcp-server/pkg/api/types"
-	"github.com/opentracing/opentracing-go"
+	otel "go.opentelemetry.io/otel"
+	trace "go.opentelemetry.io/otel/trace"
 )
 
 type traceServerSettings struct {
@@ -17,31 +20,56 @@ func traceMiddlewareServerSettings(next api.ServerSettings) api.ServerSettings {
 }
 
 func (svc traceServerSettings) GetConnectionsNum(ctx context.Context, token string) (countConn int, exists bool, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetConnectionsNum")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "serverSettings.getConnectionsNum")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetConnectionsNum(ctx, token)
 }
 
 func (svc traceServerSettings) HealthCheck(ctx context.Context, token string) (exists bool, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "HealthCheck")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "serverSettings.healthCheck")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.HealthCheck(ctx, token)
 }
 
 func (svc traceServerSettings) GetServerSettings(ctx context.Context, token string) (settings types.Settings, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetServerSettings")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "serverSettings.getServerSettings")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetServerSettings(ctx, token)
 }
 
 func (svc traceServerSettings) CreateRoom(ctx context.Context, token string, createRoom types.CreateRoomRequest) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "CreateRoom")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "serverSettings.createRoom")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.CreateRoom(ctx, token, createRoom)
 }
 
 func (svc traceServerSettings) GetDeletedRooms(ctx context.Context, token string, ids []types.GetDeletedRooms) (deletedIds []types.GetDeletedRooms, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetDeletedRooms")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "serverSettings.getDeletedRooms")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetDeletedRooms(ctx, token, ids)
 }

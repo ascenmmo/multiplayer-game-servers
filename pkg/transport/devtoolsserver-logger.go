@@ -3,13 +3,14 @@ package transport
 
 import (
 	"context"
+	"time"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/transport/viewer"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 type loggerDevToolsServer struct {
@@ -24,9 +25,10 @@ func loggerMiddlewareDevToolsServer() MiddlewareDevToolsServer {
 
 func (m loggerDevToolsServer) AddServer(ctx context.Context, token string, name string, address string) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsServer").Str("method", "addServer").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsServer.addServer",
 				"request": viewer.Sprintf("%+v", requestDevToolsServerAddServer{
 					Address: address,
 					Name:    name,
@@ -34,7 +36,7 @@ func (m loggerDevToolsServer) AddServer(ctx context.Context, token string, name 
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsServerAddServer{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call addServer")
@@ -47,13 +49,14 @@ func (m loggerDevToolsServer) AddServer(ctx context.Context, token string, name 
 
 func (m loggerDevToolsServer) GetServers(ctx context.Context, token string) (servers []types.Server, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsServer").Str("method", "getServers").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":   "devToolsServer.getServers",
 				"request":  viewer.Sprintf("%+v", requestDevToolsServerGetServers{Token: token}),
 				"response": viewer.Sprintf("%+v", responseDevToolsServerGetServers{Servers: servers}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getServers")
@@ -66,16 +69,17 @@ func (m loggerDevToolsServer) GetServers(ctx context.Context, token string) (ser
 
 func (m loggerDevToolsServer) DeleteServers(ctx context.Context, token string, serverID uuid.UUID) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsServer").Str("method", "deleteServers").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsServer.deleteServers",
 				"request": viewer.Sprintf("%+v", requestDevToolsServerDeleteServers{
 					ServerID: serverID,
 					Token:    token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsServerDeleteServers{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call deleteServers")

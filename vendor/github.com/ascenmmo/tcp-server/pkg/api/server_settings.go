@@ -2,14 +2,12 @@
 // @tg backend="Asenmmo"
 // @tg title=`Ascenmmo Rest API`
 // @tg servers=`http://stage.ascenmmo.com;stage cluster`
-//
-//go:generate tg transport --services . --out ../../pkg/transport --outSwagger ../../pkg/swagger.yaml
-//go:generate tg client -go --services . --outPath ../../pkg/clients/tcpGameServer
 
 package api
 
 import (
 	"context"
+
 	"github.com/ascenmmo/tcp-server/pkg/api/types"
 )
 

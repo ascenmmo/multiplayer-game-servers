@@ -3,12 +3,13 @@ package transport
 
 import (
 	"context"
+	"time"
+
 	"github.com/ascenmmo/tcp-server/pkg/api"
 	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/ascenmmo/tcp-server/pkg/transport/viewer"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 type loggerServerSettings struct {
@@ -23,16 +24,17 @@ func loggerMiddlewareServerSettings() MiddlewareServerSettings {
 
 func (m loggerServerSettings) GetConnectionsNum(ctx context.Context, token string) (countConn int, exists bool, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "ServerSettings").Str("method", "getConnectionsNum").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":  "serverSettings.getConnectionsNum",
 				"request": viewer.Sprintf("%+v", requestServerSettingsGetConnectionsNum{Token: token}),
 				"response": viewer.Sprintf("%+v", responseServerSettingsGetConnectionsNum{
 					CountConn: countConn,
 					Exists:    exists,
 				}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getConnectionsNum")
@@ -45,13 +47,14 @@ func (m loggerServerSettings) GetConnectionsNum(ctx context.Context, token strin
 
 func (m loggerServerSettings) HealthCheck(ctx context.Context, token string) (exists bool, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "ServerSettings").Str("method", "healthCheck").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":   "serverSettings.healthCheck",
 				"request":  viewer.Sprintf("%+v", requestServerSettingsHealthCheck{Token: token}),
 				"response": viewer.Sprintf("%+v", responseServerSettingsHealthCheck{Exists: exists}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call healthCheck")
@@ -64,13 +67,14 @@ func (m loggerServerSettings) HealthCheck(ctx context.Context, token string) (ex
 
 func (m loggerServerSettings) GetServerSettings(ctx context.Context, token string) (settings types.Settings, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "ServerSettings").Str("method", "getServerSettings").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":   "serverSettings.getServerSettings",
 				"request":  viewer.Sprintf("%+v", requestServerSettingsGetServerSettings{Token: token}),
 				"response": viewer.Sprintf("%+v", responseServerSettingsGetServerSettings{Settings: settings}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getServerSettings")
@@ -83,16 +87,17 @@ func (m loggerServerSettings) GetServerSettings(ctx context.Context, token strin
 
 func (m loggerServerSettings) CreateRoom(ctx context.Context, token string, createRoom types.CreateRoomRequest) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "ServerSettings").Str("method", "createRoom").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "serverSettings.createRoom",
 				"request": viewer.Sprintf("%+v", requestServerSettingsCreateRoom{
 					CreateRoom: createRoom,
 					Token:      token,
 				}),
 				"response": viewer.Sprintf("%+v", responseServerSettingsCreateRoom{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call createRoom")
@@ -105,16 +110,17 @@ func (m loggerServerSettings) CreateRoom(ctx context.Context, token string, crea
 
 func (m loggerServerSettings) GetDeletedRooms(ctx context.Context, token string, ids []types.GetDeletedRooms) (deletedIds []types.GetDeletedRooms, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "ServerSettings").Str("method", "getDeletedRooms").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "serverSettings.getDeletedRooms",
 				"request": viewer.Sprintf("%+v", requestServerSettingsGetDeletedRooms{
 					Ids:   ids,
 					Token: token,
 				}),
 				"response": viewer.Sprintf("%+v", responseServerSettingsGetDeletedRooms{DeletedIds: deletedIds}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getDeletedRooms")

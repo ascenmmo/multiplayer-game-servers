@@ -3,65 +3,87 @@ package transport
 
 import (
 	"context"
-	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
-	"github.com/go-kit/kit/metrics"
 	"github.com/google/uuid"
-	"time"
 )
 
 type metricsDevToolsServer struct {
-	next            multiplayer.DevToolsServer
-	requestCount    metrics.Counter
-	requestCountAll metrics.Counter
-	requestLatency  metrics.Histogram
+	next multiplayer.DevToolsServer
 }
 
 func metricsMiddlewareDevToolsServer(next multiplayer.DevToolsServer) multiplayer.DevToolsServer {
-	return &metricsDevToolsServer{
-		next:            next,
-		requestCount:    RequestCount.With("service", "DevToolsServer"),
-		requestCountAll: RequestCountAll.With("service", "DevToolsServer"),
-		requestLatency:  RequestLatency.With("service", "DevToolsServer"),
-	}
+	return &metricsDevToolsServer{next: next}
 }
 
 func (m metricsDevToolsServer) AddServer(ctx context.Context, token string, name string, address string) (err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "addServer", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsServer", "addServer", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsServer", "addServer", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsServer", "addServer", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "addServer", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "addServer").Add(1)
 
 	return m.next.AddServer(ctx, token, name, address)
 }
 
 func (m metricsDevToolsServer) GetServers(ctx context.Context, token string) (servers []types.Server, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "getServers", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsServer", "getServers", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsServer", "getServers", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsServer", "getServers", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "getServers", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "getServers").Add(1)
 
 	return m.next.GetServers(ctx, token)
 }
 
 func (m metricsDevToolsServer) DeleteServers(ctx context.Context, token string, serverID uuid.UUID) (err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "deleteServers", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("devToolsServer", "deleteServers", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("devToolsServer", "deleteServers", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("devToolsServer", "deleteServers", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "deleteServers", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "deleteServers").Add(1)
 
 	return m.next.DeleteServers(ctx, token, serverID)
 }

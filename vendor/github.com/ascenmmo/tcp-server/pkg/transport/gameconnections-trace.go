@@ -3,10 +3,13 @@ package transport
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/ascenmmo/tcp-server/pkg/api"
 	"github.com/ascenmmo/tcp-server/pkg/api/types"
 	"github.com/google/uuid"
-	"github.com/opentracing/opentracing-go"
+	otel "go.opentelemetry.io/otel"
+	trace "go.opentelemetry.io/otel/trace"
 )
 
 type traceGameConnections struct {
@@ -18,19 +21,34 @@ func traceMiddlewareGameConnections(next api.GameConnections) api.GameConnection
 }
 
 func (svc traceGameConnections) SetSendMessage(ctx context.Context, token string, message types.RequestSetMessage) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "SetSendMessage")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "gameConnections.setSendMessage")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.SetSendMessage(ctx, token, message)
 }
 
 func (svc traceGameConnections) GetMessage(ctx context.Context, token string) (messages types.ResponseGetMessage, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetMessage")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "gameConnections.getMessage")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetMessage(ctx, token)
 }
 
 func (svc traceGameConnections) RemoveUser(ctx context.Context, token string, userID uuid.UUID) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "RemoveUser")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "gameConnections.removeUser")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.RemoveUser(ctx, token, userID)
 }

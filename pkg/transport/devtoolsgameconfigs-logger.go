@@ -3,13 +3,14 @@ package transport
 
 import (
 	"context"
+	"time"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/transport/viewer"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 type loggerDevToolsGameConfigs struct {
@@ -24,16 +25,17 @@ func loggerMiddlewareDevToolsGameConfigs() MiddlewareDevToolsGameConfigs {
 
 func (m loggerDevToolsGameConfigs) CreateOrUpdateConfig(ctx context.Context, token string, configs types.GameConfigs) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsGameConfigs").Str("method", "createOrUpdateConfig").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsGameConfigs.createOrUpdateConfig",
 				"request": viewer.Sprintf("%+v", requestDevToolsGameConfigsCreateOrUpdateConfig{
 					Configs: configs,
 					Token:   token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsGameConfigsCreateOrUpdateConfig{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call createOrUpdateConfig")
@@ -46,16 +48,17 @@ func (m loggerDevToolsGameConfigs) CreateOrUpdateConfig(ctx context.Context, tok
 
 func (m loggerDevToolsGameConfigs) GetGameConfig(ctx context.Context, token string, gameID uuid.UUID) (configs types.GameConfigs, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsGameConfigs").Str("method", "getGameConfig").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsGameConfigs.getGameConfig",
 				"request": viewer.Sprintf("%+v", requestDevToolsGameConfigsGetGameConfig{
 					GameID: gameID,
 					Token:  token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsGameConfigsGetGameConfig{Configs: configs}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getGameConfig")
@@ -68,16 +71,17 @@ func (m loggerDevToolsGameConfigs) GetGameConfig(ctx context.Context, token stri
 
 func (m loggerDevToolsGameConfigs) GetGameResultConfigPreview(ctx context.Context, token string, gameID uuid.UUID) (gameResult types.GameConfigResults, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsGameConfigs").Str("method", "getGameResultConfigPreview").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsGameConfigs.getGameResultConfigPreview",
 				"request": viewer.Sprintf("%+v", requestDevToolsGameConfigsGetGameResultConfigPreview{
 					GameID: gameID,
 					Token:  token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsGameConfigsGetGameResultConfigPreview{GameResult: gameResult}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getGameResultConfigPreview")

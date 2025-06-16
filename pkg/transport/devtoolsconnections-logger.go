@@ -3,13 +3,14 @@ package transport
 
 import (
 	"context"
+	"time"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/transport/viewer"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 type loggerDevToolsConnections struct {
@@ -24,16 +25,17 @@ func loggerMiddlewareDevToolsConnections() MiddlewareDevToolsConnections {
 
 func (m loggerDevToolsConnections) CreateRoom(ctx context.Context, token string, name string) (newToken string, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "createRoom").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsConnections.createRoom",
 				"request": viewer.Sprintf("%+v", requestDevToolsConnectionsCreateRoom{
 					Name:  name,
 					Token: token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsCreateRoom{NewToken: newToken}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call createRoom")
@@ -46,13 +48,14 @@ func (m loggerDevToolsConnections) CreateRoom(ctx context.Context, token string,
 
 func (m loggerDevToolsConnections) GetRoomsAll(ctx context.Context, token string) (rooms []types.Room, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "getRoomsAll").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":   "devToolsConnections.getRoomsAll",
 				"request":  viewer.Sprintf("%+v", requestDevToolsConnectionsGetRoomsAll{Token: token}),
 				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsGetRoomsAll{Rooms: rooms}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getRoomsAll")
@@ -65,16 +68,17 @@ func (m loggerDevToolsConnections) GetRoomsAll(ctx context.Context, token string
 
 func (m loggerDevToolsConnections) JoinRoomByID(ctx context.Context, token string, roomID uuid.UUID) (newToken string, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "joinRoomByID").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsConnections.joinRoomByID",
 				"request": viewer.Sprintf("%+v", requestDevToolsConnectionsJoinRoomByID{
 					RoomID: roomID,
 					Token:  token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsJoinRoomByID{NewToken: newToken}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call joinRoomByID")
@@ -87,16 +91,17 @@ func (m loggerDevToolsConnections) JoinRoomByID(ctx context.Context, token strin
 
 func (m loggerDevToolsConnections) JoinRoomByRoomCode(ctx context.Context, token string, roomCode string) (newToken string, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "joinRoomByRoomCode").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsConnections.joinRoomByRoomCode",
 				"request": viewer.Sprintf("%+v", requestDevToolsConnectionsJoinRoomByRoomCode{
 					RoomCode: roomCode,
 					Token:    token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsJoinRoomByRoomCode{NewToken: newToken}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call joinRoomByRoomCode")
@@ -109,13 +114,14 @@ func (m loggerDevToolsConnections) JoinRoomByRoomCode(ctx context.Context, token
 
 func (m loggerDevToolsConnections) GetMyRoom(ctx context.Context, token string) (room types.Room, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "getMyRoom").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":   "devToolsConnections.getMyRoom",
 				"request":  viewer.Sprintf("%+v", requestDevToolsConnectionsGetMyRoom{Token: token}),
 				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsGetMyRoom{Room: room}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getMyRoom")
@@ -128,16 +134,17 @@ func (m loggerDevToolsConnections) GetMyRoom(ctx context.Context, token string) 
 
 func (m loggerDevToolsConnections) LeaveRoom(ctx context.Context, token string, roomID uuid.UUID) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "leaveRoom").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsConnections.leaveRoom",
 				"request": viewer.Sprintf("%+v", requestDevToolsConnectionsLeaveRoom{
 					RoomID: roomID,
 					Token:  token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsLeaveRoom{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call leaveRoom")
@@ -150,16 +157,17 @@ func (m loggerDevToolsConnections) LeaveRoom(ctx context.Context, token string, 
 
 func (m loggerDevToolsConnections) RemoveRoomByID(ctx context.Context, token string, roomID uuid.UUID) (err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "removeRoomByID").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method": "devToolsConnections.removeRoomByID",
 				"request": viewer.Sprintf("%+v", requestDevToolsConnectionsRemoveRoomByID{
 					RoomID: roomID,
 					Token:  token,
 				}),
 				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsRemoveRoomByID{}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call removeRoomByID")
@@ -172,13 +180,14 @@ func (m loggerDevToolsConnections) RemoveRoomByID(ctx context.Context, token str
 
 func (m loggerDevToolsConnections) GetRoomsConnectionUrls(ctx context.Context, token string) (connectionsServer []types.ConnectionServer, err error) {
 	logger := log.Ctx(ctx).With().Str("service", "DevToolsConnections").Str("method", "getRoomsConnectionUrls").Logger()
-	defer func(begin time.Time) {
+	defer func(_begin time.Time) {
 		logHandle := func(ev *zerolog.Event) {
 			fields := map[string]interface{}{
+				"method":   "devToolsConnections.getRoomsConnectionUrls",
 				"request":  viewer.Sprintf("%+v", requestDevToolsConnectionsGetRoomsConnectionUrls{Token: token}),
 				"response": viewer.Sprintf("%+v", responseDevToolsConnectionsGetRoomsConnectionUrls{ConnectionsServer: connectionsServer}),
 			}
-			ev.Fields(fields).Str("took", time.Since(begin).String())
+			ev.Fields(fields).Str("took", time.Since(_begin).String())
 		}
 		if err != nil {
 			logger.Error().Err(err).Func(logHandle).Msg("call getRoomsConnectionUrls")

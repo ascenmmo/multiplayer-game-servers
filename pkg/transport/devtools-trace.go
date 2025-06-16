@@ -3,10 +3,13 @@ package transport
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	"github.com/google/uuid"
-	"github.com/opentracing/opentracing-go"
+	otel "go.opentelemetry.io/otel"
+	trace "go.opentelemetry.io/otel/trace"
 )
 
 type traceDevTools struct {
@@ -18,55 +21,100 @@ func traceMiddlewareDevTools(next multiplayer.DevTools) multiplayer.DevTools {
 }
 
 func (svc traceDevTools) CreateGame(ctx context.Context, token string, game types.Game) (id uuid.UUID, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "CreateGame")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devTools.createGame")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.CreateGame(ctx, token, game)
 }
 
 func (svc traceDevTools) GameAddOwner(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GameAddOwner")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devTools.gameAddOwner")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GameAddOwner(ctx, token, gameID, userID)
 }
 
 func (svc traceDevTools) GameRemoveOwner(ctx context.Context, token string, gameID uuid.UUID, userID uuid.UUID) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GameRemoveOwner")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devTools.gameRemoveOwner")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GameRemoveOwner(ctx, token, gameID, userID)
 }
 
 func (svc traceDevTools) UpdateGame(ctx context.Context, token string, gameID uuid.UUID, newGame types.Game) (id uuid.UUID, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "UpdateGame")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devTools.updateGame")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.UpdateGame(ctx, token, gameID, newGame)
 }
 
 func (svc traceDevTools) DeleteGame(ctx context.Context, token string, gameID uuid.UUID) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "DeleteGame")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devTools.deleteGame")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.DeleteGame(ctx, token, gameID)
 }
 
 func (svc traceDevTools) GetMyGames(ctx context.Context, token string) (games []types.Game, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetMyGames")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devTools.getMyGames")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetMyGames(ctx, token)
 }
 
 func (svc traceDevTools) GetGameByGameID(ctx context.Context, token string, gameID uuid.UUID) (game types.Game, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetGameByGameID")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devTools.getGameByGameID")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetGameByGameID(ctx, token, gameID)
 }
 
 func (svc traceDevTools) TurnOnServerInGame(ctx context.Context, token string, serverID uuid.UUID, gameId uuid.UUID) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "TurnOnServerInGame")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devTools.turnOnServerInGame")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.TurnOnServerInGame(ctx, token, serverID, gameId)
 }
 
 func (svc traceDevTools) TurnOffServerInGame(ctx context.Context, token string, serverID uuid.UUID, gameId uuid.UUID) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "TurnOffServerInGame")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devTools.turnOffServerInGame")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.TurnOffServerInGame(ctx, token, serverID, gameId)
 }

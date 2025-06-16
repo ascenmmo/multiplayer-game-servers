@@ -2,9 +2,6 @@
 // @tg backend="Asenmmo multiplayer"
 // @tg title=`Ascenmmo API for clients`
 // @tg servers=`http://stage.ascenmmo.com;stage cluster`
-//
-//go:generate tg transport --services . --out ../../pkg/transport --outSwagger ../../pkg/swagger.yaml
-//go:generate tg client -go --services . --outPath ../../pkg/clients/multiplayer
 
 package multiplayer
 

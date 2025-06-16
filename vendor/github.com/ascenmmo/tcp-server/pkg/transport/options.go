@@ -2,9 +2,10 @@
 package transport
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	uuid "github.com/google/uuid"
-	"time"
 )
 
 type ServiceRoute interface {
@@ -55,6 +56,12 @@ func SetFiberCfg(cfg fiber.Config) Option {
 func SetReadBufferSize(size int) Option {
 	return func(srv *Server) {
 		srv.config.ReadBufferSize = size
+	}
+}
+
+func SetWriteBufferSize(size int) Option {
+	return func(srv *Server) {
+		srv.config.WriteBufferSize = size
 	}
 }
 

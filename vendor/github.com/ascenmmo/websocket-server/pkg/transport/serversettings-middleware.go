@@ -3,6 +3,7 @@ package transport
 
 import (
 	"context"
+
 	"github.com/ascenmmo/websocket-server/pkg/api"
 	"github.com/ascenmmo/websocket-server/pkg/api/types"
 )

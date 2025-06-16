@@ -3,90 +3,132 @@ package transport
 
 import (
 	"context"
-	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
-	"github.com/go-kit/kit/metrics"
-	"time"
 )
 
 type metricsDevelopers struct {
-	next            multiplayer.Developers
-	requestCount    metrics.Counter
-	requestCountAll metrics.Counter
-	requestLatency  metrics.Histogram
+	next multiplayer.Developers
 }
 
 func metricsMiddlewareDevelopers(next multiplayer.Developers) multiplayer.Developers {
-	return &metricsDevelopers{
-		next:            next,
-		requestCount:    RequestCount.With("service", "Developers"),
-		requestCountAll: RequestCountAll.With("service", "Developers"),
-		requestLatency:  RequestLatency.With("service", "Developers"),
-	}
+	return &metricsDevelopers{next: next}
 }
 
 func (m metricsDevelopers) SignUp(ctx context.Context, developer types.Developer) (token string, refresh string, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "signUp", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("developers", "signUp", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("developers", "signUp", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("developers", "signUp", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "signUp", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "signUp").Add(1)
 
 	return m.next.SignUp(ctx, developer)
 }
 
 func (m metricsDevelopers) SignIn(ctx context.Context, developer types.Developer) (token string, refresh string, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "signIn", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("developers", "signIn", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("developers", "signIn", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("developers", "signIn", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "signIn", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "signIn").Add(1)
 
 	return m.next.SignIn(ctx, developer)
 }
 
 func (m metricsDevelopers) RefreshToken(ctx context.Context, token string, refresh string) (newToken string, newRefresh string, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "refreshToken", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("developers", "refreshToken", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("developers", "refreshToken", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("developers", "refreshToken", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "refreshToken", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "refreshToken").Add(1)
 
 	return m.next.RefreshToken(ctx, token, refresh)
 }
 
 func (m metricsDevelopers) GetDeveloper(ctx context.Context, token string) (developer types.Developer, err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "getDeveloper", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("developers", "getDeveloper", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("developers", "getDeveloper", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("developers", "getDeveloper", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "getDeveloper", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "getDeveloper").Add(1)
 
 	return m.next.GetDeveloper(ctx, token)
 }
 
 func (m metricsDevelopers) UpdateDeveloper(ctx context.Context, token string, developer types.Developer) (err error) {
 
-	defer func(begin time.Time) {
-		m.requestLatency.With("method", "updateDeveloper", "success", fmt.Sprint(err == nil)).Observe(time.Since(begin).Seconds())
+	defer func(_begin time.Time) {
+		var (
+			success = true
+			errCode int
+		)
+		if err != nil {
+			success = false
+			errCode = internalError
+			ec, ok := err.(withErrorCode)
+			if ok {
+				errCode = ec.Code()
+			}
+		}
+		RequestCount.WithLabelValues("developers", "updateDeveloper", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestCountAll.WithLabelValues("developers", "updateDeveloper", strconv.FormatBool(success), strconv.Itoa(errCode)).Add(1)
+		RequestLatency.WithLabelValues("developers", "updateDeveloper", strconv.FormatBool(success), strconv.Itoa(errCode)).Observe(time.Since(_begin).Seconds())
 	}(time.Now())
-
-	defer m.requestCount.With("method", "updateDeveloper", "success", fmt.Sprint(err == nil)).Add(1)
-
-	m.requestCountAll.With("method", "updateDeveloper").Add(1)
 
 	return m.next.UpdateDeveloper(ctx, token, developer)
 }

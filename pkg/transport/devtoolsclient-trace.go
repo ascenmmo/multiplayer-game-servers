@@ -3,10 +3,13 @@ package transport
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	"github.com/google/uuid"
-	"github.com/opentracing/opentracing-go"
+	otel "go.opentelemetry.io/otel"
+	trace "go.opentelemetry.io/otel/trace"
 )
 
 type traceDevToolsClient struct {
@@ -18,49 +21,89 @@ func traceMiddlewareDevToolsClient(next multiplayer.DevToolsClient) multiplayer.
 }
 
 func (svc traceDevToolsClient) SignUp(ctx context.Context, client types.Client) (token string, refresh string, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "SignUp")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsClient.signUp")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.SignUp(ctx, client)
 }
 
 func (svc traceDevToolsClient) SignIn(ctx context.Context, client types.Client) (token string, refresh string, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "SignIn")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsClient.signIn")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.SignIn(ctx, client)
 }
 
 func (svc traceDevToolsClient) RefreshToken(ctx context.Context, token string, refresh string) (newToken string, newRefresh string, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "RefreshToken")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsClient.refreshToken")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.RefreshToken(ctx, token, refresh)
 }
 
 func (svc traceDevToolsClient) GetClient(ctx context.Context, token string, gameID uuid.UUID) (client types.Client, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetClient")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsClient.getClient")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetClient(ctx, token, gameID)
 }
 
 func (svc traceDevToolsClient) UpdateClient(ctx context.Context, token string, client types.Client) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "UpdateClient")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsClient.updateClient")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.UpdateClient(ctx, token, client)
 }
 
 func (svc traceDevToolsClient) GetGameSaves(ctx context.Context, token string) (gameSaves types.GameSaves, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetGameSaves")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsClient.getGameSaves")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetGameSaves(ctx, token)
 }
 
 func (svc traceDevToolsClient) SetGameSaves(ctx context.Context, token string, gameSaves types.GameSaves) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "SetGameSaves")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsClient.setGameSaves")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.SetGameSaves(ctx, token, gameSaves)
 }
 
 func (svc traceDevToolsClient) DeleteGameSaves(ctx context.Context, token string) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "DeleteGameSaves")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsClient.deleteGameSaves")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.DeleteGameSaves(ctx, token)
 }

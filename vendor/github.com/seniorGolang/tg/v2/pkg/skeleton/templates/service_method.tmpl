@@ -1,0 +1,14 @@
+package {{.serviceName}}
+
+import (
+    "context"
+
+    "{{.moduleName}}/pkg/errors"
+    "{{.moduleName}}/contracts/dto"
+)
+
+func (svc *Service) SomeMethod(ctx context.Context) (data dto.SomeStruct, err error) {
+
+    err = errors.ErrNotImplemented
+    return
+}

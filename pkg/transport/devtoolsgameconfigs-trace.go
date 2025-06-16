@@ -3,10 +3,13 @@ package transport
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer"
 	"github.com/ascenmmo/multiplayer-game-servers/pkg/multiplayer/types"
 	"github.com/google/uuid"
-	"github.com/opentracing/opentracing-go"
+	otel "go.opentelemetry.io/otel"
+	trace "go.opentelemetry.io/otel/trace"
 )
 
 type traceDevToolsGameConfigs struct {
@@ -18,19 +21,34 @@ func traceMiddlewareDevToolsGameConfigs(next multiplayer.DevToolsGameConfigs) mu
 }
 
 func (svc traceDevToolsGameConfigs) CreateOrUpdateConfig(ctx context.Context, token string, configs types.GameConfigs) (err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "CreateOrUpdateConfig")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsGameConfigs.createOrUpdateConfig")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.CreateOrUpdateConfig(ctx, token, configs)
 }
 
 func (svc traceDevToolsGameConfigs) GetGameConfig(ctx context.Context, token string, gameID uuid.UUID) (configs types.GameConfigs, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetGameConfig")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsGameConfigs.getGameConfig")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetGameConfig(ctx, token, gameID)
 }
 
 func (svc traceDevToolsGameConfigs) GetGameResultConfigPreview(ctx context.Context, token string, gameID uuid.UUID) (gameResult types.GameConfigResults, err error) {
-	span := opentracing.SpanFromContext(ctx)
-	span.SetTag("method", "GetGameResultConfigPreview")
+
+	var span trace.Span
+	ctx, span = otel.Tracer(fmt.Sprintf("tg:%s", VersionTg)).Start(ctx, "devToolsGameConfigs.getGameResultConfigPreview")
+	defer func() {
+		span.RecordError(err)
+		span.End()
+	}()
 	return svc.next.GetGameResultConfigPreview(ctx, token, gameID)
 }

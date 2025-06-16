@@ -2,9 +2,6 @@
 // @tg backend="Asenmmo"
 // @tg title=`Ascenmmo Rest API`
 // @tg servers=`ascenmmo.com`
-//
-//go:generate tg transport --services . --out ../../pkg/transport --outSwagger ../../pkg/swagger.yaml
-//go:generate tg client -go --services . --outPath ../../pkg/clients/udpGameServer
 
 package api
 
