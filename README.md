@@ -11,7 +11,7 @@ The ASCENMMO admin panel provides an easy-to-use interface for managing game ser
 
 ### How to Use the Admin Panel
 
-1. Go to the link [multiplayer-servers.ascenmmo.com/admin/games](multiplayer-servers.ascenmmo.com/admin/games) to access the admin panel.
+1. Go to the link [multiplayer-servers.ascenmmo.com/admin/games](https://multiplayer-servers.ascenmmo.com/admin/games) to access the admin panel.
 2. Register a new game by filling out the required fields.
 3. Obtain a unique game ID that will be used by clients to register players.
 
