@@ -2,6 +2,9 @@ package storage
 
 import (
 	"context"
+	"fmt"
+	"log"
+
 	"github.com/ascenmmo/multiplayer-game-servers/env"
 	"github.com/google/uuid"
 
@@ -39,11 +42,11 @@ const (
 func NewMongoConnection(cfg string) *mongo.Client {
 	mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(cfg))
 	if err != nil {
-		panic(err)
+		log.Fatal(fmt.Sprintf("Error connecting to Mongo. You set need correct mongo url: %v your url is %s", err, cfg))
 	}
 
 	if err := mongoClient.Ping(context.TODO(), readpref.Primary()); err != nil {
-		panic(err)
+		log.Fatal(fmt.Sprintf("Error get info frm Mongo. You set need correct mongo url: %v your url is %s", err, cfg))
 	}
 
 	return mongoClient

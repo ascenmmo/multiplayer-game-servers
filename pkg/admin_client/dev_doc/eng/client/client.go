@@ -15,7 +15,7 @@ func GetClientStruct() []types.DocStruct {
 				Title: "Registration",
 				Description: "Register a new user in the system by providing a unique email and password. " +
 					"Upon successful registration, tokens are returned.",
-				RequestPath:   "https://ascenmmo.com/api/v1/devToolsClient/signUp",
+				RequestPath:   "/api/v1/devToolsClient/signUp",
 				Method:        "POST",
 				RequestHeader: "Content-Type: application/json",
 				RequestBody:   "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"params\": {\n    \"client\": {\n      \"additional\": {},\n      \"email\": \"string\",\n      \"gameID\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"nickname\": \"string\",\n      \"password\": \"string\"\n    }\n  }\n}",
@@ -28,7 +28,7 @@ func GetClientStruct() []types.DocStruct {
 			{
 				Title:            "Authentication",
 				Description:      "Authenticate a user using email and password. Tokens are returned upon successful authentication.",
-				RequestPath:      "https://ascenmmo.com/api/v1/devToolsClient/signIn",
+				RequestPath:      "/api/v1/devToolsClient/signIn",
 				Method:           "POST",
 				RequestHeader:    "Content-Type: application/json",
 				RequestBody:      "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"params\": {\n    \"client\": {\n      \"additional\": {},\n      \"email\": \"string\",\n      \"gameID\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"nickname\": \"string\",\n      \"password\": \"string\"\n    }\n  }\n}",

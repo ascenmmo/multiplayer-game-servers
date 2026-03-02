@@ -15,7 +15,7 @@ func GetUDPConnectionsStruct() []types.DocStruct {
 					"The maximum number of messages per second is 200. " +
 					"You also need to wait for the server to respond with your client ID. The UserID in the response confirms that the connection is authenticated. " +
 					"Example connection command:",
-				RequestPath:      "udp://ascenmmo.com:4500",
+				RequestPath:      "udp://multiplayer-servers.ascenmmo.com:4500",
 				Method:           "udp write",
 				RequestBody:      `eyJhbGciOiJIUz11NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzA3NjA4ODYsIkluZm8iOnsiZ2FtZV9pZCI61jJhZDIyNDNhLThhN2UtMzkzMC1iNjEzLTg5YzY2NDk2YWFjZCIsInJvb21faWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDAiLCJ1c2VyX2lkIjoiN2RkZmNiNzEtOWQ3OC0zMTczLWExNGQtNDVjZTc1ODIyNmM3IiwidHRsIjo5MDAwMDAwMDAwMDB9fQ.wmq1VH88zlws_tSAdvJjfXcdcoaxL8vT8W9gsRZrw_o$_$j`,
 				RequestBodyInfo:  "You need to send a string without any wrapper several times until the server returns the userID. The server must recognize that your connection is valid; otherwise, you are not considered a connected user.",
@@ -27,7 +27,7 @@ func GetUDPConnectionsStruct() []types.DocStruct {
 				Description: "Use the same connection channel; do not create a new one. " +
 					"The connection channel for reading and sending must be the same. " +
 					"Reading command:",
-				RequestPath:     "udp://ascenmmo.com:4500",
+				RequestPath:     "udp://multiplayer-servers.ascenmmo.com:4500",
 				Method:          "udp read",
 				RequestBody:     `Belongs to the sending phase, during parallel reading no data needs to be sent.`,
 				RequestBodyInfo: "Here we need to listen for the server's response.",
@@ -41,7 +41,7 @@ func GetUDPConnectionsStruct() []types.DocStruct {
 					"The connection channel for reading and sending must be the same. " +
 					"Since you authenticated on the server in the first phase, you can now send packets. " +
 					"Example sending command:",
-				RequestPath:     "udp://ascenmmo.com:4500",
+				RequestPath:     "udp://multiplayer-servers.ascenmmo.com:4500",
 				Method:          "udp write",
 				RequestBody:     `Client 1 sent message 101, or sent JSON {"name": "MyUser1"}`,
 				RequestBodyInfo: "The server only works with []byte data. The byte array is distributed to all clients.",

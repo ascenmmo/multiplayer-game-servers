@@ -11,7 +11,7 @@ The ASCENMMO admin panel provides an easy-to-use interface for managing game ser
 
 ### How to Use the Admin Panel
 
-1. Go to the link [ascenmmo.com/admin/games](ascenmmo.com/admin/games) to access the admin panel.
+1. Go to the link [multiplayer-servers.ascenmmo.com/admin/games](multiplayer-servers.ascenmmo.com/admin/games) to access the admin panel.
 2. Register a new game by filling out the required fields.
 3. Obtain a unique game ID that will be used by clients to register players.
 
@@ -21,7 +21,7 @@ With the admin panel, you can also launch other game servers, such as UDP, WebSo
 
 ## Documentation
 
-Detailed documentation for connecting is available at [ascenmmo.com/developer/doc](http://ascenmmo.com/developer/doc).
+Detailed documentation for connecting is available at [multiplayer-servers.ascenmmo.com/developer/doc](https://multiplayer-servers.ascenmmo.com/developer/doc).
 
 ## Environment Variables
 
@@ -31,7 +31,7 @@ To ensure the service functions correctly, you need to set the environment varia
 package env
 
 var (
-	ServerAddress = "ascenmmo.com" // Server address
+	ServerAddress = "multiplayer-servers.ascenmmo.com" // Server address
 	TokenKey      = "_remember_token_must_be_32_bytes" // Unique authentication token
 )
 
@@ -39,7 +39,7 @@ var (
 	RunMultiplayer                 = true // Enable multiplayer mode
 	RunAdminPanel                  = true // Enable admin panel
 	MultiplayerPort                = "8080" // Port for multiplayer mode
-	MongoURL                       = "mongodb://username:userpassword@ascenmmo.com:27017" // MongoDB connection URL
+	MongoURL                       = "mongodb://username:userpassword@multiplayer-servers.ascenmmo.com:27017" // MongoDB connection URL
 	MultiplayerMaxRequestPerSecond = 5 // Maximum requests per second for multiplayer mode
 )
 
@@ -95,8 +95,8 @@ Here, you will need to register and add a game. Upon successful registration, th
 
 ## Important Links
 
-- [Developer Documentation](http://ascenmmo.com/developer/doc): Here you will find detailed instructions on connecting to game servers, as well as API usage examples.
-- [Admin Panel](http://ascenmmo.com/admin/games): Use this link to open the admin panel, register your game, and obtain a unique ID for client connections.
+- [Developer Documentation](http://multiplayer-servers.ascenmmo.com/developer/doc): Here you will find detailed instructions on connecting to game servers, as well as API usage examples.
+- [Admin Panel](https://multiplayer-servers.ascenmmo.com/admin/games): Use this link to open the admin panel, register your game, and obtain a unique ID for client connections.
 - [GitHub Repository](https://github.com/ascenmmo): The project's source code, including server and client components. You can download it and run it on your server.
 
 ## Conclusion

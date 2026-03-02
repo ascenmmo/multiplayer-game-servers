@@ -19,7 +19,7 @@ services:
   mongodb:
     image: mongo:8.0
     restart: always
-    container_name: mongodb
+    container_name: multiplayerMongodb
     volumes:
       - ./data/mongo:/data/db
     env_file:

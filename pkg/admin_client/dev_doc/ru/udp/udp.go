@@ -15,7 +15,7 @@ func GetUDPConnectionsStruct() []types.DocStruct {
 					"Максимальное количество сообщений в секунду — 200. " +
 					"Так же нужно дождаться от сервреа ответа в виде id вашего клиента, UserID в ответе является подтверждением что подключение аутентифицированное." +
 					"Пример команды подключения",
-				RequestPath:      "udp://ascenmmo.com:4500",
+				RequestPath:      "udp://multiplayer-servers.ascenmmo.com:4500",
 				Method:           "udp write",
 				RequestBody:      `eyJhbGciOiJIUz11NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzA3NjA4ODYsIkluZm8iOnsiZ2FtZV9pZCI61jJhZDIyNDNhLThhN2UtMzkzMC1iNjEzLTg5YzY2NDk2YWFjZCIsInJvb21faWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDAiLCJ1c2VyX2lkIjoiN2RkZmNiNzEtOWQ3OC0zMTczLWExNGQtNDVjZTc1ODIyNmM3IiwidHRsIjo5MDAwMDAwMDAwMDB9fQ.wmq1VH88zlws_tSAdvJjfXcdcoaxL8vT8W9gsRZrw_o$_$j`,
 				RequestBodyInfo:  "Нужно отправить string без всякой обвертки несколько раз пока от сервера не вернется userID. Сервер должен понять что ваше подключение является валидным, иначе вы не являетесь подключенным пользователем.",
@@ -27,7 +27,7 @@ func GetUDPConnectionsStruct() []types.DocStruct {
 				Description: "Используйте тот же канал подключения, не нужно создавать новый. " +
 					"Канал подключения на этапе чтения и отправки должен быть один." +
 					"Команда чтения ",
-				RequestPath:     "udp://ascenmmo.com:4500",
+				RequestPath:     "udp://multiplayer-servers.ascenmmo.com:4500",
 				Method:          "udp read",
 				RequestBody:     `Пренадлежит этапу отправки, при поралельном чтении не требует отправки данных'`,
 				RequestBodyInfo: "Тут мы должны слушать ответ",
@@ -41,7 +41,7 @@ func GetUDPConnectionsStruct() []types.DocStruct {
 					"Канал подключения на этапе чтения и отправки должен быть один." +
 					"Так как в первом этапе вы аутентифицировались на сервере вы можете отослать пакет" +
 					"Пример команды отправки",
-				RequestPath:     "udp://ascenmmo.com:4500",
+				RequestPath:     "udp://multiplayer-servers.ascenmmo.com:4500",
 				Method:          "udp write",
 				RequestBody:     `клиент 1 отправил сообщение 101, или он отправил json {"name": "MyUser1"}`,
 				RequestBodyInfo: "сервер работате только с даными []byte. Массив байт распределяется по всем клиентам",
