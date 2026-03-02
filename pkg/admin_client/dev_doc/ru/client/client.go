@@ -15,7 +15,7 @@ func GetClientStruct() []types.DocStruct {
 				Title: "Регистрация",
 				Description: "Регистрация нового пользователя в системе с указанием уникального email и пароля. " +
 					"После успешной регистрации возвращаются токены.",
-				RequestPath:   "https://ascenmmo.com/api/v1/devToolsClient/signUp",
+				RequestPath:   "https://multiplayer-servers.ascenmmo.com/api/v1/devToolsClient/signUp",
 				Method:        "POST",
 				RequestHeader: "Content-Type: application/json",
 				RequestBody:   "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"params\": {\n    \"client\": {\n      \"additional\": {},\n      \"email\": \"string\",\n      \"gameID\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"nickname\": \"string\",\n      \"password\": \"string\"\n    }\n  }\n}",
@@ -28,7 +28,7 @@ func GetClientStruct() []types.DocStruct {
 			{
 				Title:            "Авторизация",
 				Description:      "Авторизация пользователя с использованием email и пароля. После успешной авторизации возвращаются токены.",
-				RequestPath:      "https://ascenmmo.com/api/v1/devToolsClient/signIn",
+				RequestPath:      "https://multiplayer-servers.ascenmmo.com/api/v1/devToolsClient/signIn",
 				Method:           "POST",
 				RequestHeader:    "Content-Type: application/json",
 				RequestBody:      "{\n  \"id\": 1,\n  \"jsonrpc\": \"2.0\",\n  \"params\": {\n    \"client\": {\n      \"additional\": {},\n      \"email\": \"string\",\n      \"gameID\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"nickname\": \"string\",\n      \"password\": \"string\"\n    }\n  }\n}",

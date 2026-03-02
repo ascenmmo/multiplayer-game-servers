@@ -11,7 +11,7 @@ For English-speaking users, you can find the documentation [here](https://github
 
 ### Как использовать админку
 
-1. Перейдите по ссылке [ascenmmo.com/admin/games](http://ascenmmo.com/admin/games) для доступа к админской панели.
+1. Перейдите по ссылке [multiplayer-servers.ascenmmo.com/admin/games](https://multiplayer-servers.ascenmmo.com/admin/games) для доступа к админской панели.
 2. Зарегистрируйте новую игру, заполнив необходимые поля.
 3. Получите уникальный ID игры, который будет использоваться клиентами для регистрации игроков.
 
@@ -21,7 +21,7 @@ For English-speaking users, you can find the documentation [here](https://github
 
 ## Документация
 
-Подробная документация по подключению доступна по ссылке [ascenmmo.com/developer/doc](http://ascenmmo.com/developer/doc).
+Подробная документация по подключению доступна по ссылке [multiplayer-servers.ascenmmo.com/developer/doc](http://multiplayer-servers.ascenmmo.com/developer/doc).
 
 ## Переменные окружения
 
@@ -31,7 +31,7 @@ For English-speaking users, you can find the documentation [here](https://github
 package env
 
 var (
-	ServerAddress = "ascenmmo.com" // Адрес сервера
+	ServerAddress = "multiplayer-servers.ascenmmo.com" // Адрес сервера
 	TokenKey      = "_remember_token_must_be_32_bytes" // Уникальный токен для аутентификации
 )
 
@@ -39,7 +39,7 @@ var (
 	RunMultiplayer                 = true // Запуск многопользовательского режима
 	RunAdminPanel                  = true // Запуск админки
 	MultiplayerPort                = "8080" // Порт для многопользовательского режима
-	MongoURL                       = "mongodb://username:userpassword@ascenmmo.com:27017" // URL подключения к MongoDB
+	MongoURL                       = "mongodb://username:userpassword@multiplayerMongodb:27017" // URL подключения к MongoDB
 	MultiplayerMaxRequestPerSecond = 5 // Максимальное количество запросов в секунду для многопользовательского режима
 )
 
@@ -92,8 +92,8 @@ http://localhost:8080/admin/games
 
 ## Важные ссылки
 
-- [Документация разработчика](http://ascenmmo.com/developer/doc): Здесь вы найдете подробные инструкции по подключению к игровым серверам, а также примеры использования API.
-- [Админская панель](http://ascenmmo.com/admin/games): По этой ссылке вы можете открыть админскую панель, зарегистрировать свою игру и получить уникальный ID для подключения клиентов.
+- [Документация разработчика](https://ascenmmo.com/developer/doc): Здесь вы найдете подробные инструкции по подключению к игровым серверам, а также примеры использования API.
+- [Админская панель](http://multiplayer-servers.ascenmmo.com/admin/games): По этой ссылке вы можете открыть админскую панель, зарегистрировать свою игру и получить уникальный ID для подключения клиентов.
 - [GitHub репозиторий](https://github.com/ascenmmo): Исходный код проекта, включая серверные и клиентские компоненты. Вы можете скачать его и запустить на своем сервере.
 
 ## Заключение
